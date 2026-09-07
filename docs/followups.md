@@ -215,3 +215,86 @@ drops from 26.9 ms to 0.7 ms per frame, a ×1.29 frame speed-up. **The ceiling i
 81.4 ms per 160 ticks it alone caps the loop near 0.2× realtime. HANDOFF's 0.4× target needs Xenova's
 propagate/advance kernels to get faster (fewer, larger dispatches per tick, or a tick batch that
 does not synchronise per step), not anything on the optic side.
+
+## 6. Neuromodulation as flight state: more drive, no stability
+
+**The idea** (review §4.4, DECISIONS "Flight state as a gain"): octopamine roughly doubles the
+gain of the lobula-plate tangential cells in flight. Scale every synapse onto an LPTC in the optic
+net by a flight gain (`?flight=`, 44,581 synapses), change nothing else, readout gated and
+re-centred (§3), and ask whether the loop now holds heading and whether DNg02 lateralises.
+
+**Drum assay** (`bench/flight-gain.mjs`, drum ±1 rad/s):
+
+| flight gain | [A] HS L/R, CW | [B] HS L/R, CW (Hz) | DNa02 DSI L/R | DNg02 DSI L/R |
+| --- | --- | --- | --- | --- |
+| 1 | 1.723 / 0.087 | 122.5 / 0 | 0.184 / -0.111 | -0.035 / -0.043 |
+| 2 | 2.042 / 0.165 | 174.9 / 10.1 | 0.174 / -0.177 | 0.023 / -0.003 |
+| 3 | 2.414 / 0.226 | 195.1 / 28.5 | 0.198 / -0.403 | -0.003 / -0.011 |
+
+The gain does what it says: HS in the optic lobe rises 1.72 → 2.41 and HS in the spiking net
+122 → 195 Hz. DNg02 stays at zero selectivity at every gain (§1 and §4 said it would). DNa02's
+selectivity grows on the right side only (−0.11 → −0.40), which is the ipsilateral bias the
+haltere work found (§2), now visible under visual drive.
+
+**Cruise, 20 s, three realisations per gain** (the loop is chaotic past 30 ms, so one run is
+one sample; the realisations differ only in warm-up length, 3, 4, 5 s):
+
+| flight gain | warm 3 s | warm 4 s | warm 5 s |
+| --- | --- | --- | --- |
+| 1 | +108° / 0 coll. | +87° / 0 coll. | +92° / 0 coll. |
+| 2 | +171° / 1 coll. | — | — |
+| 3 | +9° / 0 coll. | +175° / 2 coll. | +175° / 1 coll. |
+| 4 | — | +170° / 1 coll. | — |
+
+**Reading.** The first gain-3 run came in at +9° with no collisions and looked like the answer.
+Its two replicates came in at +175° with one and two collisions, and gain 4 at +170° with one.
+Gain 1 sits at 87–108° in all three. So the honest summary is: **raising the motion pathway to
+flight strength adds drive and adds nothing to stability**; if anything the stronger loop hits
+pillars more. The 9° run is what a single lucky realisation of a chaotic loop looks like, and it
+is exactly the kind of number the thread would have quoted.
+
+**Why it fails.** The optomotor path through DNa02 is a *rotation* reflex; the drift it would
+have to cancel is a slow, self-generated ~5–10°/s turn whose optic flow at the eye is a tenth of
+the drum's, and the readout's own dynamics (turn gain 2, rest re-centring at 10 s) add a slow
+bias of their own. Doubling the LPTC gain scales the response to the drum, not the loop's
+sensitivity to its own slow rotation, and the extra drive lands on DNa02's right-side bias.
+Neuromodulation set as a gain is therefore not the stabiliser either; what is missing is a
+proper heading signal (the central complex, which this loop never reads) or a haltere model that
+encodes rotation rather than a yaw-rate current.
+
+## 7. The ionic layer, one variable: adaptation stops the storms and mutes the responses
+
+**The change** (review §4.5, DECISIONS "potassium-like adaptation"): one state variable per
+neuron, a threshold shift that grows by `inc` mV on every spike and decays with `tau` (300 ms),
+in both LIF backends (`?adapt=inc,tau`, default off). `bench/adapt-check.mjs`: with it on, the
+JavaScript and WebGPU LIF still spike identically for the first four frames (0, 0, 47, 398
+spikes against 0, 0, 47, 409 without it), so the term is the same on both backends and inert at
+zero.
+
+**The AN07B004 probe again, with 0.5 mV per spike** (`bench/hs-inject.mjs --drive AN07B004:I
+--adapt 0.5,300`, `bench/out/hs-inject-an07b004-adapt.txt`):
+
+| AN07B004 current | DNg02 tonic | HS off: DNg02 L/R, spikes/1.5 s | HS on: DNg02 L/R, spikes/1.5 s | HS on: DNa02 L/R |
+| --- | --- | --- | --- | --- |
+| 0.5 | 0 | 0.7 / 1.4, 47,000 | 1.2 / 2.4, 176,000 | 6.7 / 5.3 |
+| 1 | 0 | 2.7 / 4.2, 66,000 | 2.6 / 3.2, 235,000 | 10.7 / 9.3 |
+| 2 | 0 | 4.2 / 5.8, 340,000 | 4.7 / 6.3, 322,000 | 6.7 / 5.3 |
+| 0.5 | 0.4 | 11.4 / 12.8, 51,000 | 13.6 / 13.9, 312,000 | 5.0 / 3.2 |
+| 1 | 0.4 | 14.0 / 14.3, 273,000 | 13.9 / 15.0, 331,000 | 10.9 / 6.7 |
+| 2 | 0.4 | 16.7 / 18.8, 141,000 | 16.2 / 18.6, 82,000 | 11.0 / 6.7 |
+
+**Reading.** The storms are gone: the worst run makes 340,000 spikes in 1.5 s where the same
+drive made 1.2 million before, and no run pins at the ceiling. That is the ionic layer doing
+what the review says it does, with one variable. But the same term takes the responses with
+it: DNg02 under AN07B004 alone reaches 4–6 Hz, not threshold; with the constant back on it sits
+at 11–19 Hz and HS shifts left minus right by at most 2 Hz, in the wrong direction; and DNa02,
+which lateralised 26 / 6 Hz from HS with no adaptation, now manages 11 / 7 at best. At 0.5 mV
+per spike a cell at 30 Hz carries a 4.5 mV threshold shift, most of the 7 mV gap, so the term
+is a brake on every population, not only on runaway ones. A strength sweep (0.1, 0.2, 0.5 mV
+per spike, `bench/out/hs-inject-adapt-sweep.txt`) is reported below.
+
+**Verdict.** Same as §4 by another route: DNg02 is not reachable by injecting current at any
+one point of this graph, with or without the ionic brake. The brake itself is worth keeping as
+an option: it is the first hand-set constant in this repo that makes the network *less*
+willing to do something implausible rather than more, and any future run that drives strong
+cells should have it on.

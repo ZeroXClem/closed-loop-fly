@@ -505,21 +505,27 @@ def flight_gain():
                  'Octopamine roughly doubles LPTC gain in flight; here every synapse onto an LPTC is scaled by the flight gain, nothing else changes, readout gated and re-centred. '
                  'Left: what the optic lobe and the spiking net report under the drum. Middle: DNa02 and DNg02 direction selectivity. Right: the 20 s cruise.',
                  'bench/flight-gain.mjs · bench/out/flight-gain.json · docs/followups.md §6')
-    ax = f.add_axes([0.07, BOTTOM, 0.26, top - BOTTOM]); panel(ax)
+    ax = f.add_axes([0.07, BOTTOM, 0.22, top - BOTTOM]); panel(ax)
     ax.plot(x, [r['drum']['cw']['aHsL'] for r in runs], '-o', color=A, lw=3, label='[A] HS L, drum CW (rate units)')
     ax2 = ax.twinx(); ax2.plot(x, [r['drum']['cw']['bHsL'] for r in runs], '-s', color=B, lw=3, label='[B] HS L, drum CW (Hz)'); ax2.grid(False); ax2.set_ylabel('[B] HS, Hz', color=B); ax2.tick_params(axis='y', colors=B)
     ax.set_xlabel('flight gain'); ax.set_ylabel('[A] HS rate', color=A); ax.set_xticks(x); ax.legend(loc='upper left', frameon=False, fontsize=11); ax2.legend(loc='lower right', frameon=False, fontsize=11)
     ax.set_title('the drive', color=MUTED, fontsize=15)
-    ax3 = f.add_axes([0.40, BOTTOM, 0.24, top - BOTTOM]); panel(ax3)
+    ax3 = f.add_axes([0.42, BOTTOM, 0.22, top - BOTTOM]); panel(ax3)
     for key, col, lab in [('dna02Dsi', GOOD, 'DNa02'), ('dng02Dsi', DN, 'DNg02')]:
         ax3.plot(x, [r['drum'][key]['L'] for r in runs], '-o', color=col, lw=3, label=f'{lab} left'); ax3.plot(x, [r['drum'][key]['R'] for r in runs], '--s', color=col, lw=3, alpha=0.7, label=f'{lab} right')
     ax3.axhline(0.3, color=GOOD, ls=':', lw=1.5); ax3.text(x[0], 0.31, 'acceptance target', color=GOOD, fontsize=11, va='bottom'); ax3.axhline(0, color=MUTED, lw=1)
     ax3.set_xlabel('flight gain'); ax3.set_ylabel('direction-selectivity index (CW vs CCW)'); ax3.set_xticks(x); ax3.legend(loc='upper left', frameon=False, fontsize=11); ax3.set_ylim(-1, 1)
     ax3.set_title('does anything steer?', color=MUTED, fontsize=15)
     ax4 = f.add_axes([0.71, BOTTOM, 0.25, top - BOTTOM]); panel(ax4)
-    ax4.bar(x, [abs(r['cruise']['driftDeg']) for r in runs], color=[GOOD if abs(r['cruise']['driftDeg']) < 20 else BAD for r in runs], width=0.6)
-    for xi, r in zip(x, runs): ax4.text(xi, abs(r['cruise']['driftDeg']) + 4, f"{r['cruise']['driftDeg']:+.0f}°\n{r['cruise']['collisions']} coll.", ha='center', va='bottom', color=INK, fontsize=12)
-    ax4.axhline(20, color=GOOD, ls=':', lw=1.5); ax4.set_xlabel('flight gain'); ax4.set_ylabel('|heading drift| in 20 s, degrees'); ax4.set_xticks(x); ax4.set_ylim(0, max(30, max(abs(r['cruise']['driftDeg']) for r in runs) * 1.3))
+    allruns = list(runs) + [r for f_ in ('flight-gain-w4.json', 'flight-gain-w5.json') if (dd := load(f_)) for r in dd['runs']]
+    gains = sorted({r['flight'] for r in allruns})
+    med = [float(np.median([abs(r['cruise']['driftDeg']) for r in allruns if r['flight'] == g])) for g in gains]
+    ax4.bar(gains, med, color=[GOOD if m < 20 else BAD for m in med], width=0.6, alpha=0.85)
+    for r in allruns: ax4.scatter([r['flight']], [abs(r['cruise']['driftDeg'])], s=70, color=INK, zorder=5, edgecolors=BG)
+    for g, m in zip(gains, med):
+        rs = [r for r in allruns if r['flight'] == g]
+        ax4.text(g, max(abs(r['cruise']['driftDeg']) for r in rs) + 5, f'median {m:.0f}°\n{len(rs)} run{"s" if len(rs) > 1 else ""}, {sum(r["cruise"]["collisions"] for r in rs)} coll.', ha='center', va='bottom', color=INK, fontsize=11)
+    ax4.axhline(20, color=GOOD, ls=':', lw=1.5); ax4.set_xlabel('flight gain'); ax4.set_ylabel('|heading drift| in 20 s, degrees (dots: runs)'); ax4.set_xticks(gains); ax4.set_ylim(0, max(30, max(abs(r['cruise']['driftDeg']) for r in allruns) * 1.35))
     ax4.set_title('does the loop hold heading?', color=MUTED, fontsize=15)
     save(f, '20-flight-gain')
 
@@ -543,7 +549,7 @@ def adaptation():
         ax.plot([r['an'] for r in sel if r['hs'] == 0], [r['spikes'] / r['secs'] for r in sel if r['hs'] == 0], '-o', color=col, lw=3, label=f'{lab}, HS off')
         ax.plot([r['an'] for r in sel if r['hs'] > 0], [r['spikes'] / r['secs'] for r in sel if r['hs'] > 0], '--s', color=col, lw=3, alpha=0.7, label='HS on')
     ax.set_yscale('log'); ax.set_xlabel('AN07B004 current, mV/ms'); ax.set_ylabel('network spikes per second'); ax.legend(loc='lower right', frameon=False, fontsize=11)
-    ax.axhline(8e5, color=MUTED, ls=':', lw=1); ax.text(0.02, 0.97, 'storm', transform=ax.transAxes, color=MUTED, fontsize=12, va='top')
+    ax.axhline(8e5, color=MUTED, ls=':', lw=1); ax.text(0.98, 0.93, 'the storm ceiling', transform=ax.transAxes, color=MUTED, fontsize=12, va='top', ha='right')
     ax2 = f.add_axes([0.56, BOTTOM, 0.40, top - BOTTOM]); panel(ax2)
     for rows, col, lab in [(off, BAD, 'no adaptation'), (on, GOOD, 'with adaptation')]:
         sel = [r for r in rows if r['dn'] == 0 and r['hs'] > 0]

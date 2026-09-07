@@ -21,9 +21,14 @@ cancellation story is dead (§1); the haltere proxy's 30× was an anti-spin clam
 readout treating a silent DNa02 pair as a turn (§2); with that artefact gated out (`?gate=1`,
 default off) the intact loop drifts ~200° in 20 s and haltere-off −5°, so the loop has **no real
 stabiliser** (§3); a biological tonic drive through AN07B004 storms the network (§4); the rate net
-runs on the GPU with identical output (§5). The open problem is a stabiliser: a stronger/faster
-optomotor path or a phase-encoded haltere model onto the wing-steering MNs. Do not present the
-Phase 5/6 drift numbers without §3 next to them.
+runs on the GPU with identical output (§5). Later the same evening (§6–7): a flight-state (octopamine)
+gain on the LPTC synapses raises the drive and does not stabilise heading (one 9° run, replicates
+at 175°; §6), and a potassium-like adaptation term in both LIFs stops the storms but mutes DNa02 and
+DNg02 alike (§7). **The open problem is still a stabiliser**, and the two cheap ideas are now spent:
+what is left is a real heading signal (the central complex, never read here) or a phase-encoded
+haltere model onto the wing-steering MNs. Do not present the Phase 5/6 drift numbers without §3
+next to them, and never quote a single closed-loop run: the loop is chaotic, one run is one sample
+(§6 is the cautionary tale).
 
 ## Machines
 
@@ -90,7 +95,7 @@ Phase 5/6 drift numbers without §3 next to them.
 
 `loop.html` URL params: `bench=1` (no rAF; driven by `__loop.run(n)`), `backend=gpu|cpu`,
 `gain=` (bridge gain, mV/ms per rate unit), `set=validated|inputs`, `dnbias=` (tonic DNg02,
-mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `turngain=`,
+mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `flight=<LPTC gain>`, `adapt=<mV/spike>,<tau ms>`, `turngain=`,
 `turnsign=`, `haltere=on`, `halteregain=`, `halteresign=±1`, `course=1`, `bridge=off`,
 `stimulus=inject|poisson`, `frame=` (dt).
 
@@ -137,6 +142,14 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|
   (−2.3°), `docs/ablations-gated.md`.
 
 ## Next steps, in the order I would take them
+
+0. **A stabiliser that is not a readout trick** (everything below §3 of docs/followups.md points
+   here). Two candidates, both real anatomy: (a) read heading from the central complex (EPG /
+   PEN compass cells exist in [B]; give the loop a heading error, not a rotation reflex); (b) a
+   haltere model whose afferents encode rotation phase onto the wing-steering MNs (b1/b2/i1, in
+   `bench/out/motor-neurons.json`) instead of a yaw-rate current. Run every closed-loop claim as
+   ≥ 3 realisations (different warm-up) before writing it down.
+
 
 1. ~~Kill or confirm the octopamine hypothesis~~ **Done 2026-09-07 evening, killed**:
    `bench/hs-inject.mjs --octopamine` (options `--mute <types>`, `--monoamines 0`) mutes each

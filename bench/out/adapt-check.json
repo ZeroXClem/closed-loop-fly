@@ -1,0 +1,121 @@
+{
+ "adapt": "0.5,300",
+ "frames": 4,
+ "runs": {
+  "gpu, adapt off": {
+   "backend": "gpu",
+   "rows": [
+    {
+     "frame": 1,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 2,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 3,
+     "spikes": 47,
+     "dng02L": 34.41693878173828,
+     "dng02R": 34.41693878173828,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 4,
+     "spikes": 409,
+     "dng02L": 15.464527130126953,
+     "dng02R": 15.464527130126953,
+     "dna02L": 0,
+     "dna02R": 0
+    }
+   ]
+  },
+  "cpu, adapt on": {
+   "backend": "cpu",
+   "rows": [
+    {
+     "frame": 1,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 2,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 3,
+     "spikes": 47,
+     "dng02L": 34.41693878173828,
+     "dng02R": 34.41693878173828,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 4,
+     "spikes": 398,
+     "dng02L": 15.464527130126953,
+     "dng02R": 15.464527130126953,
+     "dna02L": 0,
+     "dna02R": 0
+    }
+   ]
+  },
+  "gpu, adapt on": {
+   "backend": "gpu",
+   "rows": [
+    {
+     "frame": 1,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 2,
+     "spikes": 0,
+     "dng02L": 0,
+     "dng02R": 0,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 3,
+     "spikes": 47,
+     "dng02L": 34.41693878173828,
+     "dng02R": 34.41693878173828,
+     "dna02L": 0,
+     "dna02R": 0
+    },
+    {
+     "frame": 4,
+     "spikes": 398,
+     "dng02L": 15.464527130126953,
+     "dng02R": 15.464527130126953,
+     "dna02L": 0,
+     "dna02R": 0
+    }
+   ]
+  }
+ },
+ "verdict": {
+  "identicalFrames": 4,
+  "note": "CPU and GPU spike identically for ~36 ms without adaptation (docs/phase1.md); expect the first two 16.7 ms frames to match with it too"
+ }
+}
