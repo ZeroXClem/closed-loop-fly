@@ -42,7 +42,7 @@ const eye = createEye({ renderer, scene: world.scene, head: world.flyRoot, colum
 const hud = new EyeHud($('hud'));
 let drumOmega = Number(params.get('omega') ?? 0);
 // Phase 4: ?motor=vnc closes the yaw loop from [B]'s DNg02 / wing MN rates; default hover (open loop)
-const readout = new MotorReadout({ turnGain: Number(params.get('turngain') ?? 1), turnSign: Number(params.get('turnsign') ?? 1), source: params.get('readout') ?? 'dng02' });
+const readout = new MotorReadout({ turnGain: Number(params.get('turngain') ?? 1), turnSign: Number(params.get('turnsign') ?? 1), source: params.get('readout') ?? 'dng02', gate: Number(params.get('gate') ?? 0), recenterTau: Number(params.get('recenter') ?? 0) });
 let motorMode = params.get('motor') ?? 'hover';
 let forces = { ...HOVER };
 const PHYS_DT = 0.001;
@@ -124,7 +124,7 @@ worker.onmessage = ({ data: m }) => {
 };
 function summarize(m) {
   const o = m.optic, r = m.rates;
-  return { frame: m.frame, tick: m.tick, t: time, omega: drumOmega, yaw: body.state.yaw, yawRate: body.state.yawRate, roll: body.state.roll, speed: body.state.speed, x: body.state.position.x, z: body.state.position.z, collisions, cmdL: readout.cmd.left, cmdR: readout.cmd.right, turnCmd: readout.turn, spikes: m.spikes, wallMs: m.wallMs, opticMs: m.opticMs, brainMs: m.brainMs, hsL: o.hsL, hsR: o.hsR, dL: o.dL, dR: o.dR, turn: o.turn, loomL: o.loomL, loomR: o.loomR, aDng02L: o.dng02L, aDng02R: o.dng02R, calibrated: o.calibrated, ...Object.fromEntries(Object.entries(r).map(([k, v]) => ['b_' + k, v])), loom: loomer.active ? loomer.distance : null, watched: m.watched ? Array.from(m.watched) : null };
+  return { frame: m.frame, tick: m.tick, t: time, omega: drumOmega, yaw: body.state.yaw, yawRate: body.state.yawRate, roll: body.state.roll, speed: body.state.speed, x: body.state.position.x, z: body.state.position.z, collisions, cmdL: readout.cmd.left, cmdR: readout.cmd.right, turnCmd: readout.turn, gate: readout.gate ?? 1, spikes: m.spikes, wallMs: m.wallMs, opticMs: m.opticMs, brainMs: m.brainMs, hsL: o.hsL, hsR: o.hsR, dL: o.dL, dR: o.dR, turn: o.turn, loomL: o.loomL, loomR: o.loomR, aDng02L: o.dng02L, aDng02R: o.dng02R, calibrated: o.calibrated, ...Object.fromEntries(Object.entries(r).map(([k, v]) => ['b_' + k, v])), loom: loomer.active ? loomer.distance : null, watched: m.watched ? Array.from(m.watched) : null };
 }
 /** Advance the scene by one fixed frame and hand the eye's luminance to the worker. */
 function requestFrame() {
@@ -216,6 +216,7 @@ worker.postMessage({
   injectGain: 1,
   steps: 40,
   optic: { graphJson: abs(opticJsonUrl), graphBin: abs(opticBinUrl), params: abs(paramsUrl) },
+  opticBackend: params.get('optic') ?? 'cpu',
   columns,
 });
 worker.postMessage({ type: 'bridge', config: { gain: Number(params.get('gain') ?? 2), set: params.get('set') ?? 'validated', on: params.get('bridge') !== 'off', dnBias: Number(params.get('dnbias') ?? 0), holdPerFrame: params.get('hold') !== 'substep' } });

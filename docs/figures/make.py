@@ -472,5 +472,29 @@ def haltere_anatomy():
 
 ALL.update(octopamine=octopamine, haltere_anatomy=haltere_anatomy)
 
+
+def ablations_gated():
+    a, b = load('ablate-dna02.json'), load('ablate-dna02-gated.json')
+    if not (a and b): return print('skip ablations_gated (no gated run)')
+    c = load('ablate-dna02-gated-recenter.json')
+    order = [k for k in ['intact', 'bridge-off', 'haltere-off', 'central-brain-silenced', 'recurrence-off', 'neck-cut', 'decapitated'] if k in a['conditions'] and k in b['conditions']]
+    nice = {'intact': 'intact', 'bridge-off': 'vision unplugged', 'haltere-off': 'haltere feedback off', 'central-brain-silenced': 'central brain silenced', 'recurrence-off': 'recurrence off', 'neck-cut': 'neck cut', 'decapitated': 'decapitated'}
+    f, top = fig('Follow-up · the readout without the artefact', 'Same ablations, a readout that lets a silent population say nothing',
+                 'Heading drift over the 20 s cruise, original readout against the gated one (turn × min(1, activity / rest activity)) and the gated one with slow re-centring. '
+                 'Where the original run spun on a silent readout, the gated run reports what the wiring actually does.',
+                 'bench/ablate.mjs --gate 1 [--recenter 10] · bench/out/ablate-dna02*.json · docs/followups.md §3')
+    ax = f.add_axes([0.24, BOTTOM, 0.72, top - BOTTOM]); panel(ax)
+    y = np.arange(len(order))[::-1]; sets = [(a, MUTED, 'original readout', 0.27), (b, GOOD, 'gated', 0.0)] + ([(c, A, 'gated + re-centring τ 10 s', -0.27)] if c else [])
+    for d, col, lab, off in sets:
+        vals = [abs(d['conditions'][k]['driftDeg']) if k in d['conditions'] else np.nan for k in order]
+        ax.barh(y + off, [max(v, 1) if not np.isnan(v) else 0 for v in vals], height=0.25, color=col, label=lab)
+        for yi, k, v in zip(y, order, vals):
+            if not np.isnan(v): ax.text(max(v, 1) * 1.15, yi + off, f'{v:,.0f}°  ·  {d["conditions"][k]["collisions"]} coll.', va='center', color=INK, fontsize=11)
+    ax.set_xscale('log'); ax.set_xlim(1, 3e5); ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(['1°', '10°', '100°', '1,000°', '10,000°'])
+    ax.set_yticks(y); ax.set_yticklabels([nice[k] for k in order], fontsize=14); ax.set_xlabel('|heading drift| in 20 s (log scale)'); ax.legend(loc='lower right', frameon=False)
+    save(f, '19-ablations-gated')
+
+ALL.update(ablations_gated=ablations_gated)
+
 if __name__ == '__main__':
     for n in (sys.argv[1:] or list(ALL)): ALL[n]()

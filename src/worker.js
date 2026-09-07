@@ -125,7 +125,7 @@ async function handle(m) {
         backend = 'cpu';
       }
     else brain = new BrainCPU(graph);
-    if (m.optic) await initOptic(m.optic, m.columns);
+    if (m.optic) await initOptic(m.optic, m.columns, m.opticBackend ?? 'cpu');
     postMessage({ type: 'ready', backend, stimulus, steps: batchSteps, optic: optic ? optic.name : null, bridge: pairs ? { ...bridge, pairs: pairs.a.length } : null });
   } else if (m.type === 'pulse') {
     if (m.replace) pulses.reset();
@@ -197,7 +197,25 @@ async function handle(m) {
     };
     const n = Math.floor(pendingDt / netDt + 1e-9);
     pendingDt -= n * netDt;
-    if (bridge.holdPerFrame) {
+    if (optic.gpu) {
+      // GPU rate net: the bridge current is built from the previous frame's r (host copy), the
+      // substeps are submitted without waiting, r is copied to staging, the LIF batch runs and
+      // its readback is the only fence; then r is mapped for this frame's readouts.
+      const t0 = performance.now();
+      for (let k = 0; k < n; k++) optic.step(m.lumL, m.lumR, netDt);
+      optic.flush();
+      opticMs += performance.now() - t0;
+      for (let done = 0; done < n * ticks; ) {
+        const chunk = Math.min(200, n * ticks - done);
+        await runB(chunk);
+        done += chunk;
+      }
+      const t2 = performance.now();
+      await optic.sync();
+      if (!pairs.rested && optic.calibrated) captureRest();
+      opticMs += performance.now() - t2;
+      substeps = n;
+    } else if (bridge.holdPerFrame) {
       const t0 = performance.now();
       for (let k = 0; k < n; k++) {
         optic.step(m.lumL, m.lumR, netDt);
@@ -326,7 +344,7 @@ async function handle(m) {
 // ---------------------------------------------------------------------------------------------
 // Phase 3 helpers
 
-async function initOptic(urls, columns) {
+async function initOptic(urls, columns, opticBackend = 'cpu') {
   postMessage({ type: 'stage', message: 'Loading the optic-v2 graph…' });
   const g = await loadOpticGraph(urls.graphJson, urls.graphBin, (loaded, total) => postMessage({ type: 'progress', value: total ? loaded / total : 0 }));
   const fv = await (await fetch(urls.params)).json();
@@ -335,6 +353,10 @@ async function initOptic(urls, columns) {
   optic = new OpticBrain(g, fv, omm.left, omm.right);
   postMessage({ type: 'stage', message: 'Settling the optic net under grey…' });
   optic.settle(0.5);
+  if (opticBackend === 'gpu') {
+    if (brain.device) { optic.useGPU(brain.device); postMessage({ type: 'stage', message: 'optic-v2 rate net moved to the GPU (same device as the LIF)' }); }
+    else postMessage({ type: 'fallback', message: 'optic=gpu asked but the LIF is on the CPU; the rate net stays on the CPU' });
+  }
   buildPairs();
   buildReadoutSets();
   applyDnBias();

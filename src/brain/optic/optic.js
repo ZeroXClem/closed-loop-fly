@@ -12,6 +12,7 @@
 import { buildCSRWeighted, unitsWhere, typeName, sideName } from './graph.js';
 import { applyParams, hasType, restV, isPooling } from './params.js';
 import { RateNet } from './rate-net.js';
+import { RateNetGPU } from './rate-net-gpu.js';
 import { Photoreceptors } from '../../eye/photoreceptor.js';
 
 const LAMINA = /^L[123]$/;
@@ -152,10 +153,26 @@ export class OpticBrain {
     this.reset();
   }
 
+  /**
+   * Move the settled rate net onto a GPUDevice (HANDOFF step 3). Call after settle(): the
+   * homeostat stays on the CPU. From then on step() submits without waiting and readouts() reads
+   * the host copy of r refreshed by `await sync()` once per frame (flush() first, then the LIF
+   * batch, then sync(), so no extra fence).
+   */
+  useGPU(device) {
+    if (this.net.kind === 'gpu') return;
+    this.net = RateNetGPU.fromCPU(device, this.net);
+    this.name = this.name.replace('[cpu]', '[gpu]');
+  }
+  get gpu() { return this.net.kind === 'gpu'; }
+  flush() { this.net.flush?.(); }
+  async sync() { if (this.net.sync) await this.net.sync(); }
+
   /** Back to the settled state; the caller then warms up in the scene before readouts count. */
   reset() {
     this.net.reset();
     this.net.bias.set(this.bias0);
+    this.net.uploadState?.();
     this.pr.L.reset();
     this.pr.R.reset();
     this.calibrated = false;

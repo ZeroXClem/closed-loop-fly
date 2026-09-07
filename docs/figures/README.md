@@ -20,6 +20,9 @@ output at render time; the only hand-typed content is labels. Dark, 16:9, `Liber
 | `10-eye-maps.png` | 1,771 columns at their connectome azimuth / elevation, coloured by luminance and photoreceptor output | `bench/out/figures.json`, `src/eye/columns.json` |
 | `11-frame-budget.png` | 98 ms of wall time per 16.7 ms frame: rate net 24, LIF 73, rest 1; per-frame counts | `bench/out/figures.json` |
 | `12-filmstrip.png` | eight 1080p stills of the intact cruise, 2.5 s apart | `shots/strip-*.png` |
+| `17-octopamine-test.png` | DNg02 L−R shift under left-HS drive with OA-VUMa4 / PS080 / both muted and with monoamines at the file sign: never leaves ±1 Hz | `bench/out/hs-inject-octopamine.json` |
+| `18-haltere-anatomy.png` | two-hop anatomy of the haltere afferents, their steady-state effect on DNa02 vs current, and the closed loop's turn command vs yaw rate for both signs | `bench/out/haltere-paths.json`, `haltere-inject*.json`, `haltere-loop.json` |
+| `19-ablations-gated.png` | the ablation drifts under the original readout, the gated readout, and gated + re-centring | `bench/out/ablate-dna02*.json` |
 | `13-shot-loom.png` … `16-shot-brain.png` | captioned 1080p screenshots: the looming sphere, the loop page with HUD, the drum assay, Xenova's brain view firing through the inject path | `shots/*.png` |
 
 ## Regenerate

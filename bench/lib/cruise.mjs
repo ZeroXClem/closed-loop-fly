@@ -8,8 +8,8 @@ const mean = (a) => a.reduce((s, v) => s + v, 0) / Math.max(1, a.length);
 const std = (a) => { const m = mean(a); return Math.sqrt(mean(a.map((v) => (v - m) ** 2))); };
 
 /** Open the loop page in the given state and wait for the worker. */
-export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, haltereSign = 1, course = true, bridge = true } = {}) {
-  const q = `bench=1&gain=${gain}&set=${set}&backend=${backend}&dnbias=${dnBias}&hold=frame&motor=hover&turngain=${turnGain}&readout=${readout}${haltere ? `&haltere=on&halteregain=${haltereGain}&halteresign=${haltereSign}` : ''}${course ? '&course=1' : ''}${bridge ? '' : '&bridge=off'}`;
+export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, haltereSign = 1, course = true, bridge = true, gate = 0, recenter = 0 } = {}) {
+  const q = `bench=1&gain=${gain}&set=${set}&backend=${backend}&dnbias=${dnBias}&hold=frame&motor=hover&turngain=${turnGain}&readout=${readout}&gate=${gate}&recenter=${recenter}${haltere ? `&haltere=on&halteregain=${haltereGain}&halteresign=${haltereSign}` : ''}${course ? '&course=1' : ''}${bridge ? '' : '&bridge=off'}`;
   await page.goto(`${url}loop.html?${q}`, { waitUntil: 'domcontentloaded' });
   await waitFor(page, () => window.__loop?.ready || window.__loop?.error, { what: 'loop ready', timeoutMs: 600000 });
   const boot = await page.evaluate(() => ({ backend: window.__loop.backend, config: window.__loop.config, error: window.__loop.error }));

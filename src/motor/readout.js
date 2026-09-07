@@ -29,6 +29,15 @@ export const DEFAULT_READOUT = Object.freeze({
   maxTurn: 0.5,
   floor: 5, // Hz, keeps a silent pair from being infinitely sensitive
   motorTau: 0.05, // s
+  /**
+   * Follow-up (docs/followups.md §3). gate: scale the turn by min(1, (L+R)/(restL+restR)) so a
+   * pair that has gone silent commands nothing instead of −(restL−restR)/floor (the
+   * "silent readout" artefact of docs/ablations.md). recenterTau (s): let the rest levels
+   * follow the rates with this time constant while flying (0 = frozen at capture), so a
+   * standing asymmetry that wanders after calibration does not become a permanent turn.
+   */
+  gate: 0,
+  recenterTau: 0,
 });
 
 export class MotorReadout {
@@ -67,7 +76,10 @@ export class MotorReadout {
     // remove the standing asymmetry of the two populations (their rest), like [A]'s side offsets
     const restL = this.rest?.[src + 'L'] ?? 0, restR = this.rest?.[src + 'R'] ?? 0;
     const dL = L - restL, dR = R - restR;
-    const diffRaw = (dL - dR) / (L + R + p.floor);
+    const gate = p.gate ? Math.min(1, (L + R) / (restL + restR + 1e-6)) : 1;
+    const diffRaw = gate * (dL - dR) / (L + R + p.floor);
+    if (p.recenterTau > 0 && this.rest) { const b = Math.min(1, dt / p.recenterTau); this.rest[src + 'L'] = restL + b * (L - restL); this.rest[src + 'R'] = restR + b * (R - restR); }
+    this.gate = gate;
     this.diffRaw = diffRaw;
     // turn > 0 = yaw right (their convention): left wing harder
     const turnTarget = Math.max(-p.maxTurn, Math.min(p.maxTurn, -p.turnSign * p.turnGain * diffRaw));

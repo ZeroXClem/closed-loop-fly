@@ -17,6 +17,7 @@ import { RateMonitor } from '../src/brain/rates.js';
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
 const I = Number(arg('current', 1.5)), SECONDS = Number(arg('seconds', 1)), MUTE_I = 50;
 const OCTO = process.argv.includes('--octopamine');
+const DRIVES = arg('drive', '') ? arg('drive', '').split(',').map((x) => { const [t, c] = x.split(':'); return { type: t, current: Number(c ?? 0.5) }; }) : [];
 const DN = arg('dnbias', OCTO ? '0.4,0.5' : '0,0.5').split(',').map(Number);
 const g = loadXenovaGraph({ monoamines: true });
 const n = g.n, T = (i) => g.neurons[i][1], S = (i) => g.neurons[i][3], NT = (i) => g.neurons[i][4];
@@ -34,6 +35,7 @@ const MONO = ['dopamine', 'octopamine', 'serotonin'];
 const monoIdx = []; for (let i = 0; i < n; i++) if (MONO.includes(NT(i))) monoIdx.push(i);
 const fileSign = Int32Array.from(monoIdx, (i) => g.neurons[i][5] | 0);
 const fileSignHist = {}; for (const v of fileSign) fileSignHist[v] = (fileSignHist[v] || 0) + 1;
+for (const d of DRIVES) console.log(`drive ${d.type}: ${idx((t) => t === d.type).length} cells at ${d.current} mV/ms`);
 
 // PS080_L's inputs by type and sign
 {
@@ -54,6 +56,8 @@ function run({ hsCurrent, dn, mute = [], monoamines = 1, seconds = SECONDS }) {
   for (const i of [...sets.dng02L, ...sets.dng02R]) kick[i] += dn * 0.1;
   const muteSet = new Set(mute); let muted = 0;
   if (mute.length) for (let i = 0; i < n; i++) if (muteSet.has(T(i))) { kick[i] = -MUTE_I * 0.1; muted++; }
+  let driven = 0;
+  for (const d of DRIVES) for (let i = 0; i < n; i++) if (T(i) === d.type) { kick[i] += d.current * 0.1; driven++; }
   const batches = Math.round(seconds / 0.01);
   let spikes = 0; const acc = {}; let nAcc = 0;
   for (let b = 0; b < batches; b++) {
@@ -61,7 +65,7 @@ function run({ hsCurrent, dn, mute = [], monoamines = 1, seconds = SECONDS }) {
     mon.update(r.counts, 100); spikes += r.total;
     if (b >= batches / 2) { for (const [k, v] of Object.entries(sets)) acc[k] = (acc[k] ?? 0) + mon.mean(v); nAcc++; }
   }
-  const out = { hsCurrent, dn, mute, monoamines, seconds, spikes, muted };
+  const out = { hsCurrent, dn, mute, monoamines, seconds, spikes, muted, driven, drives: DRIVES };
   for (const k of Object.keys(sets)) out[k] = +(acc[k] / nAcc).toFixed(2);
   return out;
 }
@@ -71,7 +75,7 @@ if (!OCTO) {
   const mute = arg('mute', '') ? arg('mute', '').split(',') : [], monoamines = Number(arg('monoamines', 1));
   for (const dn of DN) for (const hsCurrent of [0, I]) {
     const r = run({ hsCurrent, dn, mute, monoamines });
-    console.log(`\n== DNg02 tonic ${dn} mV/ms, HS_L current ${hsCurrent} mV/ms (${SECONDS} s, ${r.spikes} spikes${r.muted ? `, ${r.muted} cells muted [${mute}]` : ''}${monoamines ? '' : ', monoamines at file sign'})`);
+    console.log(`\n== DNg02 tonic ${dn} mV/ms, HS_L current ${hsCurrent} mV/ms (${SECONDS} s, ${r.spikes} spikes${r.muted ? `, ${r.muted} cells muted [${mute}]` : ''}${monoamines ? '' : ', monoamines at file sign'}${r.driven ? `, ${r.driven} cells driven [${DRIVES.map((d) => `${d.type} ${d.current} mV/ms`).join(', ')}]` : ''})`);
     console.log(line(r));
   }
 } else {
