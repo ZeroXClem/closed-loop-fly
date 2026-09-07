@@ -8,8 +8,8 @@ const mean = (a) => a.reduce((s, v) => s + v, 0) / Math.max(1, a.length);
 const std = (a) => { const m = mean(a); return Math.sqrt(mean(a.map((v) => (v - m) ** 2))); };
 
 /** Open the loop page in the given state and wait for the worker. */
-export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, course = true, bridge = true } = {}) {
-  const q = `bench=1&gain=${gain}&set=${set}&backend=${backend}&dnbias=${dnBias}&hold=frame&motor=hover&turngain=${turnGain}&readout=${readout}${haltere ? `&haltere=on&halteregain=${haltereGain}` : ''}${course ? '&course=1' : ''}${bridge ? '' : '&bridge=off'}`;
+export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, haltereSign = 1, course = true, bridge = true } = {}) {
+  const q = `bench=1&gain=${gain}&set=${set}&backend=${backend}&dnbias=${dnBias}&hold=frame&motor=hover&turngain=${turnGain}&readout=${readout}${haltere ? `&haltere=on&halteregain=${haltereGain}&halteresign=${haltereSign}` : ''}${course ? '&course=1' : ''}${bridge ? '' : '&bridge=off'}`;
   await page.goto(`${url}loop.html?${q}`, { waitUntil: 'domcontentloaded' });
   await waitFor(page, () => window.__loop?.ready || window.__loop?.error, { what: 'loop ready', timeoutMs: 600000 });
   const boot = await page.evaluate(() => ({ backend: window.__loop.backend, config: window.__loop.config, error: window.__loop.error }));
@@ -22,8 +22,9 @@ export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'd
  * `before` runs in the page after the warm-up (mutes etc.). `record` = path of a webm to write.
  */
 export async function cruise(page, { warm = 3, seconds = 30, baseAmp = 0.7, before = null, record = null } = {}) {
-  await page.evaluate((n) => { window.__loop.omega = 0; window.__loop.motor.mode = 'vnc'; return window.__loop.run(n); }, frames(warm));
-  const rest = await page.evaluate(async (n) => { await window.__loop.run(n); return window.__loop.motor.captureRest(); }, frames(1));
+  // hover through the warm-up and the rest-capture second; the motor comes on only after
+  await page.evaluate((n) => { window.__loop.omega = 0; window.__loop.motor.mode = 'hover'; return window.__loop.run(n); }, frames(warm));
+  const rest = await page.evaluate(async (n) => { await window.__loop.run(n); const r = window.__loop.motor.captureRest(); window.__loop.motor.mode = 'vnc'; return r; }, frames(1));
   if (before) await page.evaluate(before);
   let recorder = null;
   if (record) { await page.evaluate(() => { window.__loop.renderFrames = true; }); recorder = await page.screencast({ path: record }); }

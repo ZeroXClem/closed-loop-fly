@@ -223,3 +223,41 @@ shows HSS → DNa02 directly (36–47 synapses), and in the bridge runs [B]'s DN
 far more than DNg02. DNa02 is Xenova's walking-turn channel and a walking DN in the
 literature, so it stays out of the flight readout; it is the obvious signal for the walking
 readout when the leg VNC is driven.
+
+## 2026-09-07 — Phase 5: what "closing the loop" means here, and the haltere proxy
+
+- The loop was closed the moment Phase 4 applied forces: the eye hangs on the body's root,
+  so the next frame's image already comes from the new pose. Scene time advances in fixed
+  1/60 s frames gated on the worker (4 ms neural substeps inside), which is the "fixed
+  substep, render at vsync" split without a SharedArrayBuffer: at 0.17× realtime a
+  free-running renderer would only show stale frames, and gating makes every bench
+  deterministic. A free-running mode is a UI nicety for later, not a scientific step.
+- Wobble mitigations in GOAL.md's order: (1) the motor lag exists (`motorTau` 50 ms);
+  (2) a gain schedule was not needed to hover; (3) the haltere proxy is implemented: the
+  body's yaw rate becomes current on [B]'s 205 haltere afferents (`src/bridge/haltere-ids.json`,
+  sided by `rootSide`, all entering through DMetaN), left afferents for leftward rotation,
+  right for rightward, gain 2 mV/ms per rad/s, capped at 3. Whether the wiring turns that
+  into a corrective wing asymmetry is measured, not assumed (`bench/cruise.mjs`, haltere
+  off vs on).
+- Walking proprioception (leg joint angles → leg sensory neurons) is not built: nothing
+  drives the leg VNC yet (docs/phase4.md), so there is no joint angle to feed back.
+
+## 2026-09-07 — Phase 6: ablations are currents, not edge deletions
+
+The ablation primitive is the worker's `mute` message: a −50 mV/ms current on every neuron
+of the chosen superclasses (or body IDs) through the existing inject path. That silences
+them completely (the LIF cannot climb 7 mV against 1,000 mV/s) without new kernel code, and
+it composes with the bridge, the haltere proxy and Xenova's `silenced` flag (recurrent
+transmission off). A silenced cell still exists: its incoming synapses are wasted, its
+outgoing ones never fire. "Neck connective cut" is therefore "descending neurons silenced",
+and "decapitated" is "everything in the brain silenced"; both are recorded as such in
+`docs/ablations.md`.
+
+## 2026-09-07 — The haltere proxy's sign is empirical, and it matters thirtyfold
+
+`bench/cruise.mjs`: with the proxy driving the left haltere afferents for leftward rotation
+the loop spins at 2 rad/s (positive feedback); with the mirrored convention the 30 s drift
+falls from 1,064° to 35° and the wobble halves. So the connectome path from the 205 haltere
+afferents to the wing motor opposes rotation for one sign of the input and reinforces it for
+the other. The proxy ships with the corrective sign (−1) and says so; the real haltere's
+Coriolis encoding is not modelled. Drift stays above GOAL.md's 20°.

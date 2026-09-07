@@ -27,7 +27,12 @@
     "bench:optic-settle": "nix develop -c node bench/optic-settle.mjs",
     "bench:optic-drum": "nix develop -c node bench/optic-drum.mjs",
     "bench:paths": "nix develop -c node --max-old-space-size=4096 bench/paths.mjs",
-    "bench:bridge": "nix develop -c node bench/bridge.mjs"
+    "bench:bridge": "nix develop -c node bench/bridge.mjs",
+    "bench:motor": "nix develop -c node bench/motor.mjs",
+    "bench:cruise": "nix develop -c node bench/cruise.mjs",
+    "bench:ablate": "nix develop -c node bench/ablate.mjs",
+    "bench:hs-inject": "nix develop -c node --max-old-space-size=4096 bench/hs-inject.mjs",
+    "report:ablations": "nix develop -c node bench/ablate-report.mjs"
   },
   "dependencies": {
     "@huggingface/kernels": "0.0.1-preview.1",

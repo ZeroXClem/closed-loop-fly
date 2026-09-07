@@ -13,7 +13,7 @@ case "${1:-}" in
   sync)
     ssh "$HOST" "mkdir -p $REMOTE"
     rsync -az --delete --info=stats1 \
-      --exclude node_modules --exclude dist --exclude .vite --exclude result --exclude 'bench/out/' \
+      --exclude node_modules --exclude dist --exclude .vite --exclude result --exclude 'bench/out/' --exclude 'docs/*.webm' \
       --exclude '.git/lfs' \
       "$HERE/" "$HOST:$REMOTE/" ;;
   run) shift; ssh "$HOST" "cd $REMOTE && nix develop -c bash -c $(printf %q "$*")" ;;

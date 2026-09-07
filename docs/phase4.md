@@ -35,7 +35,26 @@ and the wing model's `yawGain` / `bankGain` / `sideGain` from upstream.
 
 ## Results
 
-RESULTS
+`bench/motor.mjs`, RTX 3070, bridge gain 2, DNg02 tonic 0.4 mV/ms, drum ±1 rad/s for 6 s,
+then a sphere from ±45° at 2 units/s.
+
+| readout | ω = +1 | ω = −1 | loom −45° | loom +45° | verdict |
+| --- | --- | --- | --- | --- | --- |
+| **DNg02** (the published code), turn gain 20 | yaw +0.32 rad/s, corr 0.995 | yaw **+0.13** rad/s, corr −0.90 | roll +15°, yaw +0.23 | roll +15°, yaw +0.38 | FAIL: turns left whatever the drum does |
+| DNa02 (deviation, see DECISIONS), turn gain 2 | yaw +0.15 rad/s, corr 0.84 | yaw −0.53 rad/s, corr 0.98 | roll −25°, yaw −0.30 (away) | roll −25°, yaw −0.17 (toward) | optomotor PASS; loom: same-sign roll both sides, not "away" |
+
+With the DNg02 readout the wing command is the amplified rest asymmetry of two populations
+whose difference the drum never modulates (docs/phase3.md), so the fly drifts one way at a
+turn gain of 20 and would drift the other at a different rest. The optomotor acceptance is
+therefore **not met through the published flight code**.
+
+With DNa02 the loop closes and the fly follows the drum in both directions (correlation
+0.84 / 0.98 against the > 0.5 target). Looming makes the giant fiber fire (DNp01 200–237 Hz)
+and the fly rolls 25°, but with the same sign for both approach directions, and it yaws away
+from a left loom and toward a right one, so "banks away" is not established. This readout
+is a deviation from the plan and is marked as such wherever it is used; it exists so that
+Phases 5 and 6 can exercise the closed loop while the DNg02 result stands.
+
 
 ## Walking
 

@@ -12,7 +12,7 @@ import { launchCombinedBrowser, launchSoftwareBrowser, startVite } from './lib/b
 import { openLoop, cruise, fmt } from './lib/cruise.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
-const GL = arg('gl', 'combined'), READOUT = arg('readout', 'dng02'), BACKEND = arg('backend', 'gpu'), SECONDS = Number(arg('seconds', 20)), DNBIAS = Number(arg('dnbias', 0.4)), TURNGAIN = Number(arg('turngain', 2)), ONLY = arg('conditions', 'all');
+const GL = arg('gl', 'combined'), READOUT = arg('readout', 'dng02'), BACKEND = arg('backend', 'gpu'), SECONDS = Number(arg('seconds', 20)), DNBIAS = Number(arg('dnbias', 0.4)), TURNGAIN = Number(arg('turngain', 2)), ONLY = arg('conditions', 'all'), HSIGN = Number(arg('halteresign', -1)), RECORD = process.argv.includes('--record');
 const BRAIN = ['cb_intrinsic', 'cb_sensory', 'cb_motor', 'cb_endocrine', 'cb_efferent', 'cb_sensory_tbc', 'ol_intrinsic', 'ol_sensory', 'visual_projection', 'visual_centrifugal', 'visual_projection_tbc', 'descending_neuron', 'descending_neuron_tbc', 'sensory_descending', 'efferent_descending'];
 const CENTRAL = ['cb_intrinsic', 'cb_sensory', 'cb_motor', 'cb_endocrine', 'cb_efferent', 'cb_sensory_tbc'];
 const CONDITIONS = {
@@ -27,17 +27,19 @@ const CONDITIONS = {
 const names = ONLY === 'all' ? Object.keys(CONDITIONS) : ONLY.split(',');
 const vite = await startVite();
 const browser = GL === 'software' ? await launchSoftwareBrowser() : await launchCombinedBrowser();
-const report = { readout: READOUT, seconds: SECONDS, dnBias: DNBIAS, turnGain: TURNGAIN, conditions: {} };
+const report = { readout: READOUT, seconds: SECONDS, dnBias: DNBIAS, turnGain: TURNGAIN, haltereSign: HSIGN, conditions: {} };
 try {
   const page = await browser.newPage();
   page.on('pageerror', (e) => console.log('   pageerror: ' + e.message));
   for (const name of names) {
     const c = CONDITIONS[name];
-    const boot = await openLoop(page, vite.url, { readout: READOUT, backend: BACKEND, dnBias: DNBIAS, turnGain: TURNGAIN, haltere: c.haltere, course: true, bridge: c.bridge });
+    const boot = await openLoop(page, vite.url, { readout: READOUT, backend: BACKEND, dnBias: DNBIAS, turnGain: TURNGAIN, haltere: c.haltere, haltereSign: HSIGN, course: true, bridge: c.bridge });
     console.log(`\n== ${name}: ${boot.backend}, ${boot.config?.pairs} bridge cells (${c.bridge ? 'on' : 'off'}), haltere ${c.haltere ? 'on' : 'off'}`);
     let before = null;
     if (c.before) before = c.arg ? `(${c.before.toString()})(${JSON.stringify(c.arg)})` : `(${c.before.toString()})()`;
-    const r = await cruise(page, { seconds: SECONDS, baseAmp: 0.7, before });
+    const record = RECORD && name === 'intact' ? join(ROOT, `docs/cruise-intact-${READOUT}.webm`) : null;
+    const r = await cruise(page, { seconds: SECONDS, baseAmp: 0.7, before, record });
+    if (record) console.log('   recorded ' + record);
     const muted = await page.evaluate(() => window.__loop.muted?.count ?? 0);
     r.muted = muted;
     report.conditions[name] = r;

@@ -51,7 +51,9 @@ const PHYS_DT = 0.001;
 // leftward rotation, right for rightward), through the inject API. Hand-set gain, no map.
 world.course.visible = params.has('course');
 let collisions = 0, inContact = false;
-const haltere = { on: params.get('haltere') === 'on', gain: Number(params.get('halteregain') ?? 2), maxCurrent: 3 };
+// sign +1: left afferents fire for leftward rotation; −1: the mirror. Which one the wiring
+// turns into a *corrective* wing asymmetry is an empirical question (bench/cruise.mjs).
+const haltere = { on: params.get('haltere') === 'on', gain: Number(params.get('halteregain') ?? 2), sign: Number(params.get('halteresign') ?? 1), maxCurrent: 3 };
 function countCollisions() {
   const p = body.state.position;
   let hit = false;
@@ -63,7 +65,7 @@ function countCollisions() {
 }
 function haltereCurrent() {
   if (!haltere.on) return null;
-  const w = body.state.yawRate; // + = left
+  const w = body.state.yawRate * haltere.sign; // yawRate + = left
   const l = Math.min(haltere.maxCurrent, Math.max(0, w) * haltere.gain), r = Math.min(haltere.maxCurrent, Math.max(0, -w) * haltere.gain);
   return { bodyIds: [...haltereIds.left, ...haltereIds.right], values: [...haltereIds.left.map(() => l), ...haltereIds.right.map(() => r)] };
 }
@@ -110,8 +112,9 @@ worker.onmessage = ({ data: m }) => {
     if (m.generation !== generation) return;
     pending = false; last = m; hook.last = m;
     // Phase 4: rates -> wing command -> forces for the next frame's body step
+    // rest levels accumulate while hovering (before the motor is switched on), like [A]'s offsets
+    if (!readout.rest) readout.accumulateRest(m.rates);
     if (motorMode === 'vnc') {
-      if (!readout.rest) readout.accumulateRest(m.rates);
       const cmd = readout.step(m.rates, FRAME_DT);
       forces = wingsToForces(cmd);
     }

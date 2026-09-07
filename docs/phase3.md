@@ -48,7 +48,56 @@ under gratings, DNg02 nearly constant. Reproduced.
 
 Rendered drum in the loop page, ±1 rad/s, still-drum warm-up of 3 s, 3 s windows.
 
-RESULTS_TABLE
+### Looming → LC4/LPLC2 → DNp in [B]: met
+
+Sphere approaching from −45° at 2 units/s (their assay), bridge gain 2, RTX 3070:
+
+| | before | peak during the approach |
+| --- | --- | --- |
+| [A] looming readout, left eye (top-5 LC4/LPLC2 above rest) | 0 | 4.90 |
+| [B] LC4 left | 0 Hz | 232 Hz |
+| [B] LPLC2 left | 0 Hz | 145 Hz |
+| [B] DNp01 (giant fiber) | 1 Hz | 207 Hz (241 Hz at gain 4) |
+| [B] DNp01–06 | 0.2 Hz | 149 Hz |
+
+### DNg02 lateralisation: direction sometimes, size never (DSI target > 0.3 not met)
+
+Drum ±1 rad/s, 3 s windows, RTX 3070 unless noted. DSI = (CW − CCW)/(CW + CCW) per side.
+
+| bridge | gain | DNg02 tonic (mV/ms) | [B] HS L/R, CW | DNg02 L/R, CW | DNg02 L/R, CCW | DNg02 L−R, CW / CCW | DSI |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| validated | 2 | 0.5 | 124 / 0 Hz | 30.7 / 30.4 | 30.5 / 30.2 | +0.31 / +0.37 Hz | 0.00 |
+| validated | 4 | 0.5 | 175 / 0.5 Hz | 29.8 / 28.8 | 29.5 / 28.9 | +0.96 / +0.54 Hz | 0.00 |
+| off (control) | – | 0.5 | 0 / 0 Hz | 30.4 / 29.8 | 29.9 / 29.5 | +0.67 / +0.41 Hz | 0.01 |
+| validated (JS LIF) | 2 | 0.36 | 118 / 0 Hz | 14.4 / 15.1 | 16.2 / 17.8 | −0.70 / −1.56 Hz | 0.06–0.08 |
+| validated (JS LIF) | 2 | 0.40 | 118 / 0 Hz | 19.3 / 20.0 | 20.1 / 19.8 | −0.66 / +0.30 Hz | 0.02 |
+| validated (JS LIF) | 2 | 0.44 | 118 / 0 Hz | | | +0.55 / −0.48 Hz | 0.02 |
+| inputs, 1,114 cells (JS LIF) | 2 | 0.5 | 116 / 0 Hz | 30.6 / 30.8 | | | 0.00 |
+
+[A]'s own turn signal in the same runs: +1.40 (CW) / −0.73 (CCW). The injected HS cells in [B]
+fire 118–175 Hz on the side [A] predicts and stay silent on the other; the bridge itself works.
+DNg02 does not follow because its input from HS is diluted and cancelled:
+
+| what `bench/hs-inject.mjs` measures (three left HS cells at 129 Hz, nothing else painted) | value |
+| --- | --- |
+| PS080_L input synapses / of which from HS | 4,495 / 259 (6%) |
+| PS080 L/R | 24 / 12 Hz |
+| spikes recruited network-wide by the three HS cells | 59,611 per second |
+| DNg02 L/R, no tonic drive | 2.7 / 3.5 Hz |
+| DNg02 L/R, tonic 0.4 | 19.2 / 18.4 Hz (17.4 / 17.4 without HS) |
+| DNa02 L/R, tonic 0.4 | 24.4 / 13.8 Hz (2.8 / 6.8 without HS) |
+
+The GABAergic relay gets as much recurrent inhibition (PS118, PS057, PS090, LAL061, …) as HS
+gives it excitation, and the octopaminergic OA-VUMa4 route (HSS → VUMa4 → DNg02, 91–125 / 28
+synapses, +1 under Shiu's monoamine convention) excites the contralateral DNg02 that PS080
+inhibits. In the un-refit LIF the two cancel to within 1 Hz. Meanwhile DNa02, which HSS
+reaches directly (36–47 synapses), lateralises 26 / 6 Hz from HS alone.
+
+**Verdict:** looming criterion PASS; DNg02 direction criterion marginal (the sign of L−R
+follows [A] in some runs and not others, within ±1 Hz of noise); DSI 0.00–0.08 against a
+0.3 target: FAIL, and a finding rather than a bug. It is the same DNg02 hop AbijahKaj
+report as open, now shown from the other side of the seam.
+
 
 Wiring behind the numbers (`bench/paths.mjs`, [B]): no direct HS → DNg02 synapse. HSS/HSN →
 PS080 (GABAergic; 112–168 synapses) → contralateral DNg02 (152–172 synapses over 14–15 cells)
@@ -65,7 +114,8 @@ and AN07B004 (ascending, excitatory, the top excitatory input), PS041, GNG544, L
 
 ## Open
 
-- The tonic DNg02 drive is a hand-set constant and the readout is threshold-sensitive.
+- The tonic DNg02 drive is a hand-set constant; it sets DNg02's rate but not its
+  lateralisation, at any level between 0.36 and 1 mV/ms.
 - [A] on the CPU is now a third of the frame; its GPU port is Phase 5's first item.
 - [B]'s HS cells fire at ~120 Hz under injection; LIF HS cells are a caricature of graded
   tangential cells, and the per-type gain table exists to tame that.

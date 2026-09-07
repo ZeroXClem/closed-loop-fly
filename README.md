@@ -18,10 +18,16 @@ team. See `DATA-LICENSE.md`.
 
 ## Status
 
-Phase 2 done: the compound eye (`src/eye/`, `docs/phase2.md`) samples the test world at the
-connectome's 1,771 column directions and passes the drum-direction bench. Phase 1
-(`docs/phase1.md`): Xenova's demo boots from `src/`, the worker has `inject` and `rates`
-APIs. Phase 0 findings are in `docs/recon.md`, reasons in `DECISIONS.md`, plan in `GOAL.md`.
+All six phases have been run once (2026-09-07). Read them in order: `docs/recon.md`
+(Phase 0), `docs/phase1.md` (inject/rates on Xenova's LIF), `docs/phase2.md` (the eye),
+`docs/phase3.md` (the two-network bridge: looming works end to end, DNg02 does not
+lateralise in the un-refit LIF), `docs/phase4.md` (motor readout: the published DNg02 code
+cannot steer here; a labelled DNa02 deviation can), `docs/phase5.md` (closed-loop cruise),
+`docs/ablations.md` (Phase 6). Reasons in `DECISIONS.md`, the plan in `GOAL.md`, every
+number in `bench/out/`.
+
+The main page (`loop.html`) runs the loop; `index.html` is Xenova's paint demo on the new
+worker; `eye.html` is the eye alone.
 
 ## Layout
 
@@ -50,6 +56,10 @@ npm run dev                                    # Xenova's demo booted from src/ 
 npm run bench:eye                              # eye: drum-direction bench (software GL is enough)
 npm run bench:gpu                              # headless Brave + WebGPU on the GPU box
 nix develop -c node bench/parity.mjs           # full-graph CPU-vs-GPU parity (GPU box)
+scripts/gpu-box.sh runx "node bench/bridge.mjs" # Phase 3 bridge (GPU box, headed under Xvfb)
+scripts/gpu-box.sh runx "node bench/motor.mjs"  # Phase 4 optomotor / loom
+scripts/gpu-box.sh runx "node bench/cruise.mjs --record"   # Phase 5 cruise + video
+scripts/gpu-box.sh runx "node bench/ablate.mjs" # Phase 6, then: node bench/ablate-report.mjs
 nix build '.?submodules=1'                     # pure dist/ (npm deps and data by hash)
 ```
 
