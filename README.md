@@ -1,8 +1,16 @@
 # Closed-Loop Fly
 
 A sensorimotor loop through the male *Drosophila* connectome, in the browser: rendered
-images drive the optic lobe, the wiring drives the ventral nerve cord, motor-neuron rates
-drive the body, and the body's new pose drives the next frame's image.
+images drive the optic lobe, the wiring drives the descending neurons, their rates drive
+the wings, and the body's new pose drives the next frame's image.
+
+![The loop, one frame: render, eye, optic lobe, bridge, whole CNS, descending neurons, body](docs/figures/loop-ring.png)
+
+![20 s of autonomous flight through the pillar course, eye HUD and live read-outs](docs/cruise-intact.gif)
+
+*Above: the intact cruise, one frame per simulated frame, exactly as `bench/ablate.mjs` runs it.
+Full 1080p60 video: `docs/cruise-intact-1080p.mp4`. Eighteen figures with their sources:
+[`docs/figures/`](docs/figures/README.md).*
 
 Two upstream projects, combined at MaleCNS body IDs:
 
@@ -10,11 +18,28 @@ Two upstream projects, combined at MaleCNS body IDs:
   the compound eye sampled at the connectome's 1,771 column directions and a rate model of
   the 65.8k-unit optic lobe with parameters fitted on an RTX 5090.
 - **Back end:** [Xenova/fruit-fly-simulation](https://huggingface.co/spaces/Xenova/fruit-fly-simulation) —
-  the full 166.7k-neuron, 25.6M-edge MaleCNS graph as a leaky integrate-and-fire network on
-  WebGPU, plus the NeuroMechFly body.
+  the full MaleCNS graph as a leaky integrate-and-fire network on WebGPU, plus the
+  NeuroMechFly body.
 
 Credit for everything that works belongs to those two authors and to the FlyEM MaleCNS
 team. See `DATA-LICENSE.md`.
+
+## The numbers, once
+
+One vocabulary for the whole repo, the docs and the figures. A **connection** (an edge) is one
+directed pre → post pair; its **synapse count** is the number of synapses in that pair.
+
+| | whole CNS [B], Xenova | optic lobe [A], AbijahKaj | [A] found in [B] |
+| --- | --- | --- | --- |
+| neurons | 166,700 | 65,799 | 65,799 (100%) |
+| connections | 25,582,938 | 1,967,771 | 1,967,771 (100%) |
+| synapses | 124,177,617 | 13,444,332 | identical counts on every connection |
+
+From `bench/overlap.mjs`, `bench/edges.mjs` and Xenova's `manifest.json`. Two caveats that
+travel with the results: the closed loop steers on **DNa02**, a walking-turn descending neuron,
+because the published DNg02 code does not lateralise in this un-refit LIF (a labelled
+deviation, `DECISIONS.md`); and "zero collisions" holds for every **intact** run, while one fresh
+bridge-off capture clipped a pillar (`docs/figures/09-trajectories.png`).
 
 ## Status
 
@@ -37,6 +62,8 @@ docs/recon.md      Phase 0 findings, with file:line references into vendor/
 DECISIONS.md       design log
 DATA-LICENSE.md    what data is used and under which license
 bench/             scripts that print numbers; every claim in this README gets one
+bench/out/         their outputs, committed
+docs/figures/      the figure set, rendered from bench/out by make.py
 vendor/            upstream repos as git submodules, never edited in place
 src/               new code (from Phase 1)
 ```
