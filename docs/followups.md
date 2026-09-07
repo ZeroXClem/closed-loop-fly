@@ -185,3 +185,33 @@ output is strong enough that any current that makes it fire regularly destabilis
 network before DNg02 sits near threshold. Same verdict as §1, one level up: DNg02's steering
 is not reachable by injecting current at any single point of this graph; it needs a fitted
 network, which is outside this repo's premise.
+
+## 5. The optic-v2 rate net on the GPU (HANDOFF step 3)
+
+`src/brain/optic/rate-net-gpu.js` is AbijahKaj's two WGSL kernels (`drive` over 64-edge chunks of
+the post-unit CSR, `integrate` per unit) on the same GPUDevice as Xenova's LIF. The CPU RateNet
+still settles and runs the homeostat; `useGPU()` then uploads x, r, ext and bias once. Per frame
+the worker submits the four substeps without waiting, queues a copy of r into a staging buffer,
+runs the LIF batch (whose readback is the frame's only fence) and then maps r. The bridge current
+for a frame is therefore built from the previous frame's rates: one frame (16.7 ms) of extra
+visual latency, the price of not adding a second fence (a fence under Xvfb costs ~45 ms,
+DECISIONS "rate hold per frame"). Opt in with `loop.html?optic=gpu`; the default stays on the
+CPU so every number in the docs reproduces.
+
+`bench/optic-gpu.mjs`, drum assay on both backends (RTX 3070, headed under Xvfb):
+
+| | CPU rate net | GPU rate net |
+| --- | --- | --- |
+| wall per frame | 107.3 ms (optic 26.9, LIF 79.5) | 83.2 ms (optic 0.7, LIF 81.4) |
+| realtime | 0.156× | 0.201× |
+| [A] HS L/R, drum CW | 1.83 / 0.086 | 1.83 / 0.086 |
+| [A] HS L/R, drum CCW | 0.309 / 1.237 | 0.309 / 1.237 |
+| [B] HS L/R, CW / CCW | 129.8 / 0.1 · 8.5 / 68.6 Hz | 129.3 / 0 · 8.8 / 68.4 Hz |
+
+The rate net's own output is identical to three decimals on both backends (max |Δ| in the HS
+means 0.000), and the injected HS cells in [B] match to within a hertz; DNa02 differs
+run to run as it always does (the LIF is chaotic past 30 ms, docs/phase1.md). The optic step
+drops from 26.9 ms to 0.7 ms per frame, a ×1.29 frame speed-up. **The ceiling is now the LIF**: at
+81.4 ms per 160 ticks it alone caps the loop near 0.2× realtime. HANDOFF's 0.4× target needs Xenova's
+propagate/advance kernels to get faster (fewer, larger dispatches per tick, or a tick batch that
+does not synchronise per step), not anything on the optic side.

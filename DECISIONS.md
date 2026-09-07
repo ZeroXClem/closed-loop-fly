@@ -297,3 +297,12 @@ standing asymmetry that wanders after calibration does not become a permanent tu
 the silent conditions fly straight as intended, and the intact loop drifts +204° in 20 s because
 the haltere stabilisation of Phase 5 was the clamp acting through the artefact. The defaults stay
 off so the published tables reproduce; the interpretation in followups §3 supersedes them.
+
+## 2026-09-07 — The rate net on the GPU shares the LIF's fence and lags one frame (HANDOFF step 3)
+
+`src/brain/optic/rate-net-gpu.js`, opt-in with `?optic=gpu`. Two choices: (1) no second fence per
+frame: r is copied to staging before the LIF batch and mapped after it, so the bridge uses the
+previous frame's rates (16.7 ms more visual latency) rather than paying ~45 ms per extra fence;
+(2) the default stays CPU so the published numbers reproduce bit for bit. Result: 107 → 83 ms
+per frame, 0.16× → 0.20× realtime, rate-net output identical to three decimals
+(docs/followups.md §5). The LIF is now the whole budget.

@@ -80,7 +80,7 @@ is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3
 
 `loop.html` URL params: `bench=1` (no rAF; driven by `__loop.run(n)`), `backend=gpu|cpu`,
 `gain=` (bridge gain, mV/ms per rate unit), `set=validated|inputs`, `dnbias=` (tonic DNg02,
-mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngain=`,
+mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `turngain=`,
 `turnsign=`, `haltere=on`, `halteregain=`, `halteresign=±1`, `course=1`, `bridge=off`,
 `stimulus=inject|poisson`, `frame=` (dt).
 
@@ -138,9 +138,11 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    docs/ablations-gated*.md, figure 19. **Open**: a real stabiliser (stronger/faster optomotor
    path or a phase-encoded haltere model onto the wing-steering MNs), and re-centring by default. (or with a slow re-centring like their `offsetTau`)
    so silent populations command straight flight; rerun `bench/ablate.mjs`.
-3. **GPU port of the rate net**: AbijahKaj's two WGSL kernels (`gpu-net.ts`, drive/integrate)
-   on the kernels runtime's `GPUDevice` (`brain.device` in `BrainGPU`), then a gather kernel
-   for the bridge so the per-frame fence goes. Target > 0.4× realtime.
+3. ~~GPU port of the rate net~~ **Done 2026-09-07 evening**: `src/brain/optic/rate-net-gpu.js`,
+   `loop.html?optic=gpu` (default CPU), `bench/optic-gpu.mjs`. 107 → 83 ms/frame (0.16× → 0.20×),
+   output identical; the bridge lags one frame instead of adding a fence. docs/followups.md §5.
+   **The LIF (81 ms per frame) is now the entire budget**; the 0.4× target needs Xenova's
+   propagate/advance kernels sped up, not the optic side.
 4. ~~Haltere sign vs anatomy~~ **Done 2026-09-07 evening**: `bench/haltere-paths.mjs`,
    `bench/haltere-inject.mjs --currents …`, `bench/haltere-loop.mjs`. The afferents are
    ipsilateral and inhibit their own DNa02 via PS059 (predicts the wrong sign); the real effect
@@ -148,8 +150,11 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    works as an anti-spin clamp at large yaw rates through the readout's silence-as-command
    artefact. docs/followups.md §2, figure 18. This makes step 2 the most load-bearing item.
 5. Walking: leg MN → joint map (Phase 4 leftover) once something drives the leg VNC; DNa02
-   is the natural turn signal there. Xenova's `gait.js` IK is the skeleton to drive.
-6. Re-record `docs/cruise-dna02.webm` (haltere off) if a before/after video is wanted:
+   is the natural turn signal there. Xenova's `gait.js` IK is the skeleton to drive. **Not started**:
+   nothing in the loop drives the leg VNC (the walking DNs are silent in flight), so a leg readout
+   would read zeros; it needs a walking state first (a DNp09/DNg100 drive, or a landing).
+6. (Superseded by followups §3: the haltere "before/after" contrast was the readout artefact.)
+   Re-record `docs/cruise-dna02.webm` (haltere off) if a before/after video is wanted:
    `scripts/gpu-box.sh runx "node bench/cruise.mjs --readout dna02 --record"`, then pull
    `docs/*.webm` **before** the next sync.
 

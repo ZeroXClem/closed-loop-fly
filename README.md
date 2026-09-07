@@ -56,8 +56,9 @@ cannot steer here; a labelled DNa02 deviation can), `docs/phase5.md` (closed-loo
 haltere sign explained). Reasons in `DECISIONS.md`, the plan in `GOAL.md`, every number in
 `bench/out/`.
 
-The main page (`loop.html`) runs the loop; `index.html` is Xenova's paint demo on the new
-worker; `eye.html` is the eye alone.
+The main page (`loop.html`) runs the loop (`?optic=gpu` puts the rate net on the GPU too,
+`?gate=1` uses the artefact-free readout; both default off so the numbers above reproduce);
+`index.html` is Xenova's paint demo on the new worker; `eye.html` is the eye alone.
 
 ## Layout
 
