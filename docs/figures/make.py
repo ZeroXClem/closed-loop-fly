@@ -496,5 +496,62 @@ def ablations_gated():
 
 ALL.update(ablations_gated=ablations_gated)
 
+
+def flight_gain():
+    d = load('flight-gain.json')
+    if not d: return print('skip flight_gain (no run)')
+    runs = d['runs']; x = [r['flight'] for r in runs]
+    f, top = fig('Follow-up · neuromodulation as flight state', 'Turn the motion pathway up to flight strength and ask the loop two questions',
+                 'Octopamine roughly doubles LPTC gain in flight; here every synapse onto an LPTC is scaled by the flight gain, nothing else changes, readout gated and re-centred. '
+                 'Left: what the optic lobe and the spiking net report under the drum. Middle: DNa02 and DNg02 direction selectivity. Right: the 20 s cruise.',
+                 'bench/flight-gain.mjs · bench/out/flight-gain.json · docs/followups.md §6')
+    ax = f.add_axes([0.07, BOTTOM, 0.26, top - BOTTOM]); panel(ax)
+    ax.plot(x, [r['drum']['cw']['aHsL'] for r in runs], '-o', color=A, lw=3, label='[A] HS L, drum CW (rate units)')
+    ax2 = ax.twinx(); ax2.plot(x, [r['drum']['cw']['bHsL'] for r in runs], '-s', color=B, lw=3, label='[B] HS L, drum CW (Hz)'); ax2.grid(False); ax2.set_ylabel('[B] HS, Hz', color=B); ax2.tick_params(axis='y', colors=B)
+    ax.set_xlabel('flight gain'); ax.set_ylabel('[A] HS rate', color=A); ax.set_xticks(x); ax.legend(loc='upper left', frameon=False, fontsize=11); ax2.legend(loc='lower right', frameon=False, fontsize=11)
+    ax.set_title('the drive', color=MUTED, fontsize=15)
+    ax3 = f.add_axes([0.40, BOTTOM, 0.24, top - BOTTOM]); panel(ax3)
+    for key, col, lab in [('dna02Dsi', GOOD, 'DNa02'), ('dng02Dsi', DN, 'DNg02')]:
+        ax3.plot(x, [r['drum'][key]['L'] for r in runs], '-o', color=col, lw=3, label=f'{lab} left'); ax3.plot(x, [r['drum'][key]['R'] for r in runs], '--s', color=col, lw=3, alpha=0.7, label=f'{lab} right')
+    ax3.axhline(0.3, color=GOOD, ls=':', lw=1.5); ax3.text(x[0], 0.31, 'acceptance target', color=GOOD, fontsize=11, va='bottom'); ax3.axhline(0, color=MUTED, lw=1)
+    ax3.set_xlabel('flight gain'); ax3.set_ylabel('direction-selectivity index (CW vs CCW)'); ax3.set_xticks(x); ax3.legend(loc='upper left', frameon=False, fontsize=11); ax3.set_ylim(-1, 1)
+    ax3.set_title('does anything steer?', color=MUTED, fontsize=15)
+    ax4 = f.add_axes([0.71, BOTTOM, 0.25, top - BOTTOM]); panel(ax4)
+    ax4.bar(x, [abs(r['cruise']['driftDeg']) for r in runs], color=[GOOD if abs(r['cruise']['driftDeg']) < 20 else BAD for r in runs], width=0.6)
+    for xi, r in zip(x, runs): ax4.text(xi, abs(r['cruise']['driftDeg']) + 4, f"{r['cruise']['driftDeg']:+.0f}°\n{r['cruise']['collisions']} coll.", ha='center', va='bottom', color=INK, fontsize=12)
+    ax4.axhline(20, color=GOOD, ls=':', lw=1.5); ax4.set_xlabel('flight gain'); ax4.set_ylabel('|heading drift| in 20 s, degrees'); ax4.set_xticks(x); ax4.set_ylim(0, max(30, max(abs(r['cruise']['driftDeg']) for r in runs) * 1.3))
+    ax4.set_title('does the loop hold heading?', color=MUTED, fontsize=15)
+    save(f, '20-flight-gain')
+
+def adaptation():
+    import re as _re
+    def parse(path):
+        text = (BO / path).read_text() if (BO / path).exists() else ''
+        rows = []
+        for m in _re.finditer(r'== DNg02 tonic ([\d.]+) mV/ms, HS_L current ([\d.]+) mV/ms \(([\d.]+) s, (\d+) spikes.*?\[AN07B004 ([\d.]+) mV/ms\].*?\n.*?\n\s+DNg02 L/R ([\d.]+)/([\d.]+)\s+DNa02 L/R ([\d.]+)/([\d.]+)', text):
+            rows.append(dict(dn=float(m[1]), hs=float(m[2]), secs=float(m[3]), spikes=int(m[4]), an=float(m[5]), dng02L=float(m[6]), dng02R=float(m[7]), dna02L=float(m[8]), dna02R=float(m[9])))
+        return rows
+    off, on = parse('hs-inject-an07b004.txt'), parse('hs-inject-an07b004-adapt.txt')
+    if not (off and on): return print('skip adaptation (no probe)')
+    f, top = fig('Follow-up · the ionic layer, one variable', 'A potassium-like threshold adaptation stops the storms; does it let a biological tonic drive reach DNg02?',
+                 'Two AN07B004 cells driven as DNg02\'s own tonic input, with and without an activity-dependent threshold shift (0.5 mV per spike, τ 300 ms). '
+                 'Left: total spikes per second (the storm is the wall). Right: DNg02 left and right with the left HS cells driven.',
+                 'bench/hs-inject.mjs --drive AN07B004:<I> [--adapt 0.5,300] · bench/out/hs-inject-an07b004*.txt · docs/followups.md §7')
+    ax = f.add_axes([0.08, BOTTOM, 0.40, top - BOTTOM]); panel(ax)
+    for rows, col, lab in [(off, BAD, 'no adaptation'), (on, GOOD, 'adaptation 0.5 mV/spike, τ 300 ms')]:
+        sel = [r for r in rows if r['dn'] == 0]
+        ax.plot([r['an'] for r in sel if r['hs'] == 0], [r['spikes'] / r['secs'] for r in sel if r['hs'] == 0], '-o', color=col, lw=3, label=f'{lab}, HS off')
+        ax.plot([r['an'] for r in sel if r['hs'] > 0], [r['spikes'] / r['secs'] for r in sel if r['hs'] > 0], '--s', color=col, lw=3, alpha=0.7, label='HS on')
+    ax.set_yscale('log'); ax.set_xlabel('AN07B004 current, mV/ms'); ax.set_ylabel('network spikes per second'); ax.legend(loc='lower right', frameon=False, fontsize=11)
+    ax.axhline(8e5, color=MUTED, ls=':', lw=1); ax.text(0.02, 0.97, 'storm', transform=ax.transAxes, color=MUTED, fontsize=12, va='top')
+    ax2 = f.add_axes([0.56, BOTTOM, 0.40, top - BOTTOM]); panel(ax2)
+    for rows, col, lab in [(off, BAD, 'no adaptation'), (on, GOOD, 'with adaptation')]:
+        sel = [r for r in rows if r['dn'] == 0 and r['hs'] > 0]
+        ax2.plot([r['an'] for r in sel], [r['dng02L'] for r in sel], '-o', color=col, lw=3, label=f'{lab}: DNg02 L'); ax2.plot([r['an'] for r in sel], [r['dng02R'] for r in sel], '--s', color=col, lw=3, alpha=0.7, label='DNg02 R')
+    ax2.set_xlabel('AN07B004 current, mV/ms'); ax2.set_ylabel('DNg02, Hz (left HS driven, no constant)'); ax2.legend(loc='upper left', frameon=False, fontsize=11)
+    save(f, '21-adaptation')
+
+ALL.update(flight_gain=flight_gain, adaptation=adaptation)
+
 if __name__ == '__main__':
     for n in (sys.argv[1:] or list(ALL)): ALL[n]()

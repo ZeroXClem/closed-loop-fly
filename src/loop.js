@@ -217,6 +217,8 @@ worker.postMessage({
   steps: 40,
   optic: { graphJson: abs(opticJsonUrl), graphBin: abs(opticBinUrl), params: abs(paramsUrl) },
   opticBackend: params.get('optic') ?? 'cpu',
+  opticParams: { flightGain: Number(params.get('flight') ?? 1) },
+  adapt: params.get('adapt') ? { inc: Number(params.get('adapt').split(',')[0]), tau: Number(params.get('adapt').split(',')[1] ?? 300) } : null,
   columns,
 });
 worker.postMessage({ type: 'bridge', config: { gain: Number(params.get('gain') ?? 2), set: params.get('set') ?? 'validated', on: params.get('bridge') !== 'off', dnBias: Number(params.get('dnbias') ?? 0), holdPerFrame: params.get('hold') !== 'substep' } });

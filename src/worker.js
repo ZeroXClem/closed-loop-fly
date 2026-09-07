@@ -125,7 +125,8 @@ async function handle(m) {
         backend = 'cpu';
       }
     else brain = new BrainCPU(graph);
-    if (m.optic) await initOptic(m.optic, m.columns, m.opticBackend ?? 'cpu');
+    if (m.adapt && brain.setAdaptation) brain.setAdaptation(m.adapt.inc ?? 0, m.adapt.tau ?? 300);
+    if (m.optic) await initOptic(m.optic, m.columns, m.opticBackend ?? 'cpu', m.opticParams ?? {});
     postMessage({ type: 'ready', backend, stimulus, steps: batchSteps, optic: optic ? optic.name : null, bridge: pairs ? { ...bridge, pairs: pairs.a.length } : null });
   } else if (m.type === 'pulse') {
     if (m.replace) pulses.reset();
@@ -344,13 +345,14 @@ async function handle(m) {
 // ---------------------------------------------------------------------------------------------
 // Phase 3 helpers
 
-async function initOptic(urls, columns, opticBackend = 'cpu') {
+async function initOptic(urls, columns, opticBackend = 'cpu', opticParams = {}) {
   postMessage({ type: 'stage', message: 'Loading the optic-v2 graph…' });
   const g = await loadOpticGraph(urls.graphJson, urls.graphBin, (loaded, total) => postMessage({ type: 'progress', value: total ? loaded / total : 0 }));
   const fv = await (await fetch(urls.params)).json();
   postMessage({ type: 'stage', message: 'Building the optic-v2 rate net…' });
   omm = eyesFromColumns(columns);
-  optic = new OpticBrain(g, fv, omm.left, omm.right);
+  optic = new OpticBrain(g, fv, omm.left, omm.right, opticParams);
+  if (opticParams.flightGain && opticParams.flightGain !== 1) postMessage({ type: 'stage', message: `flight-state gain ${opticParams.flightGain} on ${optic.flightScaledEdges} synapses onto LPTCs` });
   postMessage({ type: 'stage', message: 'Settling the optic net under grey…' });
   optic.settle(0.5);
   if (opticBackend === 'gpu') {

@@ -176,6 +176,10 @@ export class BrainGPU {
     this.device.queue.submit([encoder.finish()]);
   }
 
+  /** Activity-dependent threshold shift (mV per spike, decay time constant in ms); 0 = off. Same meaning as BrainCPU.setAdaptation. */
+  setAdaptation(inc, tauMs = 300) {
+    this.adapt = { inc: +inc || 0, decay: tauMs > 0 ? Math.exp(-PARAMETERS.dt / tauMs) : 0 };
+  }
   async batch(steps, rates, silenced = false, kick = null) {
     if (this.loss.message) throw Error(this.loss.message);
     if (!Number.isInteger(steps) || steps < 1 || steps > MAX_STEPS)
@@ -192,6 +196,8 @@ export class BrainGPU {
         view.setUint32(offset + i * 4, value, true),
       );
       [EM, ES, COUPLING].forEach((value, i) => view.setFloat32(offset + 20 + i * 4, value, true));
+      view.setFloat32(offset + 32, this.adapt?.inc ?? 0, true);
+      view.setFloat32(offset + 36, this.adapt?.decay ?? 1, true);
     }
     device.queue.writeBuffer(this.uniform, 0, this.uniformData, 0, UNIFORM_STRIDE * steps);
     for (let start = 0; start < steps; start += SUBMISSION_STEPS) {

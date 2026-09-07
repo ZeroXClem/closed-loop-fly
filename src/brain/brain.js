@@ -23,13 +23,19 @@ export class BrainCPU {
     this.n = graph.n;
     this.seed = seed;
     this.out = outgoingGraph(graph);
+    this.adapt = { inc: 0, decay: 1 };
     this.reset();
+  }
+  /** Activity-dependent threshold shift (mV per spike, decay time constant in ms); 0 = off (default). */
+  setAdaptation(inc, tauMs = 300) {
+    this.adapt = { inc: +inc || 0, decay: tauMs > 0 ? Math.exp(-PARAMETERS.dt / tauMs) : 0 };
   }
   reset() {
     const n = this.n;
     this.v = new Float32Array(n).fill(-52);
     this.g = new Float32Array(n);
     this.until = new Uint32Array(n);
+    this.a = new Float32Array(n);
     this.counts = new Uint32Array(n);
     this.history = Array.from({ length: 19 }, () => []);
     this.tick = 0;
@@ -50,24 +56,27 @@ export class BrainCPU {
     return this.advance(rates, driven, externalEvents, silenced, kick, injectedIndices(kick));
   }
   advance(rates, driven, externalEvents, silenced, kick = null, injected = null) {
-    const { v, g, until, counts, active, present } = this,
+    const { v, g, until, counts, active, present, a } = this,
       t = this.tick,
-      p = PARAMETERS;
+      p = PARAMETERS,
+      { inc: aInc, decay: aDecay } = this.adapt;
     const fired = [];
     let kept = 0;
     for (let k = 0; k < this.activeCount; k++) {
       const i = active[k];
       // No epsilon cutoff: skip only the exact stationary state. Refractory
       // deadlines remain stored and incoming events still check them.
-      if (v[i] === p.rest && g[i] === 0) {
+      if (v[i] === p.rest && g[i] === 0 && a[i] < 1e-4) {
         present[i] = 0;
+        a[i] = 0;
         continue;
       }
       active[kept++] = i;
       if (t >= until[i]) {
         v[i] = p.rest + (v[i] - p.rest) * EM + g[i] * COUPLING;
         g[i] *= ES;
-        if (v[i] > p.threshold) fired.push(i);
+        if (aInc) a[i] *= aDecay;
+        if (v[i] > p.threshold + a[i]) fired.push(i);
       }
     }
     this.activeCount = kept;
@@ -108,6 +117,7 @@ export class BrainCPU {
       v[i] = p.rest;
       g[i] = 0;
       until[i] = t + (rates[i] > 0 ? 0 : p.refractory);
+      if (aInc) a[i] += aInc;
       counts[i]++;
     }
     this.history[t % 19] = [];

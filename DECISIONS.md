@@ -306,3 +306,26 @@ previous frame's rates (16.7 ms more visual latency) rather than paying ~45 ms p
 (2) the default stays CPU so the published numbers reproduce bit for bit. Result: 107 → 83 ms
 per frame, 0.16× → 0.20× realtime, rate-net output identical to three decimals
 (docs/followups.md §5). The LIF is now the whole budget.
+
+## 2026-09-07 — Flight state as a gain on the synapses onto LPTCs (`?flight=`)
+
+Neuromodulation's first-order effect in this system is octopamine raising the motion-vision gain
+in flight (Suver, Mamiya & Dickinson 2012; Jung, Borst & Haag 2011; Maimon, Straw & Dickinson
+2010: about 2×). The locus chosen is every synapse onto a lobula-plate tangential cell in the
+optic net (HS, VS, H2, DCH, VCH: `flightGain` in `OpticBrain`), applied after the fitted strengths
+and before the CSR is built, so the fitted model is unchanged at gain 1 and the bridge gain stays
+2. Not chosen: scaling the bridge current (already swept, gain 4 saturates HS in [B] at 175 Hz
+without moving DNg02) or scaling T4/T5 (the recordings are of the LPTCs). Default 1 so every
+published number reproduces. Bench: `bench/flight-gain.mjs`; results in docs/followups.md §6.
+
+## 2026-09-07 — A potassium-like adaptation term in both LIF backends (`?adapt=inc,tau`)
+
+The un-refit LIF falls into network-wide storms (>1M spikes/s) when a strong cell is driven
+(followups §4), which no real brain sustains because sustained firing raises extracellular
+potassium and with it every neighbour's threshold (the review's "ionic and bioelectric state").
+The cheapest faithful version is one state variable per neuron: a threshold shift `a` that grows by
+`inc` mV on each spike and decays with `tau` (default 300 ms), tested as `v > threshold + a`.
+On the GPU it lives in the state struct's padding word (bitcast), so no buffer layout changes;
+the uniform block gains two floats. Default `inc` 0 keeps both backends bit-identical to before.
+Bench: `bench/adapt-check.mjs` (CPU/GPU agreement with it on), then the AN07B004 probe and the
+cruise with it on; results in docs/followups.md §7.

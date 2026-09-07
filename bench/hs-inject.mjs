@@ -19,6 +19,7 @@ const I = Number(arg('current', 1.5)), SECONDS = Number(arg('seconds', 1)), MUTE
 const OCTO = process.argv.includes('--octopamine');
 const DRIVES = arg('drive', '') ? arg('drive', '').split(',').map((x) => { const [t, c] = x.split(':'); return { type: t, current: Number(c ?? 0.5) }; }) : [];
 const DN = arg('dnbias', OCTO ? '0.4,0.5' : '0,0.5').split(',').map(Number);
+const ADAPT = arg('adapt', '') ? arg('adapt', '').split(',').map(Number) : null;   // [mV per spike, tau ms]
 const g = loadXenovaGraph({ monoamines: true });
 const n = g.n, T = (i) => g.neurons[i][1], S = (i) => g.neurons[i][3], NT = (i) => g.neurons[i][4];
 const idx = (pred) => { const o = []; for (let i = 0; i < n; i++) if (pred(T(i), S(i))) o.push(i); return o; };
@@ -51,6 +52,7 @@ for (const d of DRIVES) console.log(`drive ${d.type}: ${idx((t) => t === d.type)
 function run({ hsCurrent, dn, mute = [], monoamines = 1, seconds = SECONDS }) {
   for (let k = 0; k < monoIdx.length; k++) g.sign[monoIdx[k]] = monoamines ? 1 : fileSign[k];
   const brain = new BrainCPU(g);
+  if (ADAPT) brain.setAdaptation(ADAPT[0], ADAPT[1] ?? 300);
   const zero = new Float32Array(n), kick = new Float32Array(n), mon = new RateMonitor(n);
   for (const i of sets.hsL) kick[i] = hsCurrent * 0.1;
   for (const i of [...sets.dng02L, ...sets.dng02R]) kick[i] += dn * 0.1;
@@ -75,7 +77,7 @@ if (!OCTO) {
   const mute = arg('mute', '') ? arg('mute', '').split(',') : [], monoamines = Number(arg('monoamines', 1));
   for (const dn of DN) for (const hsCurrent of [0, I]) {
     const r = run({ hsCurrent, dn, mute, monoamines });
-    console.log(`\n== DNg02 tonic ${dn} mV/ms, HS_L current ${hsCurrent} mV/ms (${SECONDS} s, ${r.spikes} spikes${r.muted ? `, ${r.muted} cells muted [${mute}]` : ''}${monoamines ? '' : ', monoamines at file sign'}${r.driven ? `, ${r.driven} cells driven [${DRIVES.map((d) => `${d.type} ${d.current} mV/ms`).join(', ')}]` : ''})`);
+    console.log(`\n== DNg02 tonic ${dn} mV/ms, HS_L current ${hsCurrent} mV/ms (${SECONDS} s, ${r.spikes} spikes${r.muted ? `, ${r.muted} cells muted [${mute}]` : ''}${monoamines ? '' : ', monoamines at file sign'}${r.driven ? `, ${r.driven} cells driven [${DRIVES.map((d) => `${d.type} ${d.current} mV/ms`).join(', ')}]` : ''}${ADAPT ? `, adaptation ${ADAPT[0]} mV/spike τ ${ADAPT[1] ?? 300} ms` : ''})`);
     console.log(line(r));
   }
 } else {

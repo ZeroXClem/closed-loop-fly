@@ -26,6 +26,8 @@ export const DEFAULT_OPTIC_PARAMS = Object.freeze({
   stimMax: 1.5,
   defaultScale: 0.02,
   lptcScale: 0.001,
+  /** Flight-state (octopamine) gain on every synapse onto an LPTC: 1 = rest. Suver 2012, Jung 2011, Maimon 2010 put flight at ~2. */
+  flightGain: 1,
   lptcBias: 0.2,
   dnBias: 0.5,
   restTarget: 0.3,
@@ -51,6 +53,13 @@ export class OpticBrain {
     this.params = { ...DEFAULT_OPTIC_PARAMS, ...params };
     const p = this.params;
     const applied = applyParams(graph, fv, p.defaultScale, p.lptcScale);
+    if (p.flightGain !== 1) {
+      const isLptc = new Uint8Array(graph.n);
+      for (const i of unitsWhere(graph, (t) => LPTC.test(t))) isLptc[i] = 1;
+      let scaled = 0;
+      for (let e = 0; e < graph.m; e++) if (isLptc[graph.post[e]]) { applied.w[e] *= p.flightGain; scaled++; }
+      this.flightScaledEdges = scaled;
+    }
     this.applied = applied;
     let nCov = 0;
     for (let i = 0; i < graph.n; i++) nCov += applied.covered[i];
