@@ -398,5 +398,59 @@ def shots():
 
 ALL = dict(same_fly=same_fly, dsi=dsi, dng02_inputs=dng02_inputs, ablations=ablations, haltere=haltere, parity=parity,
            loom=loom, drum=drum, trajectories=trajectories, eye_maps=eye_maps, budget=budget, filmstrip=filmstrip, shots=shots)
+
+# ---------------------------------------------------------------- follow-ups (HANDOFF steps 1 and 4)
+def octopamine():
+    d = load('hs-inject-octopamine.json')
+    if not d: return print('skip octopamine (no run)')
+    rows = d['rows']; conds = []
+    for r in rows:
+        if r['condition'] not in conds: conds.append(r['condition'])
+    tonics = sorted({r['dn'] for r in rows})
+    f, top = fig('Follow-up · the octopamine hypothesis', 'Does DNg02 lateralise once OA-VUMa4 is out of the way? Muting the relays one at a time',
+                 f'Three left HS cells driven at {d["hsCurrent"]} mV/ms in the spiking net, nothing else painted. Bars: the shift in DNg02 left − right caused by HS, '
+                 'per condition and tonic DNg02 drive. The hypothesis predicts a clear positive shift with OA-VUMa4 muted.',
+                 'bench/hs-inject.mjs --octopamine · bench/out/hs-inject-octopamine.json · monoamine cells carry sign 0 in Xenova\'s file, +1 after the load-time fix')
+    ax = f.add_axes([0.08, BOTTOM, 0.88, top - BOTTOM]); panel(ax)
+    w = 0.8 / len(tonics)
+    for j, dn in enumerate(tonics):
+        vals = [next(r['dLR'] for r in rows if r['condition'] == c and r['dn'] == dn) for c in conds]
+        xs = [i + (j - (len(tonics) - 1) / 2) * w for i in range(len(conds))]
+        ax.bar(xs, vals, width=w * 0.92, color=[DN, WARN][j % 2], label=f'tonic DNg02 {dn} mV/ms')
+        for x, v in zip(xs, vals): ax.text(x, v + (0.3 if v >= 0 else -0.3), f'{v:+.1f}', ha='center', va='bottom' if v >= 0 else 'top', color=INK, fontsize=13)
+    ax.axhline(0, color=MUTED, lw=1); ax.set_xticks(range(len(conds))); ax.set_xticklabels(conds, fontsize=14)
+    ax.set_ylabel('DNg02 (L − R) with HS  −  (L − R) without HS, Hz'); ax.legend(loc='upper left', frameon=False)
+    lim = max(3, max(abs(r['dLR']) for r in rows) * 1.4); ax.set_ylim(-lim, lim)
+    save(f, '17-octopamine-test')
+
+def haltere_anatomy():
+    p, j = load('haltere-paths.json'), load('haltere-inject.json')
+    if not p: return print('skip haltere anatomy (no run)')
+    f, top = fig('Follow-up · haltere sign vs anatomy', 'What the 205 haltere afferents actually reach, and what driving them does to the steering neurons',
+                 'Left: signed two-hop drive from each side\'s afferents onto the steering and motor populations (Σ count × count × sign, thousands). '
+                 'Right: the same afferents driven with a constant current in the spiking net, DNa02 and wing-MN rates read out.',
+                 'bench/haltere-paths.mjs, bench/haltere-inject.mjs · bench/out/haltere-paths.json, haltere-inject.json')
+    ax = f.add_axes([0.08, BOTTOM, 0.50, top - BOTTOM]); panel(ax)
+    keys = ['DNa02 L', 'DNa02 R', 'wing MN L', 'wing MN R', 'haltere MN L', 'haltere MN R', 'DNg02 L', 'DNg02 R']
+    y = np.arange(len(keys))[::-1]
+    for k, (side, col, off) in enumerate([('L', A, 0.2), ('R', B, -0.2)]):
+        vals = [p['twoHop'][side].get(t, 0) / 1000 for t in keys]
+        ax.barh(y + off, vals, height=0.38, color=col, label=f'{side} afferents ({p["afferents"][side]} cells)')
+    ax.axvline(0, color=MUTED, lw=1); ax.set_yticks(y); ax.set_yticklabels(keys, fontsize=14); ax.set_xlabel('signed two-hop drive, thousands (negative = net inhibition)')
+    ax.legend(loc='lower right', frameon=False)
+    ax2 = f.add_axes([0.66, BOTTOM, 0.30, top - BOTTOM]); panel(ax2)
+    if j:
+        rows = j['rows']; labels = ['none', 'left driven', 'right driven']
+        x = np.arange(3)
+        ax2.bar(x - 0.2, [r['dna02L'] for r in rows], width=0.38, color=A, label='DNa02 L')
+        ax2.bar(x + 0.2, [r['dna02R'] for r in rows], width=0.38, color=DN, label='DNa02 R')
+        for i, r in enumerate(rows):
+            ax2.text(i - 0.2, r['dna02L'] + 0.5, f'{r["dna02L"]:.0f}', ha='center', color=INK, fontsize=13); ax2.text(i + 0.2, r['dna02R'] + 0.5, f'{r["dna02R"]:.0f}', ha='center', color=INK, fontsize=13)
+        ax2.set_xticks(x); ax2.set_xticklabels(labels, fontsize=14); ax2.set_ylabel('Hz'); ax2.legend(loc='upper left', frameon=False)
+        ax2.set_title(f'afferents at {j["current"]} mV/ms in the LIF', color=MUTED, fontsize=15)
+    save(f, '18-haltere-anatomy')
+
+ALL.update(octopamine=octopamine, haltere_anatomy=haltere_anatomy)
+
 if __name__ == '__main__':
     for n in (sys.argv[1:] or list(ALL)): ALL[n]()

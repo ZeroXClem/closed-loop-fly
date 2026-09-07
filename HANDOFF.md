@@ -124,10 +124,11 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
 
 ## Next steps, in the order I would take them
 
-1. **Kill or confirm the octopamine hypothesis**: `bench/hs-inject.mjs` with OA-VUMa4 muted
-   (add a `--mute-types` option using the same negative-current trick) and with the
-   monoamine sign set to 0 (Xenova's file value) instead of +1 (worker.js flips it at load).
-   If DNg02 lateralises with VUMa4 out, the finding is the monoamine convention.
+1. ~~Kill or confirm the octopamine hypothesis~~ **Done 2026-09-07 evening, killed**:
+   `bench/hs-inject.mjs --octopamine` (options `--mute <types>`, `--monoamines 0`) mutes each
+   relay, both, and sets the 541 monoamine cells to their file sign (0). DNg02 L−R stays within
+   ±1 Hz in all ten runs; DNa02 lateralises in all ten. docs/followups.md §1, DECISIONS.md.
+   The next probe on DNg02 is a biological tonic drive: `--drive AN07B004` (not written yet).
 2. **Readout without rest subtraction** (or with a slow re-centring like their `offsetTau`)
    so silent populations command straight flight; rerun `bench/ablate.mjs`.
 3. **GPU port of the rate net**: AbijahKaj's two WGSL kernels (`gpu-net.ts`, drive/integrate)

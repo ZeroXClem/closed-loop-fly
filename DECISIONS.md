@@ -261,3 +261,13 @@ falls from 1,064° to 35° and the wobble halves. So the connectome path from th
 afferents to the wing motor opposes rotation for one sign of the input and reinforces it for
 the other. The proxy ships with the corrective sign (−1) and says so; the real haltere's
 Coriolis encoding is not modelled. Drift stays above GOAL.md's 20°.
+
+## 2026-09-07 — The octopamine-cancellation hypothesis is retracted
+
+Phase 3 explained DNg02's flat response with two relays cancelling, PS080 (−) and OA-VUMa4 (+1
+after the monoamine fix). `bench/hs-inject.mjs --octopamine` muted each relay, both, and set the
+541 monoamine cells to their file sign (0): DNg02 left − right never left ±1 Hz in ten runs
+(docs/followups.md §1). The hypothesis is withdrawn; the finding is restated as "HS cannot
+lateralise DNg02 through 324 relay synapses against 35,000 others in an un-refit LIF". The
+Phase 3 text is left as written, with a pointer, so the record shows what was believed when.
+The DNa02 readout lateralises under every condition, so nothing in Phases 4–6 changes.

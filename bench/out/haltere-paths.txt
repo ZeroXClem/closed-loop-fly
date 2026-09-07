@@ -1,0 +1,18 @@
+
+== L haltere afferents (104 cells, 61936 output synapses; signs {"unclear:0":1,"acetylcholine:1":100,"serotonin:1":3})
+   direct, by superclass × side: vnc_intrinsic L:24181  ascending_neuron L:11438  vnc_intrinsic R:5847  cb_intrinsic L:5791  vnc_motor L:3890  ascending_neuron R:3271  sensory_ascending L:1913  descending_neuron L:1654  cb_motor L:1245  vnc_motor R:707
+   direct onto: DNa02 L 0 · DNa02 R 0 · DNg02 L 0 · DNg02 R 1 · wing MN L 1966 · wing MN R 36 · haltere MN L 650 · haltere MN R 125
+   two-hop signed drive (Σ c1·c2·sign): DNa02 L -41.6k · DNa02 R 1.4k · DNg02 L -16.8k · DNg02 R -14.3k · wing MN L -621.6k · wing MN R 307.2k · haltere MN L 60.0k · haltere MN R 8.0k
+   strongest mediators onto DNa02: PS059_L- → DNa02 L:-57.8k  GNG580_L+ → DNa02 L:10.2k  PS013_L+ → DNa02 L:8.6k  GNG100_L+ → DNa02 R:5.3k  IN06A008_L- → DNa02 R:-2.9k  AN06B009_L- → DNa02 L:-1.5k  AN06B009_L- → DNa02 R:-0.5k  PS072_L- → DNa02 L:-0.4k
+
+== R haltere afferents (101 cells, 50407 output synapses; signs {"acetylcholine:1":97,"serotonin:1":3,"unclear:0":1})
+   direct, by superclass × side: vnc_intrinsic R:18459  ascending_neuron R:8883  cb_intrinsic R:5455  vnc_intrinsic L:4928  ascending_neuron L:3164  vnc_motor R:3153  descending_neuron R:1714  sensory_ascending R:1523  cb_motor R:994  vnc_motor L:473
+   direct onto: DNa02 L 0 · DNa02 R 0 · DNg02 L 0 · DNg02 R 0 · wing MN L 32 · wing MN R 1630 · haltere MN L 115 · haltere MN R 514
+   two-hop signed drive (Σ c1·c2·sign): DNa02 L 5.3k · DNa02 R -71.0k · DNg02 L -3.0k · DNg02 R -6.7k · wing MN L 199.0k · wing MN R -383.3k · haltere MN L 18.7k · haltere MN R 76.3k
+   strongest mediators onto DNa02: PS059_R- → DNa02 R:-72.4k  GNG100_R+ → DNa02 L:9.6k  GNG580_R+ → DNa02 R:3.1k  IN06A008_R- → DNa02 L:-1.6k  GNG529_R- → DNa02 L:-1.0k  AN06B009_R- → DNa02 R:-0.5k  IN06A024_R- → DNa02 L:-0.5k  PS353_R- → DNa02 L:-0.4k
+
+== ipsilateral bias of two-hop drive (positive = same side as the afferents)
+   DNa02:   L afferents -42.9k, R afferents -76.3k
+   wing MN: L afferents -928.7k, R afferents -582.3k
+
+wrote bench/out/haltere-paths.json

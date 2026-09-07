@@ -90,7 +90,7 @@ DNg02 does not follow because its input from HS is diluted and cancelled:
 The GABAergic relay gets as much recurrent inhibition (PS118, PS057, PS090, LAL061, …) as HS
 gives it excitation, and the octopaminergic OA-VUMa4 route (HSS → VUMa4 → DNg02, 91–125 / 28
 synapses, +1 under Shiu's monoamine convention) excites the contralateral DNg02 that PS080
-inhibits. In the un-refit LIF the two cancel to within 1 Hz. Meanwhile DNa02, which HSS
+inhibits. In the un-refit LIF the two cancel to within 1 Hz. **Retracted 2026-09-07 evening: muting either or both relays leaves DNg02 flat; see docs/followups.md §1.** Meanwhile DNa02, which HSS
 reaches directly (36–47 synapses), lateralises 26 / 6 Hz from HS alone.
 
 **Verdict:** looming criterion PASS; DNg02 direction criterion marginal (the sign of L−R
