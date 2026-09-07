@@ -31,6 +31,18 @@ let graph,
   kick, // mV per tick, uploaded to the kernels
   zeroRates,
   watched = new Uint32Array(0);
+// Host quirk (gpu-box, Brave 151 + NVIDIA 610 under the flags in bench/lib/browser.mjs):
+// requestAdapter({ powerPreference: 'high-performance' }) returns null while the plain request
+// returns the discrete GPU. The kernel runtime hard-codes 'high-performance', so retry without it.
+if (typeof navigator !== 'undefined' && navigator.gpu?.requestAdapter) {
+  const request = navigator.gpu.requestAdapter.bind(navigator.gpu);
+  navigator.gpu.requestAdapter = async (options) => {
+    const adapter = await request(options);
+    if (adapter || !options?.powerPreference) return adapter;
+    const { powerPreference, ...rest } = options;
+    return request(rest);
+  };
+}
 let queue = Promise.resolve();
 self.onmessage = ({ data }) => {
   queue = queue
@@ -118,6 +130,45 @@ async function handle(m) {
     postMessage({ type: 'reset', generation });
   } else if (m.type === 'clear') {
     pulses.reset();
+  } else if (m.type === 'parity') {
+    // Full-graph parity: step a JavaScript reference and the live backend from reset with the
+    // same stimulus, compare per-neuron spike counts batch by batch. Diagnostic only.
+    if (backend !== 'gpu') throw Error('parity needs the WebGPU backend');
+    const steps = m.steps ?? batchSteps,
+      batches = m.batches ?? 30,
+      cpu = new BrainCPU(graph),
+      bank = new PulseBank(graph.n);
+    await brain.reset();
+    // `warm` silent batches first: the Poisson RNG is seeded by the absolute tick, so the same
+    // stimulus at a different start tick is a different realisation.
+    const warm = m.warm ?? 0;
+    for (let b = 0; b < warm; b++) {
+      cpu.batch(steps, zeroRates, false, null);
+      await brain.batch(steps, zeroRates, false, null);
+    }
+    bank.add(m.indices ?? groups.escapeInput, cpu.tick, m.strength ?? 180, 'paint');
+    const rows = [];
+    let firstMismatch = null;
+    for (let b = 0; b < batches; b++) {
+      const r = bank.sample(cpu.tick);
+      kickFromRates(stimulus === 'poisson' ? zeroRates : r, injectGain, null, kick);
+      const pr = stimulus === 'poisson' ? r : zeroRates;
+      const a = cpu.batch(steps, pr, false, kick),
+        g = await brain.batch(steps, pr, false, kick);
+      let diff = 0,
+        extraG = 0;
+      for (let i = 0; i < graph.n; i++)
+        if (a.counts[i] !== g.counts[i]) {
+          diff++;
+          extraG += g.counts[i] - a.counts[i];
+        }
+      if (diff && firstMismatch === null) firstMismatch = b;
+      rows.push({ batch: b, ms: (b + 1) * steps * 0.1, cpu: a.total, gpu: g.total, neuronsDiffering: diff, gpuMinusCpu: extraG });
+    }
+    await brain.reset();
+    pulses.reset();
+    monitor.reset();
+    postMessage({ type: 'parity', id: m.id, steps, batches, warm, firstMismatch, rows });
   } else if (m.type === 'step') {
     if (m.generation !== generation) return;
     const started = performance.now(),

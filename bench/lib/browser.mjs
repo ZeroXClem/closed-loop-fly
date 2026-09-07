@@ -20,13 +20,23 @@ export function requireGpuTools() {
 export function findBrowser() {
   return requireGpuTools().exe;
 }
+// Found by bench/webgpu-probe.mjs on gpu-box (Brave 151 / Chromium 151, NVIDIA 610.57, headless):
+//  - Dawn keeps its own adapter blocklist, separate from --ignore-gpu-blocklist, and rejects
+//    NVIDIA Linux drivers >= 570: `disable_adapter_blocklist` turns it off.
+//  - Hardware adapters only appear with Skia's Vulkan feature on AND --disable-vulkan-surface
+//    (no display); without them Dawn returns SwiftShader while chrome://gpu still says
+//    "hardware accelerated".
 export const BROWSER_ARGS = [
-  '--enable-unsafe-webgpu',
-  '--enable-features=Vulkan',
-  '--use-angle=vulkan',
-  '--ignore-gpu-blocklist',
   '--no-sandbox',
   '--disable-gpu-sandbox',
+  '--enable-unsafe-webgpu',
+  '--ignore-gpu-blocklist',
+  '--use-gl=angle',
+  '--use-angle=vulkan',
+  '--enable-features=Vulkan',
+  '--disable-vulkan-surface',
+  '--enable-dawn-features=allow_unsafe_apis,disable_adapter_blocklist',
+  '--disable-dawn-features=disallow_unsafe_apis',
   '--disable-brave-update',
   '--disable-brave-rewards-extension',
 ];
@@ -52,10 +62,10 @@ export function startVite(port = 5173) {
 }
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-export async function waitFor(page, fn, { timeoutMs = 240000, every = 250, what = 'condition' } = {}) {
+export async function waitFor(page, fn, { timeoutMs = 240000, every = 250, what = 'condition', arg } = {}) {
   const t0 = Date.now();
   for (;;) {
-    const v = await page.evaluate(fn);
+    const v = await page.evaluate(fn, arg);
     if (v) return v;
     if (Date.now() - t0 > timeoutMs) throw Error(`timeout waiting for ${what}`);
     await sleep(every);

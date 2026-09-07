@@ -1,0 +1,42 @@
+{
+ "seconds": 1,
+ "gain": 1,
+ "backend": "gpu",
+ "steps": 40,
+ "runs": [
+  {
+   "mode": "poisson",
+   "backend": "gpu",
+   "batches": 250,
+   "baseline": {
+    "n": 49,
+    "wallMs": 15.730612245008198,
+    "spikes": 0,
+    "steps": 40
+   },
+   "spikesPerBatchFirst500ms": 469,
+   "spikesPerBatchAfter500ms": 109,
+   "neuralMs": 996,
+   "realtime": 0.17,
+   "gpuMsPerBatch": 21.46,
+   "capacity": 0.19,
+   "peakEscapeHz": 500,
+   "peakAtMs": 36,
+   "triggerMs": 8,
+   "spikes": 72171,
+   "yMaxMm": 2.92,
+   "behaviors": [
+    "At rest",
+    "Taking off",
+    "Escape flight",
+    "Landing"
+   ],
+   "errors": [
+    "navigated: http://127.0.0.1:5173/?stimulus=poisson&gain=1&steps=40",
+    "http 404: http://127.0.0.1:5173/favicon.ico",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5173/favicon.ico"
+   ],
+   "parity": "WebGPU matches JavaScript: 257 neurons × 4800 ticks, 38706 spikes, max |Δv| 5.72e-5 mV, max |Δg| 2.29e-5"
+  }
+ ]
+}

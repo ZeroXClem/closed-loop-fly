@@ -1,0 +1,80 @@
+{
+ "seconds": 1.5,
+ "gain": 1,
+ "runs": [
+  {
+   "mode": "poisson",
+   "backend": "gpu",
+   "batches": 150,
+   "baseline": {
+    "n": 34,
+    "wallMs": 32.94411764702048,
+    "spikes": 0,
+    "steps": 100
+   },
+   "spikesPerBatchFirst500ms": 4441,
+   "spikesPerBatchAfter500ms": 8711,
+   "neuralMs": 1490,
+   "realtime": 0.19,
+   "gpuMsPerBatch": 41.57,
+   "capacity": 0.24,
+   "peakEscapeHz": 300,
+   "peakAtMs": 30,
+   "triggerMs": 20,
+   "spikes": 1093119,
+   "yMaxMm": 2.91,
+   "behaviors": [
+    "At rest",
+    "Taking off",
+    "Escape flight",
+    "Landing",
+    "Walking"
+   ],
+   "errors": [
+    "navigated: http://127.0.0.1:5173/?stimulus=poisson&gain=1",
+    "http 404: http://127.0.0.1:5173/favicon.ico",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5173/favicon.ico"
+   ],
+   "parity": "WebGPU matches JavaScript: 257 neurons × 4800 ticks, 38706 spikes, max |Δv| 5.72e-5 mV, max |Δg| 2.29e-5"
+  },
+  {
+   "mode": "inject",
+   "backend": "gpu",
+   "batches": 150,
+   "baseline": {
+    "n": 33,
+    "wallMs": 33.14848484843969,
+    "spikes": 0,
+    "steps": 100
+   },
+   "spikesPerBatchFirst500ms": 4978,
+   "spikesPerBatchAfter500ms": 8754,
+   "neuralMs": 1490,
+   "realtime": 0.19,
+   "gpuMsPerBatch": 42.27,
+   "capacity": 0.24,
+   "peakEscapeHz": 300,
+   "peakAtMs": 50,
+   "triggerMs": 20,
+   "spikes": 1124268,
+   "yMaxMm": 2.91,
+   "behaviors": [
+    "At rest",
+    "Taking off",
+    "Escape flight",
+    "Landing",
+    "Walking"
+   ],
+   "errors": [
+    "navigated: http://127.0.0.1:5173/?stimulus=inject&gain=1"
+   ],
+   "parity": "WebGPU matches JavaScript: 257 neurons × 4800 ticks, 38706 spikes, max |Δv| 5.72e-5 mV, max |Δg| 2.29e-5"
+  }
+ ],
+ "verdict": {
+  "ratio": 1,
+  "takeoffPoisson": true,
+  "takeoffInject": true,
+  "pass": true
+ }
+}

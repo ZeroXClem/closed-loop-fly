@@ -129,6 +129,7 @@ function timeout(ms, message) {
   watchdog = setTimeout(() => fail(message), ms);
 }
 function fail(message) {
+  hook.stages.push('fail: ' + message);
   clearTimeout(timer);
   clearTimeout(watchdog);
   worker?.terminate();
@@ -218,6 +219,7 @@ async function start(forceCPU = false) {
     return;
   }
   worker.onerror = (e) => {
+    hook.stages.push(`worker error: ${e.message} @ ${e.filename}:${e.lineno}`);
     if (epoch === token) fail(e.message || 'Worker failed to start');
   };
   worker.onmessageerror = () => {
@@ -327,6 +329,8 @@ async function start(forceCPU = false) {
         `${backend === 'gpu' ? 'WebGPU' : 'JavaScript'} · ${simRate.toFixed(2)}× realtime · ${m.total.toLocaleString()} spikes`,
       );
       timer = setTimeout(request, Math.max(0, 10 - m.wallMs));
+    } else if (m.type === 'parity' || m.type === 'rates') {
+      (hook.replies ??= []).push(m);
     } else if (m.type === 'error') {
       hook.stages.push('error: ' + m.message);
       if (backend === 'gpu' && !forceCPU) {
@@ -375,6 +379,7 @@ async function boot() {
     $('start').disabled = false;
     return true;
   } catch (error) {
+    hook.stages.push('boot failed: ' + (error.stack ?? error.message));
     fail(error.message);
     return false;
   } finally {

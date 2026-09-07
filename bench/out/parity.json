@@ -1,0 +1,978 @@
+{
+ "stimulus": "poisson",
+ "batches": 60,
+ "runs": [
+  {
+   "steps": 100,
+   "firstMismatch": 3,
+   "rows": [
+    {
+     "batch": 0,
+     "ms": 10,
+     "cpu": 480,
+     "gpu": 480,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 1,
+     "ms": 20,
+     "cpu": 1497,
+     "gpu": 1497,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 2,
+     "ms": 30,
+     "cpu": 1967,
+     "gpu": 1967,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 3,
+     "ms": 40,
+     "cpu": 1752,
+     "gpu": 1751,
+     "neuronsDiffering": 1,
+     "gpuMinusCpu": -1
+    },
+    {
+     "batch": 4,
+     "ms": 50,
+     "cpu": 1890,
+     "gpu": 1904,
+     "neuronsDiffering": 22,
+     "gpuMinusCpu": 14
+    },
+    {
+     "batch": 5,
+     "ms": 60,
+     "cpu": 1910,
+     "gpu": 1926,
+     "neuronsDiffering": 88,
+     "gpuMinusCpu": 16
+    },
+    {
+     "batch": 6,
+     "ms": 70,
+     "cpu": 2126,
+     "gpu": 2126,
+     "neuronsDiffering": 289,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 7,
+     "ms": 80,
+     "cpu": 1844,
+     "gpu": 1839,
+     "neuronsDiffering": 509,
+     "gpuMinusCpu": -5
+    },
+    {
+     "batch": 8,
+     "ms": 90,
+     "cpu": 2055,
+     "gpu": 1974,
+     "neuronsDiffering": 729,
+     "gpuMinusCpu": -81
+    },
+    {
+     "batch": 9,
+     "ms": 100,
+     "cpu": 1845,
+     "gpu": 1906,
+     "neuronsDiffering": 938,
+     "gpuMinusCpu": 61
+    },
+    {
+     "batch": 10,
+     "ms": 110,
+     "cpu": 1560,
+     "gpu": 1740,
+     "neuronsDiffering": 910,
+     "gpuMinusCpu": 180
+    },
+    {
+     "batch": 11,
+     "ms": 120,
+     "cpu": 1792,
+     "gpu": 1965,
+     "neuronsDiffering": 1149,
+     "gpuMinusCpu": 173
+    },
+    {
+     "batch": 12,
+     "ms": 130,
+     "cpu": 1887,
+     "gpu": 1795,
+     "neuronsDiffering": 1285,
+     "gpuMinusCpu": -92
+    },
+    {
+     "batch": 13,
+     "ms": 140,
+     "cpu": 1659,
+     "gpu": 1436,
+     "neuronsDiffering": 1136,
+     "gpuMinusCpu": -223
+    },
+    {
+     "batch": 14,
+     "ms": 150,
+     "cpu": 1726,
+     "gpu": 1914,
+     "neuronsDiffering": 1271,
+     "gpuMinusCpu": 188
+    },
+    {
+     "batch": 15,
+     "ms": 160,
+     "cpu": 1882,
+     "gpu": 1693,
+     "neuronsDiffering": 1469,
+     "gpuMinusCpu": -189
+    },
+    {
+     "batch": 16,
+     "ms": 170,
+     "cpu": 1407,
+     "gpu": 1485,
+     "neuronsDiffering": 1192,
+     "gpuMinusCpu": 78
+    },
+    {
+     "batch": 17,
+     "ms": 180,
+     "cpu": 1592,
+     "gpu": 1683,
+     "neuronsDiffering": 1281,
+     "gpuMinusCpu": 91
+    },
+    {
+     "batch": 18,
+     "ms": 190,
+     "cpu": 1314,
+     "gpu": 1389,
+     "neuronsDiffering": 1184,
+     "gpuMinusCpu": 75
+    },
+    {
+     "batch": 19,
+     "ms": 200,
+     "cpu": 1514,
+     "gpu": 1643,
+     "neuronsDiffering": 1337,
+     "gpuMinusCpu": 129
+    },
+    {
+     "batch": 20,
+     "ms": 210,
+     "cpu": 1411,
+     "gpu": 1825,
+     "neuronsDiffering": 1414,
+     "gpuMinusCpu": 414
+    },
+    {
+     "batch": 21,
+     "ms": 220,
+     "cpu": 1348,
+     "gpu": 1970,
+     "neuronsDiffering": 1555,
+     "gpuMinusCpu": 622
+    },
+    {
+     "batch": 22,
+     "ms": 230,
+     "cpu": 1547,
+     "gpu": 1530,
+     "neuronsDiffering": 1270,
+     "gpuMinusCpu": -17
+    },
+    {
+     "batch": 23,
+     "ms": 240,
+     "cpu": 1502,
+     "gpu": 1566,
+     "neuronsDiffering": 1367,
+     "gpuMinusCpu": 64
+    },
+    {
+     "batch": 24,
+     "ms": 250,
+     "cpu": 1049,
+     "gpu": 1301,
+     "neuronsDiffering": 1158,
+     "gpuMinusCpu": 252
+    },
+    {
+     "batch": 25,
+     "ms": 260,
+     "cpu": 855,
+     "gpu": 992,
+     "neuronsDiffering": 823,
+     "gpuMinusCpu": 137
+    },
+    {
+     "batch": 26,
+     "ms": 270,
+     "cpu": 943,
+     "gpu": 1302,
+     "neuronsDiffering": 1038,
+     "gpuMinusCpu": 359
+    },
+    {
+     "batch": 27,
+     "ms": 280,
+     "cpu": 1029,
+     "gpu": 1137,
+     "neuronsDiffering": 935,
+     "gpuMinusCpu": 108
+    },
+    {
+     "batch": 28,
+     "ms": 290,
+     "cpu": 1078,
+     "gpu": 1060,
+     "neuronsDiffering": 1000,
+     "gpuMinusCpu": -18
+    },
+    {
+     "batch": 29,
+     "ms": 300,
+     "cpu": 1045,
+     "gpu": 1019,
+     "neuronsDiffering": 943,
+     "gpuMinusCpu": -26
+    },
+    {
+     "batch": 30,
+     "ms": 310,
+     "cpu": 976,
+     "gpu": 1100,
+     "neuronsDiffering": 902,
+     "gpuMinusCpu": 124
+    },
+    {
+     "batch": 31,
+     "ms": 320,
+     "cpu": 1319,
+     "gpu": 1306,
+     "neuronsDiffering": 1211,
+     "gpuMinusCpu": -13
+    },
+    {
+     "batch": 32,
+     "ms": 330,
+     "cpu": 1198,
+     "gpu": 1069,
+     "neuronsDiffering": 1146,
+     "gpuMinusCpu": -129
+    },
+    {
+     "batch": 33,
+     "ms": 340,
+     "cpu": 1048,
+     "gpu": 774,
+     "neuronsDiffering": 937,
+     "gpuMinusCpu": -274
+    },
+    {
+     "batch": 34,
+     "ms": 350,
+     "cpu": 885,
+     "gpu": 883,
+     "neuronsDiffering": 856,
+     "gpuMinusCpu": -2
+    },
+    {
+     "batch": 35,
+     "ms": 360,
+     "cpu": 894,
+     "gpu": 925,
+     "neuronsDiffering": 849,
+     "gpuMinusCpu": 31
+    },
+    {
+     "batch": 36,
+     "ms": 370,
+     "cpu": 702,
+     "gpu": 895,
+     "neuronsDiffering": 791,
+     "gpuMinusCpu": 193
+    },
+    {
+     "batch": 37,
+     "ms": 380,
+     "cpu": 850,
+     "gpu": 919,
+     "neuronsDiffering": 874,
+     "gpuMinusCpu": 69
+    },
+    {
+     "batch": 38,
+     "ms": 390,
+     "cpu": 969,
+     "gpu": 926,
+     "neuronsDiffering": 878,
+     "gpuMinusCpu": -43
+    },
+    {
+     "batch": 39,
+     "ms": 400,
+     "cpu": 1066,
+     "gpu": 850,
+     "neuronsDiffering": 939,
+     "gpuMinusCpu": -216
+    },
+    {
+     "batch": 40,
+     "ms": 410,
+     "cpu": 829,
+     "gpu": 859,
+     "neuronsDiffering": 884,
+     "gpuMinusCpu": 30
+    },
+    {
+     "batch": 41,
+     "ms": 420,
+     "cpu": 655,
+     "gpu": 749,
+     "neuronsDiffering": 664,
+     "gpuMinusCpu": 94
+    },
+    {
+     "batch": 42,
+     "ms": 430,
+     "cpu": 634,
+     "gpu": 807,
+     "neuronsDiffering": 652,
+     "gpuMinusCpu": 173
+    },
+    {
+     "batch": 43,
+     "ms": 440,
+     "cpu": 610,
+     "gpu": 819,
+     "neuronsDiffering": 665,
+     "gpuMinusCpu": 209
+    },
+    {
+     "batch": 44,
+     "ms": 450,
+     "cpu": 605,
+     "gpu": 636,
+     "neuronsDiffering": 682,
+     "gpuMinusCpu": 31
+    },
+    {
+     "batch": 45,
+     "ms": 460,
+     "cpu": 571,
+     "gpu": 580,
+     "neuronsDiffering": 666,
+     "gpuMinusCpu": 9
+    },
+    {
+     "batch": 46,
+     "ms": 470,
+     "cpu": 537,
+     "gpu": 596,
+     "neuronsDiffering": 555,
+     "gpuMinusCpu": 59
+    },
+    {
+     "batch": 47,
+     "ms": 480,
+     "cpu": 579,
+     "gpu": 700,
+     "neuronsDiffering": 673,
+     "gpuMinusCpu": 121
+    },
+    {
+     "batch": 48,
+     "ms": 490,
+     "cpu": 613,
+     "gpu": 750,
+     "neuronsDiffering": 690,
+     "gpuMinusCpu": 137
+    },
+    {
+     "batch": 49,
+     "ms": 500,
+     "cpu": 738,
+     "gpu": 559,
+     "neuronsDiffering": 710,
+     "gpuMinusCpu": -179
+    },
+    {
+     "batch": 50,
+     "ms": 510,
+     "cpu": 716,
+     "gpu": 510,
+     "neuronsDiffering": 676,
+     "gpuMinusCpu": -206
+    },
+    {
+     "batch": 51,
+     "ms": 520,
+     "cpu": 770,
+     "gpu": 567,
+     "neuronsDiffering": 676,
+     "gpuMinusCpu": -203
+    },
+    {
+     "batch": 52,
+     "ms": 530,
+     "cpu": 629,
+     "gpu": 660,
+     "neuronsDiffering": 686,
+     "gpuMinusCpu": 31
+    },
+    {
+     "batch": 53,
+     "ms": 540,
+     "cpu": 478,
+     "gpu": 499,
+     "neuronsDiffering": 513,
+     "gpuMinusCpu": 21
+    },
+    {
+     "batch": 54,
+     "ms": 550,
+     "cpu": 407,
+     "gpu": 528,
+     "neuronsDiffering": 476,
+     "gpuMinusCpu": 121
+    },
+    {
+     "batch": 55,
+     "ms": 560,
+     "cpu": 481,
+     "gpu": 498,
+     "neuronsDiffering": 461,
+     "gpuMinusCpu": 17
+    },
+    {
+     "batch": 56,
+     "ms": 570,
+     "cpu": 322,
+     "gpu": 369,
+     "neuronsDiffering": 408,
+     "gpuMinusCpu": 47
+    },
+    {
+     "batch": 57,
+     "ms": 580,
+     "cpu": 259,
+     "gpu": 472,
+     "neuronsDiffering": 410,
+     "gpuMinusCpu": 213
+    },
+    {
+     "batch": 58,
+     "ms": 590,
+     "cpu": 443,
+     "gpu": 400,
+     "neuronsDiffering": 436,
+     "gpuMinusCpu": -43
+    },
+    {
+     "batch": 59,
+     "ms": 600,
+     "cpu": 613,
+     "gpu": 400,
+     "neuronsDiffering": 617,
+     "gpuMinusCpu": -213
+    }
+   ]
+  },
+  {
+   "steps": 40,
+   "firstMismatch": 9,
+   "rows": [
+    {
+     "batch": 0,
+     "ms": 4,
+     "cpu": 106,
+     "gpu": 106,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 1,
+     "ms": 8,
+     "cpu": 223,
+     "gpu": 223,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 2,
+     "ms": 12,
+     "cpu": 389,
+     "gpu": 389,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 3,
+     "ms": 16,
+     "cpu": 624,
+     "gpu": 624,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 4,
+     "ms": 20,
+     "cpu": 635,
+     "gpu": 635,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 5,
+     "ms": 24,
+     "cpu": 757,
+     "gpu": 757,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 6,
+     "ms": 28,
+     "cpu": 788,
+     "gpu": 788,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 7,
+     "ms": 32,
+     "cpu": 784,
+     "gpu": 784,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 8,
+     "ms": 36,
+     "cpu": 692,
+     "gpu": 692,
+     "neuronsDiffering": 0,
+     "gpuMinusCpu": 0
+    },
+    {
+     "batch": 9,
+     "ms": 40,
+     "cpu": 698,
+     "gpu": 697,
+     "neuronsDiffering": 1,
+     "gpuMinusCpu": -1
+    },
+    {
+     "batch": 10,
+     "ms": 44,
+     "cpu": 768,
+     "gpu": 767,
+     "neuronsDiffering": 3,
+     "gpuMinusCpu": -1
+    },
+    {
+     "batch": 11,
+     "ms": 48,
+     "cpu": 719,
+     "gpu": 724,
+     "neuronsDiffering": 7,
+     "gpuMinusCpu": 5
+    },
+    {
+     "batch": 12,
+     "ms": 52,
+     "cpu": 785,
+     "gpu": 809,
+     "neuronsDiffering": 38,
+     "gpuMinusCpu": 24
+    },
+    {
+     "batch": 13,
+     "ms": 56,
+     "cpu": 729,
+     "gpu": 727,
+     "neuronsDiffering": 68,
+     "gpuMinusCpu": -2
+    },
+    {
+     "batch": 14,
+     "ms": 60,
+     "cpu": 799,
+     "gpu": 803,
+     "neuronsDiffering": 108,
+     "gpuMinusCpu": 4
+    },
+    {
+     "batch": 15,
+     "ms": 64,
+     "cpu": 959,
+     "gpu": 936,
+     "neuronsDiffering": 177,
+     "gpuMinusCpu": -23
+    },
+    {
+     "batch": 16,
+     "ms": 68,
+     "cpu": 805,
+     "gpu": 843,
+     "neuronsDiffering": 254,
+     "gpuMinusCpu": 38
+    },
+    {
+     "batch": 17,
+     "ms": 72,
+     "cpu": 712,
+     "gpu": 694,
+     "neuronsDiffering": 320,
+     "gpuMinusCpu": -18
+    },
+    {
+     "batch": 18,
+     "ms": 76,
+     "cpu": 731,
+     "gpu": 727,
+     "neuronsDiffering": 396,
+     "gpuMinusCpu": -4
+    },
+    {
+     "batch": 19,
+     "ms": 80,
+     "cpu": 763,
+     "gpu": 765,
+     "neuronsDiffering": 490,
+     "gpuMinusCpu": 2
+    },
+    {
+     "batch": 20,
+     "ms": 84,
+     "cpu": 816,
+     "gpu": 780,
+     "neuronsDiffering": 584,
+     "gpuMinusCpu": -36
+    },
+    {
+     "batch": 21,
+     "ms": 88,
+     "cpu": 760,
+     "gpu": 804,
+     "neuronsDiffering": 601,
+     "gpuMinusCpu": 44
+    },
+    {
+     "batch": 22,
+     "ms": 92,
+     "cpu": 922,
+     "gpu": 808,
+     "neuronsDiffering": 710,
+     "gpuMinusCpu": -114
+    },
+    {
+     "batch": 23,
+     "ms": 96,
+     "cpu": 764,
+     "gpu": 770,
+     "neuronsDiffering": 692,
+     "gpuMinusCpu": 6
+    },
+    {
+     "batch": 24,
+     "ms": 100,
+     "cpu": 623,
+     "gpu": 708,
+     "neuronsDiffering": 609,
+     "gpuMinusCpu": 85
+    },
+    {
+     "batch": 25,
+     "ms": 104,
+     "cpu": 618,
+     "gpu": 739,
+     "neuronsDiffering": 687,
+     "gpuMinusCpu": 121
+    },
+    {
+     "batch": 26,
+     "ms": 108,
+     "cpu": 617,
+     "gpu": 702,
+     "neuronsDiffering": 675,
+     "gpuMinusCpu": 85
+    },
+    {
+     "batch": 27,
+     "ms": 112,
+     "cpu": 559,
+     "gpu": 658,
+     "neuronsDiffering": 623,
+     "gpuMinusCpu": 99
+    },
+    {
+     "batch": 28,
+     "ms": 116,
+     "cpu": 584,
+     "gpu": 819,
+     "neuronsDiffering": 767,
+     "gpuMinusCpu": 235
+    },
+    {
+     "batch": 29,
+     "ms": 120,
+     "cpu": 786,
+     "gpu": 815,
+     "neuronsDiffering": 927,
+     "gpuMinusCpu": 29
+    },
+    {
+     "batch": 30,
+     "ms": 124,
+     "cpu": 890,
+     "gpu": 793,
+     "neuronsDiffering": 943,
+     "gpuMinusCpu": -97
+    },
+    {
+     "batch": 31,
+     "ms": 128,
+     "cpu": 730,
+     "gpu": 706,
+     "neuronsDiffering": 840,
+     "gpuMinusCpu": -24
+    },
+    {
+     "batch": 32,
+     "ms": 132,
+     "cpu": 739,
+     "gpu": 723,
+     "neuronsDiffering": 816,
+     "gpuMinusCpu": -16
+    },
+    {
+     "batch": 33,
+     "ms": 136,
+     "cpu": 691,
+     "gpu": 606,
+     "neuronsDiffering": 773,
+     "gpuMinusCpu": -85
+    },
+    {
+     "batch": 34,
+     "ms": 140,
+     "cpu": 648,
+     "gpu": 544,
+     "neuronsDiffering": 707,
+     "gpuMinusCpu": -104
+    },
+    {
+     "batch": 35,
+     "ms": 144,
+     "cpu": 701,
+     "gpu": 668,
+     "neuronsDiffering": 737,
+     "gpuMinusCpu": -33
+    },
+    {
+     "batch": 36,
+     "ms": 148,
+     "cpu": 718,
+     "gpu": 615,
+     "neuronsDiffering": 771,
+     "gpuMinusCpu": -103
+    },
+    {
+     "batch": 37,
+     "ms": 152,
+     "cpu": 682,
+     "gpu": 619,
+     "neuronsDiffering": 795,
+     "gpuMinusCpu": -63
+    },
+    {
+     "batch": 38,
+     "ms": 156,
+     "cpu": 648,
+     "gpu": 606,
+     "neuronsDiffering": 774,
+     "gpuMinusCpu": -42
+    },
+    {
+     "batch": 39,
+     "ms": 160,
+     "cpu": 640,
+     "gpu": 710,
+     "neuronsDiffering": 794,
+     "gpuMinusCpu": 70
+    },
+    {
+     "batch": 40,
+     "ms": 164,
+     "cpu": 630,
+     "gpu": 741,
+     "neuronsDiffering": 843,
+     "gpuMinusCpu": 111
+    },
+    {
+     "batch": 41,
+     "ms": 168,
+     "cpu": 684,
+     "gpu": 771,
+     "neuronsDiffering": 927,
+     "gpuMinusCpu": 87
+    },
+    {
+     "batch": 42,
+     "ms": 172,
+     "cpu": 630,
+     "gpu": 724,
+     "neuronsDiffering": 880,
+     "gpuMinusCpu": 94
+    },
+    {
+     "batch": 43,
+     "ms": 176,
+     "cpu": 621,
+     "gpu": 554,
+     "neuronsDiffering": 775,
+     "gpuMinusCpu": -67
+    },
+    {
+     "batch": 44,
+     "ms": 180,
+     "cpu": 567,
+     "gpu": 581,
+     "neuronsDiffering": 794,
+     "gpuMinusCpu": 14
+    },
+    {
+     "batch": 45,
+     "ms": 184,
+     "cpu": 466,
+     "gpu": 613,
+     "neuronsDiffering": 735,
+     "gpuMinusCpu": 147
+    },
+    {
+     "batch": 46,
+     "ms": 188,
+     "cpu": 560,
+     "gpu": 510,
+     "neuronsDiffering": 750,
+     "gpuMinusCpu": -50
+    },
+    {
+     "batch": 47,
+     "ms": 192,
+     "cpu": 632,
+     "gpu": 603,
+     "neuronsDiffering": 785,
+     "gpuMinusCpu": -29
+    },
+    {
+     "batch": 48,
+     "ms": 196,
+     "cpu": 692,
+     "gpu": 639,
+     "neuronsDiffering": 848,
+     "gpuMinusCpu": -53
+    },
+    {
+     "batch": 49,
+     "ms": 200,
+     "cpu": 628,
+     "gpu": 654,
+     "neuronsDiffering": 847,
+     "gpuMinusCpu": 26
+    },
+    {
+     "batch": 50,
+     "ms": 204,
+     "cpu": 577,
+     "gpu": 686,
+     "neuronsDiffering": 871,
+     "gpuMinusCpu": 109
+    },
+    {
+     "batch": 51,
+     "ms": 208,
+     "cpu": 772,
+     "gpu": 667,
+     "neuronsDiffering": 919,
+     "gpuMinusCpu": -105
+    },
+    {
+     "batch": 52,
+     "ms": 212,
+     "cpu": 754,
+     "gpu": 626,
+     "neuronsDiffering": 928,
+     "gpuMinusCpu": -128
+    },
+    {
+     "batch": 53,
+     "ms": 216,
+     "cpu": 607,
+     "gpu": 593,
+     "neuronsDiffering": 776,
+     "gpuMinusCpu": -14
+    },
+    {
+     "batch": 54,
+     "ms": 220,
+     "cpu": 705,
+     "gpu": 541,
+     "neuronsDiffering": 842,
+     "gpuMinusCpu": -164
+    },
+    {
+     "batch": 55,
+     "ms": 224,
+     "cpu": 648,
+     "gpu": 457,
+     "neuronsDiffering": 749,
+     "gpuMinusCpu": -191
+    },
+    {
+     "batch": 56,
+     "ms": 228,
+     "cpu": 604,
+     "gpu": 539,
+     "neuronsDiffering": 755,
+     "gpuMinusCpu": -65
+    },
+    {
+     "batch": 57,
+     "ms": 232,
+     "cpu": 528,
+     "gpu": 586,
+     "neuronsDiffering": 764,
+     "gpuMinusCpu": 58
+    },
+    {
+     "batch": 58,
+     "ms": 236,
+     "cpu": 503,
+     "gpu": 648,
+     "neuronsDiffering": 785,
+     "gpuMinusCpu": 145
+    },
+    {
+     "batch": 59,
+     "ms": 240,
+     "cpu": 473,
+     "gpu": 537,
+     "neuronsDiffering": 708,
+     "gpuMinusCpu": 64
+    }
+   ]
+  }
+ ]
+}

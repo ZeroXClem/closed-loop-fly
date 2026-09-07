@@ -18,8 +18,10 @@ team. See `DATA-LICENSE.md`.
 
 ## Status
 
-Phase 0 (reconnaissance) — see `GOAL.md` for the plan, `docs/recon.md` for what was found,
-`DECISIONS.md` for why things are the way they are.
+Phase 1 done: Xenova's demo boots from `src/`, the worker has `inject` (additive current)
+and `rates` (EMA) APIs, and the Fly preset through `inject` matches the original on both the
+JavaScript and WebGPU backends (`docs/phase1.md`). Phase 0 findings are in `docs/recon.md`,
+reasons in `DECISIONS.md`, the plan in `GOAL.md`.
 
 ## Layout
 
@@ -46,6 +48,7 @@ npm run bench                                  # overlap, edge and annotation-ta
 npm run bench:inject                           # Phase 1 acceptance on the JavaScript LIF (CPU)
 npm run dev                                    # Xenova's demo booted from src/ (WebGPU in the browser)
 npm run bench:gpu                              # headless Brave + WebGPU on the GPU box
+nix develop -c node bench/parity.mjs           # full-graph CPU-vs-GPU parity (GPU box)
 nix build '.?submodules=1'                     # pure dist/ (npm deps and data by hash)
 ```
 

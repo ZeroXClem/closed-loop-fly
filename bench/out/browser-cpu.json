@@ -1,0 +1,43 @@
+{
+ "seconds": 1.5,
+ "gain": 1,
+ "backend": "cpu",
+ "steps": 100,
+ "runs": [
+  {
+   "mode": "poisson",
+   "backend": "cpu",
+   "batches": 150,
+   "baseline": {
+    "n": 37,
+    "wallMs": 4.640540540621087,
+    "spikes": 0,
+    "steps": 100
+   },
+   "spikesPerBatchFirst500ms": 1205,
+   "spikesPerBatchAfter500ms": 208,
+   "neuralMs": 1490,
+   "realtime": 0.1,
+   "gpuMsPerBatch": 99.64,
+   "capacity": 0.1,
+   "peakEscapeHz": 300,
+   "peakAtMs": 10,
+   "triggerMs": 10,
+   "spikes": 81019,
+   "yMaxMm": 2.92,
+   "behaviors": [
+    "At rest",
+    "Taking off",
+    "Escape flight",
+    "Landing",
+    "Walking"
+   ],
+   "errors": [
+    "navigated: http://127.0.0.1:5173/?stimulus=poisson&gain=1&steps=100",
+    "http 404: http://127.0.0.1:5173/favicon.ico",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5173/favicon.ico"
+   ],
+   "parity": null
+  }
+ ]
+}

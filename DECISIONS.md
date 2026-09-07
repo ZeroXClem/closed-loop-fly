@@ -126,3 +126,29 @@ Two things learned wrapping the repo:
   loader no longer searches `/usr/share/vulkan/icd.d` and `vulkaninfo` reports "Found no
   drivers". The shellHook appends `/usr/local/share:/usr/share` (and `/etc/xdg`) back. This
   is the one place the impure GPU path touches the shell.
+
+## 2026-09-07 — Phase 1: additive current, not a Poisson rate, is the injection primitive
+
+`brain.inject()` adds a per-neuron current to `v` every tick (kick = I·dt, mV per tick), in
+both the JavaScript and WGSL kernels at the same point of the update (after the Poisson kick,
+before reset, float32 adds in the same order). Xenova's existing `rates` path was kept
+untouched for painting regression (`?stimulus=poisson`) and for the bridge's A/B.
+
+Why not reuse `rates`: it forces one spike per event (68.75 mV kicks) and removes the
+refractory period, so it is a rate clamp, and the bridge is specified as "inject, don't
+clamp". Painted pulses in Hz reach the new path through `rateToCurrent()`, the current at
+which an isolated LIF fires at that rate; it reproduces the Fly preset (docs/phase1.md).
+
+Verification: Xenova's CPU-vs-GPU fixture extended with current (exact match), a full-graph
+parity bench (identical for 36 ms, then float-order chaos with matched statistics), and the
+Fly preset on both backends.
+
+## 2026-09-07 — Host quirks handled in code, recorded here, not hidden
+
+- Vite dev server: `/data/*.gz` served as stored bytes (`vite.config.js`), else the app's own
+  gunzip fails.
+- `navigator.gpu.requestAdapter` shim in `src/worker.js`: retry without `powerPreference`
+  when the high-performance request returns null (Brave 151 + NVIDIA 610 under the flags in
+  `bench/lib/browser.mjs`).
+- Dawn adapter blocklist off, Skia-Vulkan on, no Vulkan surface: the only headless
+  configuration that yields the RTX 3070 (`bench/webgpu-probe.mjs` documents the search).
