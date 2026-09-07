@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The closed loop</title>
+<style>
+  html, body { margin: 0; background: #0b0e13; width: 3200px; height: 1800px; overflow: hidden; }
+  body { font-family: Inter, "Liberation Sans", "DejaVu Sans", sans-serif; color: #e8edf3; }
+  .kicker { position: absolute; left: 128px; top: 90px; font-size: 30px; font-weight: 600; letter-spacing: 0.08em; color: #3fd6c8; text-transform: uppercase; }
+  h1 { position: absolute; left: 128px; top: 134px; margin: 0; font-size: 66px; font-weight: 700; letter-spacing: -0.01em; width: 2900px; line-height: 1.1; }
+  .sub { position: absolute; left: 128px; top: 300px; width: 2900px; font-size: 31px; color: #8d97a5; line-height: 1.35; }
+  .foot { position: absolute; left: 128px; bottom: 56px; font-size: 24px; color: #8d97a5; }
+  .repo { position: absolute; right: 128px; bottom: 56px; font-size: 24px; color: #8d97a5; }
+  svg { position: absolute; left: 0; top: 0; }
+  .node { fill: #121821; stroke: #2a3442; stroke-width: 3; }
+  .num { font-size: 58px; font-weight: 700; fill: #e8edf3; }
+  .lab { font-size: 26px; font-weight: 600; fill: #e8edf3; }
+  .det { font-size: 23px; fill: #8d97a5; }
+  .a .num { fill: #3fd6c8; } .b .num { fill: #ffb545; } .m .num { fill: #ff5c8a; } .g .num { fill: #7ee081; }
+  .center-big { font-size: 42px; font-weight: 700; fill: #e8edf3; }
+  .center-small { font-size: 27px; fill: #8d97a5; }
+  .edge { fill: none; stroke: #4a5768; stroke-width: 9; stroke-linecap: round; }
+  .edgeA { fill: none; stroke: #3fd6c8; stroke-width: 11; stroke-linecap: round; }
+  .edgelab { font-size: 24px; font-weight: 600; fill: #8d97a5; }
+</style>
+<div class="kicker">closed-loop-fly · one frame of the loop</div>
+<h1>Vision drives the wiring, the wiring drives the wings, the wings move the eye</h1>
+<div class="sub">Every 16.7 ms of fly time, in a browser tab. Two published networks joined at their MaleCNS body IDs, nothing fitted in between.</div>
+<svg width="3200" height="1800" viewBox="0 0 3200 1800">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5768"/></marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3fd6c8"/></marker>
+  </defs>
+  <!-- faint ring behind everything -->
+  <ellipse cx="1600" cy="1060" rx="1180" ry="470" fill="none" stroke="#1c2430" stroke-width="3" stroke-dasharray="14 18"/>
+
+  <!-- edges, box edge to box edge -->
+  <path class="edge" d="M 1030 580 L 1180 560" marker-end="url(#arr)"/>
+  <path class="edge" d="M 2020 560 L 2170 580" marker-end="url(#arr)"/>
+  <path class="edge" d="M 2640 700 Q 2760 760 2760 930" marker-end="url(#arr)"/>
+  <path class="edge" d="M 2760 1140 Q 2760 1330 2520 1395" marker-end="url(#arr)"/>
+  <path class="edge" d="M 1640 1500 L 1410 1500" marker-end="url(#arr)"/>
+  <path class="edge" d="M 590 1500 Q 440 1330 440 1150" marker-end="url(#arr)"/>
+  <path class="edgeA" d="M 440 930 Q 440 760 630 705" marker-end="url(#arrA)"/>
+  <text class="edgelab" x="1105" y="530" text-anchor="middle">luminance</text>
+  <text class="edgelab" x="2095" y="515" text-anchor="middle">1,771 × 2</text>
+  <text class="edgelab" x="2095" y="545" text-anchor="middle">signals</text>
+  <text class="edgelab" x="2800" y="820" text-anchor="start">HS · LC4 · LPLC2 rates</text>
+  <text class="edgelab" x="2790" y="1300" text-anchor="start">current, same neuron</text>
+  <text class="edgelab" x="1525" y="1470" text-anchor="middle">DN spikes</text>
+  <text class="edgelab" x="400" y="1330" text-anchor="end">wing forces</text>
+  <text class="edgelab" x="400" y="820" text-anchor="end" fill="#3fd6c8">the head moves,</text>
+  <text class="edgelab" x="400" y="852" text-anchor="end" fill="#3fd6c8">the image changes</text>
+
+  <!-- 1 render: centre (640, 600) 780 × 200 -->
+  <g transform="translate(250, 500)">
+    <rect class="node" x="0" y="0" width="780" height="200" rx="22"/>
+    <text class="det" x="32" y="50">1 · render the world from the fly's head</text>
+    <text class="num" x="32" y="120">6 cube faces</text>
+    <text class="lab" x="32" y="168">Three.js · pillar course, drum, ground</text>
+  </g>
+  <!-- 2 eye: centre (1600, 540) 820 × 200 -->
+  <g transform="translate(1190, 440)" class="a">
+    <rect class="node" x="0" y="0" width="820" height="200" rx="22"/>
+    <text class="det" x="32" y="50">2 · the compound eye</text>
+    <text class="num" x="32" y="120">1,771 ommatidia</text>
+    <text class="lab" x="32" y="168">one per connectome column · adaptation + low-pass</text>
+  </g>
+  <!-- 3 optic lobe: centre (2560, 600) 760 × 200 -->
+  <g transform="translate(2180, 500)" class="a">
+    <rect class="node" x="0" y="0" width="760" height="200" rx="22"/>
+    <text class="det" x="32" y="50">3 · optic lobe  [A]</text>
+    <text class="num" x="32" y="120">65,799 units</text>
+    <text class="lab" x="32" y="168">fitted rate net · reads HS, LC4, LPLC2</text>
+  </g>
+  <!-- 4 bridge: centre (2760, 1040) 600 × 200 -->
+  <g transform="translate(2460, 940)" class="g">
+    <rect class="node" x="0" y="0" width="600" height="200" rx="22"/>
+    <text class="det" x="32" y="50">4 · the bridge</text>
+    <text class="num" x="32" y="120">317 neurons</text>
+    <text class="lab" x="32" y="168">rate → current, by body ID</text>
+  </g>
+  <!-- 5 CNS: centre (2200, 1500) 1100 × 200 -->
+  <g transform="translate(1650, 1400)" class="b">
+    <rect class="node" x="0" y="0" width="1100" height="200" rx="22"/>
+    <text class="det" x="32" y="50">5 · the whole central nervous system  [B]</text>
+    <text class="num" x="32" y="120">166,700 neurons · 124M synapses</text>
+    <text class="lab" x="32" y="168">MaleCNS · leaky integrate-and-fire on WebGPU · 160 ticks a frame</text>
+  </g>
+  <!-- 6 DN -> wings: centre (1000, 1500) 800 × 200 -->
+  <g transform="translate(600, 1400)" class="m">
+    <rect class="node" x="0" y="0" width="800" height="200" rx="22"/>
+    <text class="det" x="32" y="50">6 · descending neurons → wings</text>
+    <text class="num" x="32" y="120">DNa02 left / right</text>
+    <text class="lab" x="32" y="168">→ wing amplitudes → thrust, yaw, bank</text>
+  </g>
+  <!-- 7 body: centre (440, 1040) 620 × 200 -->
+  <g transform="translate(130, 940)">
+    <rect class="node" x="0" y="0" width="620" height="200" rx="22"/>
+    <text class="det" x="32" y="50">7 · the body moves</text>
+    <text class="num" x="32" y="120">rigid body</text>
+    <text class="lab" x="32" y="168">yaw rate → 205 haltere afferents</text>
+  </g>
+
+  <!-- centre -->
+  <text class="center-big" x="1600" y="1030" text-anchor="middle">one frame = 16.7 ms of fly time</text>
+  <text class="center-small" x="1600" y="1088" text-anchor="middle">≈ 95 ms of wall time on an RTX 3070 · 0.17× realtime</text>
+  <text class="center-small" x="1600" y="1136" text-anchor="middle">both networks in one web worker · deterministic frame clock</text>
+</svg>
+<div class="foot">Xenova/fruit-fly-simulation (whole CNS, LIF, WebGPU) · AbijahKaj/fruit-fly-brain-research (optic-v2, eye) · MaleCNS connectome, Janelia</div>
+<div class="repo">github.com/ZeroXClem/closed-loop-fly</div>

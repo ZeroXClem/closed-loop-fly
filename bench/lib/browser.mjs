@@ -54,10 +54,10 @@ export const SOFTWARE_GL_ARGS = ['--no-sandbox', '--disable-gpu-sandbox', '--use
  * `xvfb-run -a` (scripts/gpu-box.sh runx ...); headless loses the WebGL context immediately.
  */
 export const COMBINED_ARGS = BROWSER_ARGS.filter((a) => a !== '--disable-vulkan-surface');
-export function launchCombinedBrowser() {
+export function launchCombinedBrowser({ width = 1280, height = 800 } = {}) {
   const tools = requireGpuTools();
   if (!process.env.DISPLAY) throw Error('WebGL + WebGPU in one page needs a display: run under xvfb-run -a (scripts/gpu-box.sh runx <cmd>)');
-  return puppeteer.launch({ executablePath: tools.exe, headless: false, args: COMBINED_ARGS, protocolTimeout: 600000 });
+  return puppeteer.launch({ executablePath: tools.exe, headless: false, args: [...COMBINED_ARGS, `--window-size=${width},${height}`], defaultViewport: { width, height, deviceScaleFactor: 1 }, protocolTimeout: 600000 });
 }
 function findAnyBrowser() {
   const exe = process.env.BROWSER || CANDIDATES.find(existsSync);

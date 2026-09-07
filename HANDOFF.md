@@ -141,6 +141,16 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    `scripts/gpu-box.sh runx "node bench/cruise.mjs --readout dna02 --record"`, then pull
    `docs/*.webm` **before** the next sync.
 
+## Figures (added 2026-09-07 afternoon)
+
+`docs/figures/` holds the 18-image set for the thread and its `README.md` (what each shows, which bench
+output feeds it, how to regenerate). `docs/figures/make.py` renders the charts from `bench/out/*.json`;
+`bench/figures-capture.mjs` and `bench/filmstrip-capture.mjs` produce the per-frame traces and 1080p
+screenshots on the GPU box (`scripts/gpu-box.sh bg …`, log in `bench/out/bg.log` there; `XVFB_SCREEN`
+sets the virtual display so 1920 × 1080 viewports fit). The loop page gained `__loop.eye()`,
+`courseLayout()`, `ui(show)` and `drawHud()` for this. Xenova's presets are `walk|left|right|escape`
+(there is no `fly`).
+
 ## Gotchas that cost time
 
 - Headless Brave + WebGPU flags lose every WebGL context; WebGL + WebGPU in one page only

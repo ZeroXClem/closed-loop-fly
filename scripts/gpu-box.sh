@@ -7,6 +7,7 @@
 #   scripts/gpu-box.sh run <cmd...>    run a command in the mirror, inside `nix develop`
 #   scripts/gpu-box.sh runx <cmd...>   same, under xvfb-run (WebGL + WebGPU in one page needs a display)
 #   scripts/gpu-box.sh raw <cmd...>    same, without the devShell
+#   scripts/gpu-box.sh bg <cmd...>     like runx, detached on the box (survives ssh); log in bench/out/bg.log there
 #   scripts/gpu-box.sh pull <path>     copy a file/dir from the mirror back here (bench/out/ is never synced or deleted)
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
@@ -21,8 +22,9 @@ case "${1:-}" in
       --exclude '.git/lfs' --exclude 'scripts/gpu-box.local' \
       "$HERE/" "$HOST:$REMOTE/" ;;
   run) shift; ssh "$HOST" "cd $REMOTE && nix develop -c bash -c $(printf %q "$*")" ;;
-  runx) shift; ssh "$HOST" "cd $REMOTE && xvfb-run -a -s '-screen 0 1280x800x24' nix develop -c bash -c $(printf %q "$*")" ;;
+  runx) shift; ssh "$HOST" "cd $REMOTE && xvfb-run -a -s '-screen 0 ${XVFB_SCREEN:-1280x800x24}' nix develop -c bash -c $(printf %q "$*")" ;;
   raw) shift; ssh "$HOST" "cd $REMOTE && $*" ;;
+  bg) shift; ssh "$HOST" "cd $REMOTE && setsid -f bash -c 'xvfb-run -a -s \"-screen 0 ${XVFB_SCREEN:-1280x800x24}\" nix develop -c bash -c $(printf %q "$*") > bench/out/bg.log 2>&1' && echo started" ;;
   pull) shift; rsync -az "$HOST:$REMOTE/$1" "$HERE/$1" ;;
-  *) sed -n 2,10p "$0"; exit 1 ;;
+  *) sed -n 2,11p "$0"; exit 1 ;;
 esac

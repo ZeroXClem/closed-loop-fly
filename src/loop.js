@@ -196,6 +196,11 @@ Object.assign(hook, {
   collisions: () => collisions,
   resetCollisions: () => { collisions = 0; inContact = false; },
   screenshotFrame: () => { render(); },
+  // figure captures: per-column eye state, the course layout, HUD overlay control
+  eye: () => ({ lumL: Array.from(eye.lum.left), lumR: Array.from(eye.lum.right), rL: Array.from(eye.r.left), rR: Array.from(eye.r.right) }),
+  courseLayout: () => world.course.children.map((m) => ({ x: m.position.x, z: m.position.z, h: m.geometry.parameters.height, w: m.geometry.parameters.width })),
+  ui: (show) => { for (const id of ['hud', 'net', 'stats', 'status', 'help']) $(id).style.display = show ? '' : 'none'; },
+  drawHud: () => { hud.draw(eye.omm.left, eye.lum.left, eye.omm.right, eye.lum.right, { label: 'luminance' }); if (hook.last) stats(hook.last); },
   body: () => ({ ...body.state, position: body.state.position.toArray() }),
   time: () => time,
 });
