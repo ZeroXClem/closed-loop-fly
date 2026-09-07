@@ -3,7 +3,7 @@
 #   scripts/gpu-box.sh sync            mirror the repo (vendor + LFS objects included, no node_modules/.venv)
 #   scripts/gpu-box.sh run <cmd...>    run a command in the mirror, inside `nix develop`
 #   scripts/gpu-box.sh raw <cmd...>    same, without the devShell
-#   scripts/gpu-box.sh pull <path>     copy a file/dir from the mirror back here
+#   scripts/gpu-box.sh pull <path>     copy a file/dir from the mirror back here (bench/out/ is never synced or deleted)
 set -euo pipefail
 HOST=${GPU_BOX_HOST:-user@gpu-box}
 REMOTE=${GPU_BOX_DIR:-projects/closedloopfly}
@@ -12,7 +12,7 @@ case "${1:-}" in
   sync)
     ssh "$HOST" "mkdir -p $REMOTE"
     rsync -az --delete --info=stats1 \
-      --exclude node_modules --exclude dist --exclude .vite --exclude result \
+      --exclude node_modules --exclude dist --exclude .vite --exclude result --exclude 'bench/out/' \
       --exclude '.git/lfs' \
       "$HERE/" "$HOST:$REMOTE/" ;;
   run) shift; ssh "$HOST" "cd $REMOTE && nix develop -c bash -c $(printf %q "$*")" ;;

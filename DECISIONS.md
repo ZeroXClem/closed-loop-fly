@@ -111,3 +111,18 @@ such. The devShell warns when `brave` or `vulkaninfo` are not on PATH so CPU-onl
 Consequences: `data/raw/` and the Python venv are gone (the table is a store path; the Python
 env is the devShell's). `nix build` needs `'.?submodules=1'` because the vendored trees are
 git submodules. `scripts/gpu-box.sh run` executes remote commands inside `nix develop`.
+
+## 2026-09-06 — Upstreams are flake inputs as well as submodules; the devShell restores XDG dirs
+
+Two things learned wrapping the repo:
+
+- `nix build '.?submodules=1'` on Nix 2.23 handed the derivation a source tree with empty
+  `vendor/` directories while `nix eval` of the same ref showed them populated. Rather than
+  depend on that, the three upstreams are also **non-flake inputs pinned by rev** (the HF Space
+  and HF model repo over `git+https`, the research repo from GitHub). The build assembles
+  `vendor/` from them and overlays the fixed-output data. `scripts/check-pins.sh` fails if a
+  submodule and its input drift. `nix build .` now works from any checkout, no git-lfs.
+- `mkShell` sets `XDG_DATA_DIRS` to store paths only, so inside `nix develop` the host Vulkan
+  loader no longer searches `/usr/share/vulkan/icd.d` and `vulkaninfo` reports "Found no
+  drivers". The shellHook appends `/usr/local/share:/usr/share` (and `/etc/xdg`) back. This
+  is the one place the impure GPU path touches the shell.

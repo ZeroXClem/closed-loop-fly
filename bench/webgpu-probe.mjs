@@ -9,13 +9,13 @@ import { createServer } from 'node:http';
 const exe = findBrowser();
 const SANDBOX = ['--no-sandbox', '--disable-gpu-sandbox'];
 const VARIANTS = {
-  // Dawn talks to Vulkan itself; do NOT turn on Skia's Vulkan backend (that trips the
-  // "webgpu on vk via gl interop" driver-bug workaround on NVIDIA and disables WebGPU).
-  dawn: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist'],
-  dawnAngleVk: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan'],
-  dawnNoWorkarounds: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--disable-gpu-driver-bug-workarounds'],
-  skiaVkNoWorkarounds: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--enable-features=Vulkan', '--disable-gpu-driver-bug-workarounds'],
-  dawnEgl: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=egl'],
+  // Dawn owns its Vulkan instance; --use-angle=vulkan made chrome://gpu report WebGPU as
+  // hardware accelerated on the RTX 3070 but the page still got SwiftShader. Probe why.
+  angleVk: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan'],
+  angleVkNoWorkarounds: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan', '--disable-gpu-driver-bug-workarounds'],
+  angleVkSkia: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan', '--enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan'],
+  angleVkUnsafeApis: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan', '--enable-dawn-features=allow_unsafe_apis'],
+  angleVkNoSwiftshader: [...SANDBOX, '--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan', '--disable-features=WebGPUFallbackAdapter'],
 };
 const only = process.argv[2];
 // a real http origin, so the secure-context rule is not the variable under test
@@ -35,7 +35,10 @@ for (const [name, args] of Object.entries(VARIANTS)) {
       const out = { secure: isSecureContext, hasGpu: !!navigator.gpu, ua: navigator.userAgent };
       if (!navigator.gpu) return out;
       const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+      const plain = await navigator.gpu.requestAdapter();
+      out.plainAdapter = plain ? `${plain.info?.vendor}/${plain.info?.architecture} fallback=${plain.isFallbackAdapter}` : null;
       if (!adapter) return { ...out, adapter: null };
+      out.isFallbackAdapter = adapter.isFallbackAdapter;
       const info = adapter.info ?? {};
       const device = await adapter.requestDevice();
       const L = device.limits;
@@ -48,8 +51,14 @@ for (const [name, args] of Object.entries(VARIANTS)) {
     const lines = await gpuPage.evaluate(() => {
       const iv = document.querySelector('info-view');
       const root = iv?.shadowRoot ?? document;
-      const items = [...root.querySelectorAll('li, td')].map((e) => e.innerText.trim());
-      return items.filter((t) => /^(WebGPU|Vulkan|GL_RENDERER|ANGLE|Driver Ver|Vulkan Ver|\*\s+Disable webgpu)/i.test(t) || /WebGPU:/.test(t)).slice(0, 10);
+      const seen = new Set(), out = [];
+      for (const e of root.querySelectorAll('*')) {
+        if (e.children.length) continue;
+        const t = (e.textContent || '').trim().replace(/\s+/g, ' ');
+        if (t.length < 4 || t.length > 220 || seen.has(t)) continue;
+        if (/WebGPU|Dawn|Adapter|NVIDIA|SwiftShader|blocklist|GL_RENDERER|Vulkan|Disable webgpu/i.test(t)) { seen.add(t); out.push(t); }
+      }
+      return out.slice(0, 40);
     }).catch((e) => ['(no text: ' + e.message + ')']);
     for (const l of lines) console.log('   gpu: ' + l.trim());
   } catch (e) {

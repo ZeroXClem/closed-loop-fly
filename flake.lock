@@ -1,5 +1,40 @@
 {
   "nodes": {
+    "abijah-data": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788605432,
+        "narHash": "sha256-sglT29B7lZVvPw1UAbYgzNdD1fCJl9h0zC6qHxv15Ro=",
+        "ref": "main",
+        "rev": "4893ecff295a9972db0480bcd24458c958387bd8",
+        "revCount": 2,
+        "type": "git",
+        "url": "https://huggingface.co/AbijahKaj/fruit-fly-brain"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "4893ecff295a9972db0480bcd24458c958387bd8",
+        "type": "git",
+        "url": "https://huggingface.co/AbijahKaj/fruit-fly-brain"
+      }
+    },
+    "abijah-research": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788606036,
+        "narHash": "sha256-VsJapAO3jIoR8tWMdFU+aYCAB7YVMUBDbgKkEkza9LQ=",
+        "owner": "AbijahKaj",
+        "repo": "fruit-fly-brain-research",
+        "rev": "c28066a5b9eff03efdb002f6779980d29f70634c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AbijahKaj",
+        "repo": "fruit-fly-brain-research",
+        "rev": "c28066a5b9eff03efdb002f6779980d29f70634c",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1788614874,
@@ -18,7 +53,28 @@
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "abijah-data": "abijah-data",
+        "abijah-research": "abijah-research",
+        "nixpkgs": "nixpkgs",
+        "xenova": "xenova"
+      }
+    },
+    "xenova": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788737622,
+        "narHash": "sha256-YOvH0jUUAGuDoddY7sZXy6EjVzeJzbl8M/tUwaBGvL8=",
+        "ref": "main",
+        "rev": "776d115ee5aa934578a87fd6d260d138084f59c1",
+        "revCount": 7,
+        "type": "git",
+        "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "776d115ee5aa934578a87fd6d260d138084f59c1",
+        "type": "git",
+        "url": "https://huggingface.co/spaces/Xenova/fruit-fly-simulation"
       }
     }
   },
