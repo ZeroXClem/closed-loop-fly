@@ -144,11 +144,15 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|
 ## Next steps, in the order I would take them
 
 0. **A stabiliser that is not a readout trick** (everything below §3 of docs/followups.md points
-   here). Two candidates, both real anatomy: (a) read heading from the central complex (EPG /
-   PEN compass cells exist in [B]; give the loop a heading error, not a rotation reflex); (b) a
-   haltere model whose afferents encode rotation phase onto the wing-steering MNs (b1/b2/i1, in
-   `bench/out/motor-neurons.json`) instead of a yaw-rate current. Run every closed-loop claim as
-   ≥ 3 realisations (different warm-up) before writing it down.
+   here). (a) ~~read heading from the central complex~~ **tried 2026-09-07 night, closed** (§8):
+   the compass is complete in the graph (EPG 46, PEN 42, Δ7 42, PFL3 → DNa02 736 synapses, ring
+   order recoverable from the wiring), but nothing the loop carries reaches it, optic-v2 has no
+   MeTu, and the un-refit LIF's ring is a fixed point at one wedge (~52° on the spectral ring)
+   for any pulse position and any tonic drive: no bump, no memory. Making it a compass means
+   tuning EPG–PEN–Δ7 gains, i.e. a fitted stage. `bench/compass-paths.mjs`, `bench/compass-bump.mjs`.
+   (b) **still open**: a haltere model whose afferents encode rotation phase onto the wing-steering
+   MNs (b1/b2/i1, in `bench/out/motor-neurons.json`) instead of a yaw-rate current. Run every
+   closed-loop claim as ≥ 3 realisations (different warm-up) before writing it down.
 
 
 1. ~~Kill or confirm the octopamine hypothesis~~ **Done 2026-09-07 evening, killed**:

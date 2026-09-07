@@ -347,3 +347,43 @@ would be the network's: if the EPG ring integrates that input into a persistent 
 gets a heading estimate held by the connectome, and a decoded heading error (bump angle versus
 the starting angle) can replace the rotation reflex. Whether the un-refit LIF holds a bump at
 all is the next test (`bench/compass-bump.mjs`).
+
+**The bump test** (`bench/compass-bump.mjs`, `bench/out/compass-bump*.json`, figure 22). A uniform
+tonic current on all 46 EPG cells, a 300 ms pulse of +1 mV/ms on the wedge of six cells around
+0° of the spectral ring, then 1.5 s free. The ring's mean rate and its population vector
+(length PVL, angle) tell whether a localised, persistent state forms.
+
+| EPG tonic, mV/ms | pulse end: EPG Hz, PVL @ angle | +0.5 s free | +1.5 s free |
+| --- | --- | --- | --- |
+| 0.20, 0.28, 0.30 | 14 Hz, 0.98 @ 2° | 0 Hz | 0 Hz (silent) |
+| 0.32 | 14 Hz, 0.98 @ 3° | 5.1 Hz, 0.56 @ 22° | 0.5 Hz |
+| 0.33 | 15 Hz, 0.98 @ 3° | 9.8 Hz, 0.95 @ −50° | 8.4 Hz, 0.99 @ **52°** |
+| 0.34 | 15 Hz, 0.98 @ 3° | 13.3 Hz, 0.59 @ 25° | 0.7 Hz |
+| 0.345 | 15 Hz, 0.98 @ 3° | 4.6 Hz, 0.97 @ 53° | 0.5 Hz |
+| 0.36 (above threshold) | 15 Hz, 0.98 @ 3° | 9.5 Hz, 0.96 @ **53°** | 2.5 Hz, 0.97 @ 55° |
+
+**Reading.** Below 0.32 mV/ms the ring goes silent the moment the pulse ends: there is no
+recurrent excitation strong enough to sustain it. From 0.33 upward activity survives, but not
+where the pulse put it: within half a second it sits at 52–55° on the spectral ring, whatever
+was pulsed at 0°, and it stays there (0.33: 8.4 Hz at 52° after 1.5 s). That is not a
+continuous attractor holding a heading; it is a fixed point, a wedge that wins because in the
+un-refit graph it has the most recurrent excitation, and the pulse's position is forgotten. The
+window between "silent" and "pinned" is a few hundredths of a millivolt per millisecond wide and
+contains no bump.
+
+**The control settles it.** At tonic 0.33 a pulse at 180° leaves the ring firing at 51° after
+half a second and 54° after 1.5 s; a pulse at −90° passes through a scrambled state (PVL 0.06 at
+half a second) and lands at 55°. Three pulse positions, one resting place. The un-refit ring has
+a single fixed point and no memory of where it was pushed (`bench/out/compass-bump-w180.json`,
+`compass-bump-w270.json`; figure 22).
+
+**Verdict on step 0a.** The heading circuit is complete in the graph, down to PFL3 → DNa02, and
+it is not usable in this model for three separate reasons, each sufficient: the loop carries no
+input that reaches it (halteres, HS, LC4, LPLC2 all zero at two hops); the fitted optic net lacks
+the MeTu cells that would give it landmarks; and the LIF with one synaptic constant turns the
+ring attractor into a fixed point. The first two could be proxied, as the haltere was. The third
+cannot be fixed without tuning the EPG–PEN–Δ7 recurrence, and that is the fitted-network step
+the whole repo is built to stay short of. Kakaria and de Bivort's connectome-derived ring
+attractor works because its gains are chosen to make it work; the review's point again, now in
+the compass. Route 0a is closed. What remains for a stabiliser is route 0b, a haltere model
+that encodes rotation onto the wing-steering motor neurons, or admitting a fitted stage.

@@ -561,13 +561,18 @@ ALL.update(flight_gain=flight_gain, adaptation=adaptation)
 
 
 def compass():
-    cx, bp = load('compass.json'), load('compass-bump.json')
+    cx = load('compass.json')
     if not cx: return print('skip compass (no run)')
-    f, top = fig('Step 0 · the compass in the graph', 'The EPG ring can be read off the wiring; does the un-refit LIF hold a bump on it?',
-                 'Left: the 46 EPG cells placed by a spectral embedding of their PEN/PEG-mediated excitation, coloured by side; PEN offsets show which way each side shifts. '
-                 'Middle: population-vector length and angle after a wedge pulse at three tonic drives. Right: the bump angle while one PEN side is driven.',
-                 'bench/compass-paths.mjs, bench/compass-bump.mjs · bench/out/compass.json, compass-bump.json · docs/followups.md §8')
-    ax = f.add_axes([0.05, BOTTOM, 0.27, top - BOTTOM]); panel(ax); ax.set_aspect('equal'); ax.grid(False)
+    runs = []
+    for f_ in ('compass-bump.json', 'compass-bump-fine.json'):
+        d = load(f_)
+        if d: runs += d['A']
+    runs = sorted(runs, key=lambda a: a['tonic'])
+    f, top = fig('Step 0 · the compass in the graph', 'The EPG ring can be read off the wiring; the un-refit LIF does not hold a bump on it',
+                 'Left: the 46 EPG cells placed by a spectral embedding of their PEN/PEG-mediated excitation, coloured by side. Middle and right: after a 300 ms pulse on one '
+                 'wedge, the ring\'s mean rate and its population-vector length (only while the ring is active) at each uniform tonic drive; a bump would hold both.',
+                 'bench/compass-paths.mjs, bench/compass-bump.mjs · bench/out/compass.json, compass-bump*.json · docs/followups.md §8')
+    ax = f.add_axes([0.05, BOTTOM, 0.25, top - BOTTOM]); panel(ax); ax.set_aspect('equal'); ax.grid(False)
     for e in cx['ring']['epg']:
         th = np.radians(e['angleDeg']); ax.scatter([np.cos(th)], [np.sin(th)], s=90, color=A if e['side'] == 'L' else B, zorder=3)
     ax.scatter([], [], color=A, label='EPG, left soma'); ax.scatter([], [], color=B, label='EPG, right soma')
@@ -575,23 +580,31 @@ def compass():
     for side, col in [('L', A), ('R', B)]:
         vals = [o['offsetDeg'] for o in offs if o['side'] == side]
         if vals: ax.text(0, 0.12 if side == 'L' else -0.12, f'PEN {side}: median shift {np.median(vals):+.0f}°', ha='center', va='center', color=col, fontsize=12)
-    ax.text(0, -0.36, f"{cx['ring']['localShare4'] * 100:.0f}% of excitation on the 4 nearest neighbours", ha='center', color=MUTED, fontsize=11)
+    ax.text(0, -0.38, f"{cx['ring']['localShare4'] * 100:.0f}% of excitation on the\n4 nearest neighbours", ha='center', va='top', color=MUTED, fontsize=11)
     ax.set_xlim(-1.3, 1.3); ax.set_ylim(-1.3, 1.3); ax.set_xticks([]); ax.set_yticks([]); ax.legend(loc='upper left', frameon=False, fontsize=11); ax.set_title('the ring, from its own wiring', color=MUTED, fontsize=15)
-    ax2 = f.add_axes([0.39, BOTTOM, 0.27, top - BOTTOM]); panel(ax2)
-    if bp:
-        cols = [A, GOOD, B, DN, WARN]
-        for k, a in enumerate(bp['A']):
-            tr = a['trace']; ax2.plot([r['t'] for r in tr], [r['pvl'] for r in tr], color=cols[k % 5], lw=2.5, label=f"tonic {a['tonic']} mV/ms{'  ·  bump' if a['bump'] else ''}")
-        ax2.axvspan(0.5, 0.8, color=INK, alpha=0.08); ax2.text(0.65, 0.97, 'pulse', transform=ax2.get_xaxis_transform(), ha='center', va='top', color=MUTED, fontsize=11)
-        ax2.set_xlabel('time, s'); ax2.set_ylabel('EPG population-vector length'); ax2.set_ylim(0, 1); ax2.legend(loc='upper right', frameon=False, fontsize=11)
-    ax2.set_title('does a bump persist?', color=MUTED, fontsize=15)
-    ax3 = f.add_axes([0.73, BOTTOM, 0.23, top - BOTTOM]); panel(ax3)
-    if bp and bp.get('B'):
-        for row, col in zip(bp['B'], [A, B]):
-            tr = row['trace']; ax3.plot([r['t'] for r in tr], [r['angleDeg'] for r in tr], color=col, lw=2.5, label=f"PEN {row['side']} driven: shift {row['shiftDeg']:+.0f}°")
-        ax3.axvspan(1.1, 2.1, color=INK, alpha=0.08); ax3.text(1.6, 0.97, 'PEN drive', transform=ax3.get_xaxis_transform(), ha='center', va='top', color=MUTED, fontsize=11)
-        ax3.set_xlabel('time, s'); ax3.set_ylabel('bump angle, degrees'); ax3.set_ylim(-180, 180); ax3.legend(loc='lower left', frameon=False, fontsize=11)
-    ax3.set_title('does PEN move it?', color=MUTED, fontsize=15)
+    cols = [A, GOOD, B, DN, WARN, INK, MUTED, '#9ad0ff']
+    ax2 = f.add_axes([0.37, BOTTOM, 0.28, top - BOTTOM]); panel(ax2)
+    ax3 = f.add_axes([0.71, BOTTOM, 0.25, top - BOTTOM]); panel(ax3)
+    shown = [a for a in runs if a['tonic'] >= 0.32]
+    silent = [a for a in runs if a['tonic'] < 0.32]
+    if silent:
+        tr = silent[0]['trace']; ax2.plot([r['t'] for r in tr], [r['meanHz'] for r in tr], color=MUTED, lw=2.5, label=f"tonic ≤ {max(a['tonic'] for a in silent)} (silent after the pulse)")
+    for k, a in enumerate(shown):
+        tr = a['trace']; t = [r['t'] for r in tr]
+        ax2.plot(t, [r['meanHz'] for r in tr], color=cols[k % len(cols)], lw=2.5, label=f"tonic {a['tonic']}")
+        ax3.plot(t, [r['angleDeg'] if r['meanHz'] >= 1 else np.nan for r in tr], color=cols[k % len(cols)], lw=2.5, label=f"tonic {a['tonic']}, pulse at 0°")
+    # control pulses elsewhere on the ring (pinning test)
+    for f_, ls, lab in (('compass-bump-w180.json', '--', 'pulse at 180°'), ('compass-bump-w270.json', ':', 'pulse at −90°')):
+        d = load(f_)
+        if d:
+            for a in d['A']:
+                tr = a['trace']; ax3.plot([r['t'] for r in tr], [r['angleDeg'] if r['meanHz'] >= 1 else np.nan for r in tr], color=INK, lw=2.5, ls=ls, label=f"tonic {a['tonic']}, {lab}")
+    for axx in (ax2, ax3):
+        axx.axvspan(0.5, 0.8, color=INK, alpha=0.08); axx.text(0.65, 0.97, 'pulse', transform=axx.get_xaxis_transform(), ha='center', va='top', color=MUTED, fontsize=11); axx.set_xlabel('time, s')
+    ax2.set_ylabel('mean EPG rate, Hz'); ax2.legend(loc='upper right', frameon=False, fontsize=10); ax2.set_title('does the ring stay active?', color=MUTED, fontsize=15)
+    ax3.set_ylabel('population-vector angle, degrees (ring ≥ 1 Hz)'); ax3.set_ylim(-180, 180); ax3.set_yticks([-180, -90, 0, 90, 180]); ax3.legend(loc='lower left', frameon=False, fontsize=9)
+    ax3.axhline(52, color=BAD, lw=1, ls='--'); ax3.text(0.02, 0.66, 'the wedge that wins', transform=ax3.transAxes, color=BAD, fontsize=11)
+    ax3.set_title('where does what remains sit?', color=MUTED, fontsize=15)
     save(f, '22-compass')
 
 ALL.update(compass=compass)
