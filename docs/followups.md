@@ -291,7 +291,22 @@ at 11–19 Hz and HS shifts left minus right by at most 2 Hz, in the wrong direc
 which lateralised 26 / 6 Hz from HS with no adaptation, now manages 11 / 7 at best. At 0.5 mV
 per spike a cell at 30 Hz carries a 4.5 mV threshold shift, most of the 7 mV gap, so the term
 is a brake on every population, not only on runaway ones. A strength sweep (0.1, 0.2, 0.5 mV
-per spike, `bench/out/hs-inject-adapt-sweep.txt`) is reported below.
+per spike, `bench/out/hs-inject-adapt-sweep.txt`):
+
+| adaptation, mV/spike | HS alone (tonic 0.4): DNa02 L/R, HS off → on | AN07B004 1 mV/ms, no constant: spikes/1.5 s | AN07B004 1 + tonic 0.4: DNa02 L/R, HS off → on |
+| --- | --- | --- | --- |
+| 0 (reference) | 2.8 / 6.8 → 24.4 / 13.8 | 1,223,000 (storm) | — |
+| 0.1 | 5.4 / 5.4 → 14.9 / 8.6 | 781,000 (storm) | 14.4 / 19.7 → 26.4 / 12.0 |
+| 0.2 | 6.4 / 5.5 → 11.2 / 8.3 | 579,000 (storm) | 11.7 / 9.4 → 2.7 / 0.0 (storm with HS) |
+| 0.5 | 4.0 / 10.7 → 9.3 / 5.3 | 66,000 | 5.3 / 11.0 → 10.9 / 6.7 |
+
+There is no strength that does both jobs. At 0.1 mV per spike DNa02 keeps most of its
+optomotor response (+6 Hz left − right from HS; +14 with AN07B004 and the constant on) but the
+AN07B004 storm is only trimmed, not stopped; at 0.5 the storms are gone and so is most of the
+response; 0.2 sits in between and still storms once HS is added. DNg02 is flat at every
+strength (24.0 / 25.2 → 24.2 / 25.3 in the best-driven case). A single global brake trades
+storms for responses because it is global; the real fly's extracellular potassium is local,
+which is the next variable up and not one this repo can set from its data.
 
 **Verdict.** Same as §4 by another route: DNg02 is not reachable by injecting current at any
 one point of this graph, with or without the ionic brake. The brake itself is worth keeping as
