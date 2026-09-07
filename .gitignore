@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vite/
+*.log
+.DS_Store
+# large derived data lives in vendor/ submodules or is fetched by scripts
+data/cache/
