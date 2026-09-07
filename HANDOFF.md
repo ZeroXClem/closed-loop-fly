@@ -1,4 +1,4 @@
-# HANDOFF — closed-loop-fly, as of 2026-09-07 ~04:00 EDT
+# HANDOFF — closed-loop-fly, as of 2026-09-07 evening (EDT)
 
 For the next agent. Everything here was learned the hard way in one overnight session; the
 phase docs carry the science, this file carries how to work. Read `README.md`, then this,
@@ -13,7 +13,17 @@ eye → LC4/LPLC2 → giant fiber in the full graph (Phase 3); a closed loop tha
 course with zero collisions (Phase 5); seven ablations (Phase 6). What does not: DNg02 never
 lateralises in the un-refit LIF (DSI ≤ 0.08), so the published DNg02 flight code cannot steer
 (Phase 4). The closed loop runs on a **labelled deviation**, the DNa02 readout. Heading drift
-is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3070.
+is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3070 (0.20× with
+the rate net on the GPU, `?optic=gpu`).
+
+**Evening follow-ups (docs/followups.md, all pushed; the thread is public):** the octopamine
+cancellation story is dead (§1); the haltere proxy's 30× was an anti-spin clamp riding on the
+readout treating a silent DNa02 pair as a turn (§2); with that artefact gated out (`?gate=1`,
+default off) the intact loop drifts ~200° in 20 s and haltere-off −5°, so the loop has **no real
+stabiliser** (§3); a biological tonic drive through AN07B004 storms the network (§4); the rate net
+runs on the GPU with identical output (§5). The open problem is a stabiliser: a stronger/faster
+optomotor path or a phase-encoded haltere model onto the wing-steering MNs. Do not present the
+Phase 5/6 drift numbers without §3 next to them.
 
 ## Machines
 
@@ -112,15 +122,19 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|
 - Optic net at rest: L1/L2 silent, T4/T5 quiet, HS ~1, LC4/LPLC2 0, [A]'s DNp saturated at
   the ceiling (unfitted central inputs) → never bridge DNp/DNg02/MNs.
 - Looming −45° → [B] LC4 232 Hz, LPLC2 145 Hz, DNp01 207 Hz. Bridge off → [B] silent.
-- DNg02: three left HS at 129 Hz are 6% of PS080's 4,495 input synapses; recurrent
-  inhibition (PS118, PS057, PS090, LAL061) and the octopaminergic HSS → OA-VUMa4 → DNg02
-  route cancel the PS080 route; DNg02 L−R stays within ±1 Hz at any tonic drive 0.36–1.
-  DNa02 (HSS → DNa02 direct, 36–47 synapses) lateralises 26/6 Hz from HS alone.
+- DNg02: three left HS at 129 Hz are 6% of PS080's 4,495 input synapses; DNg02 L−R stays
+  within ±1 Hz at any tonic drive 0.36–1 **and with either or both relays muted and with the
+  monoamines at sign 0** (followups §1): not a cancellation, just 324 relay synapses against
+  35,000. AN07B004 (2 cells) as a tonic drive storms the network (§4). DNa02 (HSS → DNa02
+  direct, 36–47 synapses) lateralises 26/6 Hz from HS alone, under every condition tried.
 - Cruise 30 s: 0 collisions always; drift 1,064° (no haltere) → 35° (sign −1) → spin (sign +1).
-  Intact 20 s: −10.9°.
+  Intact 20 s: −10.9°. **But** (followups §2–3): the afferents are ipsilateral and do not steer
+  DNa02 by side; sign −1 works only at large yaw rates through the silent-pair artefact; with the
+  gate on, intact +204° / haltere-off −5° / bridge-off +188° in 20 s.
 - Ablations: in recurrence-off / neck-cut / decapitated the readout populations are silent,
   the rest-subtracted command saturates and the fly spins identically — an artefact of the
-  readout; read the rates for those conditions.
+  readout; read the rates for those conditions. With `--gate 1` those conditions fly straight
+  (−2.3°), `docs/ablations-gated.md`.
 
 ## Next steps, in the order I would take them
 
