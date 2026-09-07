@@ -569,8 +569,8 @@ def compass():
         if d: runs += d['A']
     runs = sorted(runs, key=lambda a: a['tonic'])
     f, top = fig('Step 0 · the compass in the graph', 'The EPG ring can be read off the wiring; the un-refit LIF does not hold a bump on it',
-                 'Left: the 46 EPG cells placed by a spectral embedding of their PEN/PEG-mediated excitation, coloured by side. Middle and right: after a 300 ms pulse on one '
-                 'wedge, the ring\'s mean rate and its population-vector length (only while the ring is active) at each uniform tonic drive; a bump would hold both.',
+                 'Left: the 46 EPG cells placed by a spectral embedding of their PEN/PEG-mediated excitation, coloured by side. Middle: the ring\'s mean rate after a 300 ms pulse on one wedge, '
+                 'per uniform tonic drive. Right: where the surviving activity sits, for pulses at 0°, 180° and −90°. A compass would stay where it was pushed; this ring goes to one wedge.',
                  'bench/compass-paths.mjs, bench/compass-bump.mjs · bench/out/compass.json, compass-bump*.json · docs/followups.md §8')
     ax = f.add_axes([0.05, BOTTOM, 0.25, top - BOTTOM]); panel(ax); ax.set_aspect('equal'); ax.grid(False)
     for e in cx['ring']['epg']:
