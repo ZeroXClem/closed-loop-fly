@@ -149,7 +149,9 @@ output feeds it, how to regenerate). `docs/figures/make.py` renders the charts f
 screenshots on the GPU box (`scripts/gpu-box.sh bg …`, log in `bench/out/bg.log` there; `XVFB_SCREEN`
 sets the virtual display so 1920 × 1080 viewports fit). The loop page gained `__loop.eye()`,
 `courseLayout()`, `ui(show)` and `drawHud()` for this. Xenova's presets are `walk|left|right|escape`
-(there is no `fly`).
+(there is no `fly`). `bench/video-capture.mjs` makes the HD cruise video: one 1080p still per simulated
+frame, assembled at 60 fps on the box with ffmpeg (`docs/cruise-intact-1080p.mp4`, 9.5 MB, X-ready H.264).
+X rejects WebM; the MP4s in docs/ are the ones to post.
 
 ## Gotchas that cost time
 
