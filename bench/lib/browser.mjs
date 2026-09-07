@@ -20,7 +20,7 @@ export function requireGpuTools() {
 export function findBrowser() {
   return requireGpuTools().exe;
 }
-// Found by bench/webgpu-probe.mjs on gpu-box (Brave 151 / Chromium 151, NVIDIA 610.57, headless):
+// Found by bench/webgpu-probe.mjs on the GPU box (Brave 151 / Chromium 151, NVIDIA 610.57, headless):
 //  - Dawn keeps its own adapter blocklist, separate from --ignore-gpu-blocklist, and rejects
 //    NVIDIA Linux drivers >= 570: `disable_adapter_blocklist` turns it off.
 //  - Hardware adapters only appear with Skia's Vulkan feature on AND --disable-vulkan-surface

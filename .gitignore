@@ -9,3 +9,6 @@ data/cache/
 result
 result-*
 *.zip
+
+# your GPU box (user@host), sourced by scripts/gpu-box.sh; never committed
+scripts/gpu-box.local

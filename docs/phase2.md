@@ -22,7 +22,7 @@ photoreceptor output. GOAL.md's "1,771 × 2" is 1,771 total across both eyes.
 
 ## Acceptance numbers, `bench/eye.mjs` (drum ω = ±1 rad/s, 120 Hz frames, 1.5 s adaptation, 2 s window)
 
-| | dev VM, SwiftShader | gpu-box, RTX 3070 |
+| | dev VM, SwiftShader | GPU box, RTX 3070 |
 | --- | --- | --- |
 | columns mapped to a cube face | 879 / 879 and 892 / 892 | same |
 | frame: render + sample | 3.35 + 0.05 ms → 295 Hz | see below |
@@ -44,7 +44,7 @@ cannot break an unwrap chain.
 
 ## On the GPU box
 
-| | gpu-box, RTX 3070 |
+| | GPU box, RTX 3070 |
 | --- | --- |
 | hardware WebGL, headless (`bench/eye.mjs` default there) | 0.6–1.2 ms per frame (850–1,600 Hz); slopes +0.200 / +0.202 and −0.191 / −0.192 rad/°; PASS |
 | WebGL + WebGPU in one page, headed under Xvfb | 1.0–1.1 ms per frame, WebGPU adapter `nvidia/ampere` from the same page; PASS |

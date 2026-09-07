@@ -48,7 +48,7 @@ let graph,
   pendingDt = 0,
   frameCount = 0,
   loopStats = { opticMs: 0, brainMs: 0, substeps: 0 };
-// Host quirk (gpu-box, Brave 151 + NVIDIA 610 under the flags in bench/lib/browser.mjs; see
+// Host quirk (GPU box, Brave 151 + NVIDIA 610 under the flags in bench/lib/browser.mjs; see
 // bench/webgpu-retry-probe.mjs): the first requestAdapter in a fresh GPU process returns null
 // while Dawn initialises (~250 ms); a plain first request locks in SwiftShader. The kernel
 // runtime asks once, for 'high-performance'. Retry the same options a few times, then relax.

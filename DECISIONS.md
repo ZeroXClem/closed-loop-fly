@@ -102,7 +102,7 @@ circuitry, never DNg02 or the MNs themselves.
 | CPU benches (`npm run bench*`) | `nix develop -c node …` | yes (given the vendored data) |
 | `bench/browser.mjs`, `npm run dev` with WebGPU | the **host's** Brave and NVIDIA Vulkan driver; nothing GPU-related is packaged | **no** |
 
-Why the GPU side is impure: gpu-box is Arch with the proprietary NVIDIA driver. Packaging a
+Why the GPU side is impure: the GPU box is Arch with the proprietary NVIDIA driver. Packaging a
 browser or Vulkan in Nix on a non-NixOS host means fighting the driver ICD and glibc (nixGL
 territory) for no scientific gain; the numbers come from the host stack and are recorded as
 such. The devShell warns when `brave` or `vulkaninfo` are not on PATH so CPU-only machines

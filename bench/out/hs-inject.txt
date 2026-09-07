@@ -1,0 +1,26 @@
+PS080_L (1 cell) input 4495 synapses; top: PS118_L-:163  PS057_L-:153  PS333_R+:150  PLP228_R+:147  PS090_L-:138  LAL061_L-:136  LAL156_a_R+:136  PS232_R+:130  PS112_L-:124  LAL019_L+:103  LAL126_R-:94  PLP208_R+:89  PS221_L+:89  LAL133_e_L-:86
+  excitatory 2730, inhibitory 1752
+
+== DNg02 tonic 0 mV/ms, HS_L current 0 mV/ms (1 s, 0 spikes)
+   HS L/R 0.0/0.0  PS080 L/R 0.0/0.0  OA-VUMa4 0.0  GNG286 L/R 0.0/0.0  DNp15_L 0.0  LPT114_L 0.0  PS321_L 0.0
+   DNg02 L/R 0.0/0.0  DNa02 L/R 0.0/0.0
+
+== DNg02 tonic 0 mV/ms, HS_L current 1.5 mV/ms (1 s, 59611 spikes)
+   HS L/R 128.8/0.0  PS080 L/R 24.0/12.2  OA-VUMa4 20.0  GNG286 L/R 20.1/10.2  DNp15_L 80.2  LPT114_L 0.0  PS321_L 48.7
+   DNg02 L/R 2.7/3.5  DNa02 L/R 26.1/6.1
+
+== DNg02 tonic 0.4 mV/ms, HS_L current 0 mV/ms (1 s, 32592 spikes)
+   HS L/R 0.0/0.0  PS080 L/R 6.0/4.0  OA-VUMa4 14.0  GNG286 L/R 6.0/4.0  DNp15_L 0.0  LPT114_L 0.2  PS321_L 0.0
+   DNg02 L/R 17.4/17.4  DNa02 L/R 2.8/6.8
+
+== DNg02 tonic 0.4 mV/ms, HS_L current 1.5 mV/ms (1 s, 78650 spikes)
+   HS L/R 129.7/0.0  PS080 L/R 19.6/19.8  OA-VUMa4 36.9  GNG286 L/R 17.8/13.5  DNp15_L 76.8  LPT114_L 1.3  PS321_L 42.9
+   DNg02 L/R 19.2/18.4  DNa02 L/R 24.4/13.8
+
+== DNg02 tonic 0.5 mV/ms, HS_L current 0 mV/ms (1 s, 82435 spikes)
+   HS L/R 0.0/0.0  PS080 L/R 10.0/20.5  OA-VUMa4 40.5  GNG286 L/R 16.8/16.8  DNp15_L 0.0  LPT114_L 0.0  PS321_L 0.0
+   DNg02 L/R 32.2/30.6  DNa02 L/R 29.9/12.4
+
+== DNg02 tonic 0.5 mV/ms, HS_L current 1.5 mV/ms (1 s, 66671 spikes)
+   HS L/R 128.6/0.0  PS080 L/R 14.5/11.8  OA-VUMa4 31.6  GNG286 L/R 18.8/14.2  DNp15_L 77.8  LPT114_L 2.2  PS321_L 45.2
+   DNg02 L/R 29.7/29.8  DNa02 L/R 38.3/4.2

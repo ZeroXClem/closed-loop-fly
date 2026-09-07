@@ -32,7 +32,7 @@ maps to `rateToCurrent(R)` (180 Hz → 2.27 mV/ms), times `injectGain`.
 
 ## Acceptance numbers
 
-### JavaScript LIF, `bench/inject.mjs` (gpu-box i9-12900, `--seconds 0.6`)
+### JavaScript LIF, `bench/inject.mjs` (GPU box i9-12900, `--seconds 0.6`)
 
 Fly preset: 126 LC4 cells, 180 Hz paint envelope. Escape channel = mean DNp01 rate.
 
@@ -49,7 +49,7 @@ somewhat more downstream activity, as expected for input that sums with recurren
 of clamping the cell. Gain 2 drives the network into Xenova's known sustained-activity regime
 (9,000 spikes per 10 ms by 500 ms).
 
-### WebGPU, `bench/browser.mjs` (gpu-box RTX 3070, headless Brave 151, `--seconds 1.5`)
+### WebGPU, `bench/browser.mjs` (GPU box RTX 3070, headless Brave 151, `--seconds 1.5`)
 
 | | Poisson | inject, gain 1 |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ The cost is dominated by the fixed per-tick dispatches (≈ 0.33 ms per 0.1 ms t
 are added; the kernel's per-tick overhead is the first target when Phase 5 looks at
 performance. Xenova's readback fence per batch is part of it.
 
-## Getting WebGPU in headless Brave on gpu-box (impure, see DECISIONS.md)
+## Getting WebGPU in headless Brave on the GPU box (impure, see DECISIONS.md)
 
 Found with `bench/webgpu-probe.mjs`; the flags live in `bench/lib/browser.mjs`.
 

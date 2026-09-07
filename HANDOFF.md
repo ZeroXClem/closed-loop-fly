@@ -25,7 +25,10 @@ is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3
 | agents | this Claude | `pi` (`pi -p "<prompt>"`, has sudo) |
 | access | — | SSH key, BatchMode OK; **the SSH link periodically demands re-auth**: a hung ssh/rsync printing a login URL means ask the user to click it |
 
-- **Nightly poweroff on gpu-box**: `nightly-poweroff.timer` at 01:20 EDT. Do not `sudo`
+- **Real machine names are not in this repo.** `user@gpu-box` is a placeholder; the real
+  host lives in the git-ignored `scripts/gpu-box.local` (`GPU_BOX_HOST=user@host`, sourced by
+  `scripts/gpu-box.sh`) and in the agent memory notes outside the checkout.
+- **Nightly poweroff on the GPU box**: `nightly-poweroff.timer` at 01:20 EDT. Do not `sudo`
   yourself (the auto-mode classifier blocks it and the user prefers you don't); ask pi:
   `ssh user@gpu-box 'pi -p "stop nightly-poweroff.timer; systemd-run --on-calendar=... a
   one-shot that starts nightly-poweroff.timer then nightly-poweroff.service"'`. On 2026-09-07
@@ -36,14 +39,14 @@ is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3
 
 ## Workflow that works
 
-- Source of truth is this checkout. gpu-box holds an rsync mirror at
+- Source of truth is this checkout. The GPU box holds an rsync mirror at
   `~/projects/closedloopfly/`. `scripts/gpu-box.sh sync` mirrors (excludes node_modules,
   dist, result, `bench/out/`, `docs/*.webm`, and **deletes** anything else not present
   locally, so pull remote outputs before you sync). `run <cmd>` executes inside
   `nix develop`; `runx <cmd>` also under `xvfb-run` (needed whenever a page uses WebGL and
   WebGPU together, i.e. `loop.html`); `raw <cmd>` skips the devShell; `pull <path>` copies back.
 - **Never edit `src/` while a local bench is running**: Vite hot-reloads the bench page and
-  the run dies with "Execution context was destroyed". **Never sync to gpu-box mid-run**
+  the run dies with "Execution context was destroyed". **Never sync to the GPU box mid-run**
   for the same reason. Bench outputs land in `bench/out/` on whichever machine ran them;
   rsync them back (`rsync -az user@gpu-box:projects/closedloopfly/bench/out/X.json bench/out/`).
 - Long remote benches: run in the background and poll the task output file; pipe through
@@ -52,7 +55,7 @@ is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3
 - `startVite()` in `bench/lib/browser.mjs` picks a random port, so benches can run side by side.
 - CPU benches (overlap, edges, optic-settle, optic-drum, hs-inject, inject, paths) run here
   in seconds to minutes. Anything with `--gl software --backend cpu` also runs here (JS LIF,
-  ~0.3× realtime while [B] is quiet, slower when it isn't). GPU truth comes from gpu-box.
+  ~0.3× realtime while [B] is quiet, slower when it isn't). GPU truth comes from the GPU box.
 - Scripts: `npm run bench:*` wraps `nix develop -c`; see `package.json`. `npm run dev`
   serves `index.html` (Xenova's paint demo on our worker), `eye.html`, `loop.html`.
 
