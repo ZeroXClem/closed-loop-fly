@@ -39,7 +39,11 @@ From `bench/overlap.mjs`, `bench/edges.mjs` and Xenova's `manifest.json`. Two ca
 travel with the results: the closed loop steers on **DNa02**, a walking-turn descending neuron,
 because the published DNg02 code does not lateralise in this un-refit LIF (a labelled
 deviation, `DECISIONS.md`); and "zero collisions" holds for every **intact** run, while one fresh
-bridge-off capture clipped a pillar (`docs/figures/09-trajectories.png`).
+bridge-off capture clipped a pillar (`docs/figures/09-trajectories.png`). A third, added after
+publication (`docs/followups.md` §2–3): the haltere proxy's 30× drift reduction and the "vision
+matters" contrast in the ablation table act through a readout artefact (a silent DNa02 pair became
+a fixed turn); with that artefact gated out, the intact loop drifts ~200° in 20 s. The published
+tables reproduce as written; their interpretation is the follow-up's.
 
 ## Status
 

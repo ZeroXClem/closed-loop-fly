@@ -110,3 +110,50 @@ implies. Two consequences for the queue: HANDOFF step 2 (a readout that does not
 a command) is now the first thing to fix, because it is load-bearing here; and a haltere model
 worth the name needs phase-encoded afferent activity (Coriolis) and the wing-steering motor
 neurons, not a yaw-rate current on 205 cells.
+
+## 3. The readout without the artefact: the stabiliser was the artefact
+
+**The change** (DECISIONS.md, "Readout gate"): the turn command is scaled by
+min(1, (L + R)/(restL + restR)), so a DNa02 pair that has gone silent commands nothing instead of
+−(restL − restR)/floor; optionally the rest levels follow the rates with τ = 10 s. Both off by
+default; `bench/ablate.mjs --gate 1 [--recenter 10]`. Tables: `docs/ablations-gated.md`,
+`docs/ablations-gated-recenter.md`; figure 19.
+
+| condition | original readout | gated | gated + re-centring τ 10 s |
+| --- | --- | --- | --- |
+| intact | −10.9°, 0 coll. | +203.6°, 1 coll. | +107.5°, 0 coll. |
+| bridge-off | −67.4°, 0 | +187.7°, 0 | +73.7°, 0 |
+| haltere-off | −342.2°, 0 | −5.1° (excursion 77°), 1 | +54.2°, 0 |
+| central-brain-silenced | −1,608° | −2.3°, straight | — |
+| recurrence-off, neck-cut, decapitated | −2,256° (readout saturated) | −2.3°, straight | — |
+
+**What the gate fixed.** Every condition whose readout populations are silent now flies
+straight (−2.3° over 20 s, yaw-rate sd 0.011 rad/s), which is what "no evidence, no command"
+should do; the −2,256° rows of docs/ablations.md were the readout, as that page said.
+
+**What the gate revealed.** With the artefact gone, the intact loop drifts +204° in 20 s and
+clips one pillar; **haltere-off drifts −5°**; bridge-off drifts +188°. Read together with §2:
+the 30× stabilisation reported in Phase 5 was the haltere clamp acting *through* the artefact
+(right-afferent drive silences both DNa02 sides, the silent pair became a fixed right command
+that opposed the left drift). Remove the artefact and the same haltere current is at best
+neutral and at worst harmful (+204° with it, −5° without). And the visual bridge does not hold
+heading either: intact and bridge-off differ by 16° out of 200. The optomotor response through
+DNa02 is real (docs/phase4.md, drum following at correlation 0.84–0.98) but at bridge gain 2 it
+is far too weak to cancel a self-generated ~10°/s drift, whose optic flow is a tenth of the
+drum's.
+
+**Re-centring** halves the drift in every condition (204 → 108, 188 → 74), which says roughly
+half of the remaining drift is the DNa02 rest asymmetry wandering after capture (the Phase 5
+suspicion) and the other half is a genuine standing bias in the loop.
+
+**Standing of the published numbers.** The Phase 5 and Phase 6 tables are reproducible and
+stay as written (original readout, defaults unchanged). Their interpretation changes: "haltere
+feedback cuts drift 30×" is true of that readout and false of the loop's wiring; "vision matters"
+(bridge-off 67° vs intact 11°) was also carried by the clamp and does not survive the gate. The
+README caveats and the thread's post 10 should be read with this section.
+
+**What would actually stabilise heading.** (a) A stronger or faster optomotor path: bridge
+gain, or a turn gain fitted so that the loop's own rotational optic flow at ~0.2 rad/s produces
+a counter-command of the size the drift needs; (b) a haltere model with phase-encoded afferents
+onto the wing-steering motor neurons instead of a yaw-rate current into DNa02's neighbourhood;
+(c) re-centring by default. None of these is a wiring result; all are readout or proxy design.

@@ -129,7 +129,12 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    relay, both, and sets the 541 monoamine cells to their file sign (0). DNg02 L−R stays within
    ±1 Hz in all ten runs; DNa02 lateralises in all ten. docs/followups.md §1, DECISIONS.md.
    The next probe on DNg02 is a biological tonic drive: `--drive AN07B004` (not written yet).
-2. **Readout without rest subtraction** (now first: the haltere clamp depends on the artefact, followups §2) (or with a slow re-centring like their `offsetTau`)
+2. ~~Readout without rest subtraction~~ **Done 2026-09-07 evening**: `gate` and `recenterTau` in
+   `src/motor/readout.js` (off by default), `bench/ablate.mjs --gate 1 [--recenter 10] --tag …`.
+   Silent conditions now fly straight; the intact loop drifts +204° (re-centring: +108°) and
+   haltere-off −5°: the 30× stabilisation was the clamp through the artefact. docs/followups.md §3,
+   docs/ablations-gated*.md, figure 19. **Open**: a real stabiliser (stronger/faster optomotor
+   path or a phase-encoded haltere model onto the wing-steering MNs), and re-centring by default. (or with a slow re-centring like their `offsetTau`)
    so silent populations command straight flight; rerun `bench/ablate.mjs`.
 3. **GPU port of the rate net**: AbijahKaj's two WGSL kernels (`gpu-net.ts`, drive/integrate)
    on the kernels runtime's `GPUDevice` (`brain.device` in `BrainGPU`), then a gather kernel

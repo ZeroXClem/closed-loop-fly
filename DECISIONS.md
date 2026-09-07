@@ -282,3 +282,18 @@ silence both DNa02 sides, left afferents spare the left one); `bench/haltere-loo
 readout turning DNa02 silence into a +0.34 command. docs/followups.md §2. The thread's "30×" holds;
 the mechanism is a clamp, not a reflex. HANDOFF step 2 (readout without rest subtraction) moves to
 the top of the queue.
+
+## 2026-09-07 — Readout gate: a silent population says nothing (HANDOFF step 2)
+
+The rest-subtracted turn, (L − restL) − (R − restR) over (L + R + floor), turns a pair that has
+gone silent into a fixed command of −(restL − restR)/floor: the "silent readout" artefact of
+docs/ablations.md, and, per docs/followups.md §2, the thing the haltere clamp rode on. Fix chosen:
+scale the turn by min(1, (L + R)/(restL + restR)), so the command fades with the evidence; no
+change while the pair is at or above its rest activity. A second, optional term lets the rest
+levels follow the rates with a time constant (`recenterTau`, AbijahKaj's offset idea), so a
+standing asymmetry that wanders after calibration does not become a permanent turn. Both are
+**off by default** so every number in the docs still reproduces; new runs opt in with
+`?gate=1&recenter=10` (`bench/ablate.mjs --gate 1 --recenter 10 --tag …`). Results: docs/followups.md §3:
+the silent conditions fly straight as intended, and the intact loop drifts +204° in 20 s because
+the haltere stabilisation of Phase 5 was the clamp acting through the artefact. The defaults stay
+off so the published tables reproduce; the interpretation in followups §3 supersedes them.
