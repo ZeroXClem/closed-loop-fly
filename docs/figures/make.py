@@ -88,11 +88,12 @@ def same_fly():
             txt(ax, cx, cy + 3, f'[A]  {small:,}', A, 21, ha='center', va='center', weight='bold')
             txt(ax, cx, cy - 1.8, small_lab, INK, 14, ha='center', va='center')
             txt(ax, cx, cy - 6, '100% found in [B]', GOOD, 16, ha='center', va='center', weight='bold')
-        else:
-            lx = x0 + 3 + s_small + 2.5
-            txt(ax, lx, cy + 3, f'[A]  {small:,}', A, 21, ha='left', va='center', weight='bold')
-            txt(ax, lx, cy - 1.8, small_lab, INK, 14, ha='left', va='center')
-            txt(ax, lx, cy - 6, '100% found in [B], counts identical', GOOD, 16, ha='left', va='center', weight='bold')
+        else:  # too small to hold text: label it from directly above, inside the big box, with a leader
+            lx, ty = x0 + 3, 7 + s_small
+            ax.plot([lx + s_small / 2, lx + s_small / 2], [ty, ty + 2.2], color=A, lw=2)
+            txt(ax, lx, ty + 11.5, f'[A]  {small:,}', A, 21, ha='left', va='center', weight='bold')
+            txt(ax, lx, ty + 7.2, small_lab, INK, 14, ha='left', va='center')
+            txt(ax, lx, ty + 3.6, '100% found in [B], counts identical', GOOD, 16, ha='left', va='center', weight='bold')
     nest(5, nB, nA, 'Xenova · whole male CNS, LIF spiking', 'AbijahKaj optic-v2, fitted rate net', 'neurons')
     nest(53, eB, eA, '124,177,617 synapses', f'{ed["sumA"]:,} synapses', 'connections')
     txt(ax, 26, 52, 'neurons, matched by body ID', MUTED, 16, ha='center')
