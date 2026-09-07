@@ -18,6 +18,7 @@ const report = { adapt: ADAPT, frames: N, runs: {} };
 for (const [label, backend, adapt] of [['gpu, adapt off', 'gpu', ''], ['cpu, adapt on', 'cpu', ADAPT], ['gpu, adapt on', 'gpu', ADAPT]]) {
   const page = await browser.newPage();
   const boot = await openLoop(page, vite.url, { readout: 'dna02', dnBias: 0.4, turnGain: 2, haltere: false, course: false, bridge: true, backend, adapt });
+  if (boot.backend !== backend) throw Error(`${label}: LIF backend is ${boot.backend}, wanted ${backend}: ` + (await page.evaluate(() => window.__loop.stages.filter((s) => /fallback|error/i.test(s)).join(' | '))));
   const rows = await page.evaluate(async (n) => { window.__loop.omega = 0; window.__loop.frames.length = 0; await window.__loop.run(n); return window.__loop.frames.map((r) => ({ frame: r.frame, spikes: r.spikes, dng02L: r.b_dng02L, dng02R: r.b_dng02R, dna02L: r.b_dna02L, dna02R: r.b_dna02R })); }, N);
   report.runs[label] = { backend: boot.backend, rows };
   log(`${label} (${boot.backend}): spikes per frame ${rows.map((r) => r.spikes).join(', ')}; DNg02 at frame ${N}: ${rows.at(-1).dng02L.toFixed(1)}/${rows.at(-1).dng02R.toFixed(1)}`);

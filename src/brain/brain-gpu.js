@@ -115,7 +115,7 @@ export class BrainGPU {
         visibility: GPUShaderStage.COMPUTE,
         buffer:
           binding === 7
-            ? { type: 'uniform', hasDynamicOffset: true, minBindingSize: 32 }
+            ? { type: 'uniform', hasDynamicOffset: true, minBindingSize: 40 }
             : { type: [0, 1, 4, 8].includes(binding) ? 'read-only-storage' : 'storage' },
       })),
     });
@@ -149,7 +149,7 @@ export class BrainGPU {
       layout,
       entries: bindings.map((buffer, binding) => ({
         binding,
-        resource: { buffer, ...(binding === 7 ? { size: 32 } : {}) },
+        resource: { buffer, ...(binding === 7 ? { size: 40 } : {}) }, // Params is 40 bytes with the two adaptation floats
       })),
     });
     this.indirectBind = device.createBindGroup({

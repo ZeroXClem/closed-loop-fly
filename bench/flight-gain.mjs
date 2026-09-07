@@ -25,6 +25,7 @@ for (const flight of GAINS) {
   // drum assay
   let page = await browser.newPage();
   let boot = await openLoop(page, vite.url, { ...common, flight });
+  if (boot.backend !== 'gpu') throw Error(`LIF fell back to ${boot.backend}: ` + (await page.evaluate(() => window.__loop.stages.filter((s) => /fallback|error/i.test(s)).join(' | '))));
   log(`flight ${flight}: ${boot.backend}; stages: ${(await page.evaluate(() => window.__loop.stages)).filter((s) => /flight|adapt/i.test(s)).join(' | ') || 'no flight stage (gain 1)'}`);
   await page.evaluate((n) => { window.__loop.omega = 0; window.__loop.motor.mode = 'hover'; return window.__loop.run(n); }, frames(3));
   const seg = async (omega, s) => page.evaluate(async (omega, n, keys) => { window.__loop.omega = omega; window.__loop.frames.length = 0; await window.__loop.run(n); return window.__loop.frames.map((r) => Object.fromEntries(keys.map((k) => [k, r[k]]))); }, omega, frames(s), KEYS);
