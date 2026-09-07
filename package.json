@@ -1,0 +1,16 @@
+{
+  "name": "closed-loop-fly",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A sensorimotor loop through the male Drosophila connectome, in the browser.",
+  "license": "MIT",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "bench:overlap": "node bench/overlap.mjs",
+    "bench:edges": "node --max-old-space-size=4096 bench/edges.mjs",
+    "bench:annotations": ".venv/bin/python bench/annotations.py",
+    "setup:venv": "uv venv .venv && uv pip install --python .venv/bin/python -r bench/requirements.txt",
+    "bench": "npm run bench:overlap && npm run bench:edges"
+  }
+}

@@ -1,0 +1,50 @@
+{
+ "A": {
+  "units": 65799,
+  "edges": 1967771,
+  "source": "male-cns:v1.0 flat-connectome, traced-only, minconf-0.5"
+ },
+ "B": {
+  "neurons": 166700,
+  "edges": 25582938,
+  "dataset": "MaleCNS v1.0"
+ },
+ "unitsInB": 65799,
+ "unitsMissing": 0,
+ "edgesInB": 1967771,
+ "typeAgree": 65793,
+ "sideAgree": 65799,
+ "compared": 65799,
+ "byRole": {
+  "dn": {
+   "total": 41,
+   "inB": 41
+  },
+  "input": {
+   "total": 1114,
+   "inB": 1114
+  },
+  "brain": {
+   "total": 300,
+   "inB": 300
+  },
+  "optic": {
+   "total": 63963,
+   "inB": 63963
+  },
+  "vnc": {
+   "total": 298,
+   "inB": 298
+  },
+  "output": {
+   "total": 83,
+   "inB": 83
+  }
+ },
+ "byTypeMiss": {},
+ "typeDisagree": {
+  "untyped_cb_intrinsic -> ": 5,
+  "untyped_vnc_motor -> ": 1
+ },
+ "missingBodyIds": []
+}

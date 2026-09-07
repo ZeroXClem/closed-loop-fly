@@ -1,0 +1,90 @@
+{
+ "edgesA": 1967771,
+ "found": 1967771,
+ "equal": 1967771,
+ "missing": 0,
+ "sumA": 13444332,
+ "sumB": 13444332,
+ "ratioHist": {
+  "1.00": 1967771
+ },
+ "extra": {
+  "HS": {
+   "cells": 6,
+   "synIn": 97542,
+   "synOut": 6242,
+   "eIn": 6940,
+   "eOut": 1524
+  },
+  "LC4": {
+   "cells": 126,
+   "synIn": 202101,
+   "synOut": 103472,
+   "eIn": 42022,
+   "eOut": 21293
+  },
+  "LPLC2": {
+   "cells": 185,
+   "synIn": 258994,
+   "synOut": 92440,
+   "eIn": 74824,
+   "eOut": 27866
+  },
+  "DNg02": {
+   "cells": 29,
+   "synIn": 1629,
+   "synOut": 33578,
+   "eIn": 521,
+   "eOut": 6713
+  },
+  "DNp": {
+   "cells": 12,
+   "synIn": 69731,
+   "synOut": 75902,
+   "eIn": 2556,
+   "eOut": 6419
+  },
+  "T4T5": {
+   "cells": 13580,
+   "synIn": 2406324,
+   "synOut": 735593,
+   "eIn": 612300,
+   "eOut": 224268
+  },
+  "lamina": {
+   "cells": 5327,
+   "synIn": 422826,
+   "synOut": 539774,
+   "eIn": 49488,
+   "eOut": 64290
+  },
+  "wingMN": {
+   "cells": 67,
+   "synIn": 113167,
+   "synOut": 491356,
+   "eIn": 5237,
+   "eOut": 32392
+  },
+  "haltereMN": {
+   "cells": 16,
+   "synIn": 4260,
+   "synOut": 57300,
+   "eIn": 305,
+   "eOut": 5210
+  },
+  "brainBridge": {
+   "cells": 300,
+   "synIn": 401413,
+   "synOut": 874486,
+   "eIn": 79960,
+   "eOut": 130199
+  },
+  "vncBridge": {
+   "cells": 298,
+   "synIn": 86214,
+   "synOut": 626330,
+   "eIn": 12482,
+   "eOut": 96921
+  }
+ }
+}

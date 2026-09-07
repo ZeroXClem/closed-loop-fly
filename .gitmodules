@@ -1,0 +1,9 @@
+[submodule "vendor/fruit-fly-simulation"]
+	path = vendor/fruit-fly-simulation
+	url = https://huggingface.co/spaces/Xenova/fruit-fly-simulation
+[submodule "vendor/fruit-fly-brain-research"]
+	path = vendor/fruit-fly-brain-research
+	url = https://github.com/AbijahKaj/fruit-fly-brain-research
+[submodule "vendor/fruit-fly-brain"]
+	path = vendor/fruit-fly-brain
+	url = https://huggingface.co/AbijahKaj/fruit-fly-brain
