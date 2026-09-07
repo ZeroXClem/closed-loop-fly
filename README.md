@@ -35,10 +35,22 @@ src/               new code (from Phase 1)
 
 ## Setup
 
+Everything runs through the Nix flake (`flake.nix`); the only host requirements are Nix with
+flakes and, for GPU work, Brave plus the NVIDIA Vulkan driver (see `DECISIONS.md`).
+
 ```sh
-git clone --recurse-submodules <this repo>
-# git-lfs is required for vendor/fruit-fly-simulation and vendor/fruit-fly-brain
-npm run bench            # overlap + edge checks (Node only)
-npm run setup:venv       # Python venv for the annotation-table script (uv)
-npm run bench:annotations
+git clone --recurse-submodules <this repo>     # git-lfs pulls the data; or see below
+nix develop                                    # node >= 22.12, git-lfs, python + pyarrow/pandas
+npm install
+npm run bench                                  # overlap, edge and annotation-table checks (CPU)
+npm run bench:inject                           # Phase 1 acceptance on the JavaScript LIF (CPU)
+npm run dev                                    # Xenova's demo booted from src/ (WebGPU in the browser)
+npm run bench:gpu                              # headless Brave + WebGPU on the GPU box
+nix build '.?submodules=1'                     # pure dist/ (npm deps and data by hash)
 ```
+
+Without git-lfs, the same data assets come from the flake as fixed-output fetches:
+`cp -r $(nix build '.?submodules=1#assets' --print-out-paths)/vendor/. vendor/`.
+
+The GPU box is driven from a checkout via `scripts/gpu-box.sh sync|run` (rsync mirror; `run`
+executes inside `nix develop` there).

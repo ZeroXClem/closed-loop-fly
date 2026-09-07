@@ -5,12 +5,29 @@
   "type": "module",
   "description": "A sensorimotor loop through the male Drosophila connectome, in the browser.",
   "license": "MIT",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "bench:overlap": "node bench/overlap.mjs",
-    "bench:edges": "node --max-old-space-size=4096 bench/edges.mjs",
-    "bench:annotations": ".venv/bin/python bench/annotations.py",
-    "setup:venv": "uv venv .venv && uv pip install --python .venv/bin/python -r bench/requirements.txt",
-    "bench": "npm run bench:overlap && npm run bench:edges"
+    "dev": "nix develop -c vite",
+    "build": "nix develop -c vite build",
+    "preview": "nix develop -c vite preview",
+    "bench": "npm run bench:overlap && npm run bench:edges && npm run bench:annotations",
+    "bench:overlap": "nix develop -c node bench/overlap.mjs",
+    "bench:edges": "nix develop -c node --max-old-space-size=4096 bench/edges.mjs",
+    "bench:annotations": "nix develop -c python bench/annotations.py",
+    "bench:inject": "nix develop -c node bench/inject.mjs",
+    "bench:gpu": "nix develop -c node bench/browser.mjs",
+    "bench:webgpu-probe": "nix develop -c node bench/webgpu-probe.mjs",
+    "npm-deps-hash": "nix develop -c sh -c 'prefetch-npm-deps package-lock.json > nix/npm-deps-hash'",
+    "vite:build": "vite build"
+  },
+  "dependencies": {
+    "@huggingface/kernels": "0.0.1-preview.1",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "8.2.2",
+    "puppeteer-core": "^24.0.0"
   }
 }

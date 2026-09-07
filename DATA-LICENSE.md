@@ -18,7 +18,8 @@ Derived files, and where they come from:
 | `vendor/fruit-fly-simulation/public/data/*.bin.gz`, `neurons.json.gz` | Xenova (`manifest.json` lists the source tables and SHA-256s) | 166,700-neuron induced graph, incoming CSR, synapse counts, per-neuron type/superclass/side/transmitter/sign/soma |
 | `vendor/fruit-fly-brain/optic.json`, `optic.bin` | AbijahKaj (`data/extract_v2.py` in `vendor/fruit-fly-brain-research`) | 65,799-unit optic-lobe-to-wing subgraph with column retinotopy |
 | `vendor/fruit-fly-brain/fitted-params.json` | AbijahKaj (`train/`) | per-type τ/bias and per-pair strengths fitted on that graph |
-| `data/raw/body-annotations.feather` (git-ignored) | downloaded verbatim from the MaleCNS bucket; SHA-256 checked against Xenova's manifest | cell annotations incl. subclass and neuromere, used for motor-neuron tables |
+| `nix/assets.nix` → `packages.annotations` | fixed-output fetch of the MaleCNS annotation table, SHA-256 from Xenova's manifest | cell annotations incl. subclass and neuromere, used for motor-neuron tables |
+| `nix/assets.nix` → `packages.assets` | fixed-output fetches of every git-lfs asset above, SHA-256 = the LFS oid | same bytes as the submodules, for LFS-less builds |
 | `bench/out/*.json`, `src/bridge/ids.json` | this repo's `bench/` scripts | body-ID lists and overlap statistics |
 
 Required citation for any of the above:

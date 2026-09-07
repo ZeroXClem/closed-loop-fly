@@ -348,7 +348,7 @@ weights, pooling scale, tonic drives), and [B] has the central brain, VNC and se
 
 ## 5. Populations for Phases 4–5 (from the annotation table)
 
-`data/raw/body-annotations.feather` (SHA-256 verified against Xenova's manifest) carries
+the MaleCNS annotation table (`packages.annotations` in the flake, SHA-256 from Xenova's manifest) carries
 what neither graph does: `subclass`, `somaNeuromere`, `exitNerve`, `class`. Every motor and
 haltere-sensory cell below exists in [B]. Tables: `bench/out/motor-neurons.json` (815 rows),
 `bench/out/haltere-sensory.json` (205 rows).
@@ -399,7 +399,7 @@ cells for the walking feedback.
 | Node / npm | 25.9 / 11.13 | 26.7 / 12.0 |
 | git / git-lfs | 2.54 / 3.8.0 (user-local) | 2.55 / 3.7.1 |
 | browsers | none | Brave (Chromium ⇒ WebGPU), Firefox; no graphical session |
-| Python | 3.12, uv, project `.venv` (`bench/requirements.txt`) | — |
+| Python | from the Nix devShell (pyarrow, pandas) | same |
 
 CPU-only benches (`bench/*.mjs`) run here; anything that touches WebGPU (Phase 1 onward)
 runs on the GPU box, headless Brave with `--enable-unsafe-webgpu --use-angle=vulkan` or via

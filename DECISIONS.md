@@ -89,3 +89,25 @@ rate" finding. The plan's bridge (inject [A]'s HS / LC4 / LPLC2 / DNp rates into
 DNg02 and MNs from [B]) is therefore the right shape: the descending and motor circuitry is
 read from the graph that actually contains it. Bridge cells are the *inputs* to that
 circuitry, never DNg02 or the MNs themselves.
+
+## 2026-09-06 — Nix: dist is pure, the GPU bench is impure by design
+
+`flake.nix` wraps the repo. What is pure and what is not:
+
+| | how | pure? |
+| --- | --- | --- |
+| `packages.default` (`dist/`) | `buildNpmPackage`, npm deps by hash (`nix/npm-deps-hash`), every large data asset by SHA-256 (`nix/assets.nix`, generated from the git-lfs oids and Xenova's manifest), `vite build` offline | yes |
+| `packages.annotations` | fixed-output `fetchurl` of the MaleCNS annotation table | yes |
+| `devShells.default` | node ≥ 22.12, git-lfs, rsync, python with pyarrow + pandas; `$MALECNS_ANNOTATIONS` points into the store | yes |
+| CPU benches (`npm run bench*`) | `nix develop -c node …` | yes (given the vendored data) |
+| `bench/browser.mjs`, `npm run dev` with WebGPU | the **host's** Brave and NVIDIA Vulkan driver; nothing GPU-related is packaged | **no** |
+
+Why the GPU side is impure: gpu-box is Arch with the proprietary NVIDIA driver. Packaging a
+browser or Vulkan in Nix on a non-NixOS host means fighting the driver ICD and glibc (nixGL
+territory) for no scientific gain; the numbers come from the host stack and are recorded as
+such. The devShell warns when `brave` or `vulkaninfo` are not on PATH so CPU-only machines
+(the dev VM) still run everything else; `bench/lib/browser.mjs` fails with a clear message.
+
+Consequences: `data/raw/` and the Python venv are gone (the table is a store path; the Python
+env is the devShell's). `nix build` needs `'.?submodules=1'` because the vendored trees are
+git submodules. `scripts/gpu-box.sh run` executes remote commands inside `nix develop`.

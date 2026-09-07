@@ -2,16 +2,21 @@
 (subclass, class, neuromere/nerve columns). Emits body-ID tables for motor neurons and haltere
 sensory neurons, cross-checked against Xenova's 166,700-row neuron list.
 
-    uv venv .venv && uv pip install --python .venv/bin/python -r bench/requirements.txt
-    .venv/bin/python bench/annotations.py
+    npm run bench:annotations        (= nix develop -c python bench/annotations.py)
+
+The table path comes from $MALECNS_ANNOTATIONS, set by the devShell to the fixed-output
+fetch in nix/assets.nix (SHA-256 from Xenova's manifest). No ad-hoc downloads.
 """
 from __future__ import annotations
-import gzip, json, sys
+import gzip, json, os, sys
 from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
-ann = pd.read_feather(ROOT / "data/raw/body-annotations.feather")
+TABLE = os.environ.get("MALECNS_ANNOTATIONS")
+if not TABLE:
+    sys.exit("MALECNS_ANNOTATIONS is not set: run under `nix develop` (npm run bench:annotations)")
+ann = pd.read_feather(TABLE)
 xen = json.load(gzip.open(ROOT / "vendor/fruit-fly-simulation/public/data/neurons.json.gz"))
 xen_ids = {int(r[0]) for r in xen}
 print(f"annotation rows: {len(ann)}   Xenova rows: {len(xen)}")

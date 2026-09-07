@@ -6,6 +6,5 @@ dist/
 # large derived data lives in vendor/ submodules or is fetched by scripts
 data/cache/
 
-# raw third-party tables, fetched by scripts (see DATA-LICENSE.md)
-data/raw/
-.venv/
+result
+result-*
