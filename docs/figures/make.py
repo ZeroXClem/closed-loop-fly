@@ -83,6 +83,7 @@ def same_fly():
         ax.add_patch(FancyBboxPatch((x0 + 3, 7), s_small, s_small, boxstyle='round,pad=0,rounding_size=1.2', fc='#0f2a2c', ec=A, lw=2.5))
         txt(ax, x0 + s_big - 1.5, 4 + s_big - 2.5, f'[B]  {big:,} {unit}', B, 21, ha='right', va='top', weight='bold')
         txt(ax, x0 + s_big - 1.5, 4 + s_big - 7.5, big_lab, MUTED, 14, ha='right', va='top')
+        txt(ax, x0 + s_big, 2.3, f'[A] is {small / big * 100:.1f}% of [B]\'s {unit} · areas drawn to scale', MUTED, 13, ha='right', va='center', style='italic')
         cx, cy = x0 + 3 + s_small / 2, 7 + s_small / 2
         if s_small > 24:
             txt(ax, cx, cy + 3, f'[A]  {small:,}', A, 21, ha='center', va='center', weight='bold')
