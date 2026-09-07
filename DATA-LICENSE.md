@@ -21,6 +21,7 @@ Derived files, and where they come from:
 | `nix/assets.nix` → `packages.annotations` | fixed-output fetch of the MaleCNS annotation table, SHA-256 from Xenova's manifest | cell annotations incl. subclass and neuromere, used for motor-neuron tables |
 | `nix/assets.nix` → `packages.assets` | fixed-output fetches of every git-lfs asset above, SHA-256 = the LFS oid | same bytes as the submodules, for LFS-less builds |
 | `bench/out/*.json`, `src/bridge/ids.json` | this repo's `bench/` scripts | body-ID lists and overlap statistics |
+| `src/eye/columns.json` | `scripts/gen-columns.mjs` from AbijahKaj's `optic.json`/`optic.bin` | the 1,771 optic-lobe columns: eye, hex coordinates, azimuth, elevation (retinotopy calibrated from the wiring by their `extract_v2.py`) |
 
 Required citation for any of the above:
 

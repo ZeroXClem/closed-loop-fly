@@ -20,7 +20,10 @@
     "bench:gpu": "nix develop -c node bench/browser.mjs",
     "bench:webgpu-probe": "nix develop -c node bench/webgpu-probe.mjs",
     "npm-deps-hash": "nix develop -c sh -c 'prefetch-npm-deps package-lock.json > nix/npm-deps-hash'",
-    "vite:build": "vite build"
+    "vite:build": "vite build",
+    "bench:eye": "nix develop -c node bench/eye.mjs",
+    "bench:parity": "nix develop -c node bench/parity.mjs",
+    "gen:columns": "nix develop -c node scripts/gen-columns.mjs"
   },
   "dependencies": {
     "@huggingface/kernels": "0.0.1-preview.1",

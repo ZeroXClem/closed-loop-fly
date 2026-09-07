@@ -1,0 +1,155 @@
+{
+ "omega": 1,
+ "seconds": 2,
+ "warm": 1.5,
+ "hz": 120,
+ "size": 48,
+ "gpu": true,
+ "runs": [
+  {
+   "omega": 1,
+   "f0": 1.91,
+   "direction": "left",
+   "contrast": {
+    "left": {
+     "p10": 0,
+     "median": 0,
+     "p90": 0.941
+    },
+    "right": {
+     "p10": 0,
+     "median": 0,
+     "p90": 0.936
+    },
+    "equatorLeft": {
+     "p10": 0,
+     "median": 0.882,
+     "p90": 0.977
+    },
+    "equatorRight": {
+     "p10": 0,
+     "median": 0.881,
+     "p90": 0.959
+    }
+   },
+   "photoreceptorMeanR": {
+    "left": 1.258,
+    "right": 1.259
+   },
+   "phase": {
+    "left": {
+     "n": 84,
+     "kept": 61,
+     "pairs": 60,
+     "azMin": -158.3,
+     "azMax": -9.7,
+     "slope": 0.2001,
+     "mad": 0.0658,
+     "laterAtLargerAz": 0,
+     "meanAmp": 0.1984,
+     "medianAmp": 0.2693
+    },
+    "right": {
+     "n": 84,
+     "kept": 53,
+     "pairs": 51,
+     "azMin": 9.9,
+     "azMax": 158.5,
+     "slope": 0.202,
+     "mad": 0.0685,
+     "laterAtLargerAz": 0,
+     "meanAmp": 0.1728,
+     "medianAmp": 0.2682
+    },
+    "expectedSlopeMagnitude": 0.2094
+   },
+   "frameMs": {
+    "render": 0.96,
+    "sample": 0.03,
+    "total": 0.99,
+    "hzCapacity": 1008
+   },
+   "pass": {
+    "signLeft": true,
+    "signRight": true,
+    "magnitudeLeft": true,
+    "magnitudeRight": true,
+    "contrast": true,
+    "all": true
+   }
+  },
+  {
+   "omega": -1,
+   "f0": 1.91,
+   "direction": "right",
+   "contrast": {
+    "left": {
+     "p10": 0,
+     "median": 0,
+     "p90": 0.941
+    },
+    "right": {
+     "p10": 0,
+     "median": 0,
+     "p90": 0.939
+    },
+    "equatorLeft": {
+     "p10": 0,
+     "median": 0.884,
+     "p90": 0.971
+    },
+    "equatorRight": {
+     "p10": 0,
+     "median": 0.882,
+     "p90": 0.971
+    }
+   },
+   "photoreceptorMeanR": {
+    "left": 1.258,
+    "right": 1.259
+   },
+   "phase": {
+    "left": {
+     "n": 84,
+     "kept": 61,
+     "pairs": 60,
+     "azMin": -158.3,
+     "azMax": -9.7,
+     "slope": -0.1913,
+     "mad": 0.0646,
+     "laterAtLargerAz": 0.72,
+     "meanAmp": 0.1986,
+     "medianAmp": 0.2698
+    },
+    "right": {
+     "n": 84,
+     "kept": 53,
+     "pairs": 51,
+     "azMin": 9.9,
+     "azMax": 158.5,
+     "slope": -0.1921,
+     "mad": 0.0737,
+     "laterAtLargerAz": 0.71,
+     "meanAmp": 0.1724,
+     "medianAmp": 0.2677
+    },
+    "expectedSlopeMagnitude": 0.2094
+   },
+   "frameMs": {
+    "render": 1.08,
+    "sample": 0.049,
+    "total": 1.13,
+    "hzCapacity": 889
+   },
+   "pass": {
+    "signLeft": true,
+    "signRight": true,
+    "magnitudeLeft": true,
+    "magnitudeRight": true,
+    "contrast": true,
+    "all": true
+   }
+  }
+ ],
+ "pass": true
+}

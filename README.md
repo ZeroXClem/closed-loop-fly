@@ -18,10 +18,10 @@ team. See `DATA-LICENSE.md`.
 
 ## Status
 
-Phase 1 done: Xenova's demo boots from `src/`, the worker has `inject` (additive current)
-and `rates` (EMA) APIs, and the Fly preset through `inject` matches the original on both the
-JavaScript and WebGPU backends (`docs/phase1.md`). Phase 0 findings are in `docs/recon.md`,
-reasons in `DECISIONS.md`, the plan in `GOAL.md`.
+Phase 2 done: the compound eye (`src/eye/`, `docs/phase2.md`) samples the test world at the
+connectome's 1,771 column directions and passes the drum-direction bench. Phase 1
+(`docs/phase1.md`): Xenova's demo boots from `src/`, the worker has `inject` and `rates`
+APIs. Phase 0 findings are in `docs/recon.md`, reasons in `DECISIONS.md`, plan in `GOAL.md`.
 
 ## Layout
 
@@ -46,7 +46,8 @@ nix develop                                    # node >= 22.12, git-lfs, python 
 npm install
 npm run bench                                  # overlap, edge and annotation-table checks (CPU)
 npm run bench:inject                           # Phase 1 acceptance on the JavaScript LIF (CPU)
-npm run dev                                    # Xenova's demo booted from src/ (WebGPU in the browser)
+npm run dev                                    # Xenova's demo booted from src/ (WebGPU in the browser); /eye.html is the eye demo
+npm run bench:eye                              # eye: drum-direction bench (software GL is enough)
 npm run bench:gpu                              # headless Brave + WebGPU on the GPU box
 nix develop -c node bench/parity.mjs           # full-graph CPU-vs-GPU parity (GPU box)
 nix build '.?submodules=1'                     # pure dist/ (npm deps and data by hash)

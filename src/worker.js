@@ -31,14 +31,20 @@ let graph,
   kick, // mV per tick, uploaded to the kernels
   zeroRates,
   watched = new Uint32Array(0);
-// Host quirk (gpu-box, Brave 151 + NVIDIA 610 under the flags in bench/lib/browser.mjs):
-// requestAdapter({ powerPreference: 'high-performance' }) returns null while the plain request
-// returns the discrete GPU. The kernel runtime hard-codes 'high-performance', so retry without it.
+// Host quirk (gpu-box, Brave 151 + NVIDIA 610 under the flags in bench/lib/browser.mjs; see
+// bench/webgpu-retry-probe.mjs): the first requestAdapter in a fresh GPU process returns null
+// while Dawn initialises (~250 ms); a plain first request locks in SwiftShader. The kernel
+// runtime asks once, for 'high-performance'. Retry the same options a few times, then relax.
 if (typeof navigator !== 'undefined' && navigator.gpu?.requestAdapter) {
   const request = navigator.gpu.requestAdapter.bind(navigator.gpu);
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   navigator.gpu.requestAdapter = async (options) => {
-    const adapter = await request(options);
-    if (adapter || !options?.powerPreference) return adapter;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const adapter = await request(options);
+      if (adapter) return adapter;
+      await wait(100);
+    }
+    if (!options?.powerPreference) return null;
     const { powerPreference, ...rest } = options;
     return request(rest);
   };

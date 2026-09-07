@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Closed-loop fly — the eye</title>
+    <link rel="icon" href="data:," />
+    <style>
+      html, body { margin: 0; height: 100%; background: #10171d; color: #cfd6df; font: 13px ui-monospace, monospace; overflow: hidden; }
+      #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+      #hud { position: fixed; left: 8px; top: 8px; width: 680px; height: 270px; background: rgba(16, 23, 29, 0.7); border: 1px solid #2a3038; }
+      #stats { position: fixed; left: 8px; top: 290px; display: grid; grid-template-columns: max-content max-content; gap: 2px 12px; background: rgba(16, 23, 29, 0.7); padding: 6px 8px; border: 1px solid #2a3038; }
+      #stats .k { color: #9aa3ad; }
+      #help { position: fixed; right: 8px; bottom: 8px; color: #9aa3ad; text-align: right; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view"></canvas>
+    <canvas id="hud" width="680" height="270"></canvas>
+    <div id="stats"></div>
+    <div id="help">[ ] drum speed · space stop · v luminance / photoreceptor / stimulus · l loom · r reset<br />?omega= ?bench=1 ?size=48</div>
+    <script type="module" src="/src/eye-demo.js"></script>
+  </body>
+</html>

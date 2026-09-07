@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { createReadStream, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const PUBLIC = 'vendor/fruit-fly-simulation/public';
 
@@ -43,6 +43,7 @@ export default defineConfig({
   base: './',
   publicDir: PUBLIC,
   plugins: [storedGzip()],
+  build: { rolldownOptions: { input: { main: resolve('index.html'), eye: resolve('eye.html') } } },
   worker: { format: 'es' },
   server: { host: true, port: 5173, strictPort: true },
   // The worker is the only importer of @huggingface/kernels. Without this, the dev server

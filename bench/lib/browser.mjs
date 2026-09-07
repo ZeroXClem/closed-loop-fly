@@ -40,9 +40,43 @@ export const BROWSER_ARGS = [
   '--disable-brave-update',
   '--disable-brave-rewards-extension',
 ];
+/** Headless: WebGPU compute on the GPU; the page's WebGL context is lost at once (Phase 1 benches). */
 export function launchBrowser() {
   return puppeteer.launch({ executablePath: findBrowser(), headless: true, args: BROWSER_ARGS, protocolTimeout: 600000 });
 }
+/** Plain hardware WebGL (ANGLE on Vulkan), no WebGPU flags: the eye alone, headless. */
+export const HARDWARE_GL_ARGS = ['--no-sandbox', '--disable-gpu-sandbox', '--ignore-gpu-blocklist', '--use-gl=angle', '--use-angle=vulkan'];
+/** WebGL only, software rasteriser (SwiftShader): runs anywhere a Chromium-family browser exists. */
+export const SOFTWARE_GL_ARGS = ['--no-sandbox', '--disable-gpu-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'];
+/**
+ * WebGL and hardware WebGPU in ONE page (the closed loop, Phase 3 on): only works headed on
+ * a display, with the WebGPU set minus --disable-vulkan-surface. Run under
+ * `xvfb-run -a` (scripts/gpu-box.sh runx ...); headless loses the WebGL context immediately.
+ */
+export const COMBINED_ARGS = BROWSER_ARGS.filter((a) => a !== '--disable-vulkan-surface');
+export function launchCombinedBrowser() {
+  const tools = requireGpuTools();
+  if (!process.env.DISPLAY) throw Error('WebGL + WebGPU in one page needs a display: run under xvfb-run -a (scripts/gpu-box.sh runx <cmd>)');
+  return puppeteer.launch({ executablePath: tools.exe, headless: false, args: COMBINED_ARGS, protocolTimeout: 600000 });
+}
+function findAnyBrowser() {
+  const exe = process.env.BROWSER || CANDIDATES.find(existsSync);
+  if (!exe) throw Error('no Chromium-family browser found; set BROWSER=/path');
+  return exe;
+}
+export function launchSoftwareBrowser() {
+  return puppeteer.launch({ executablePath: findAnyBrowser(), headless: true, args: SOFTWARE_GL_ARGS, protocolTimeout: 600000 });
+}
+/** For WebGL-only benches: hardware GL when the host has a GPU, SwiftShader otherwise; says which. */
+export async function launchWebGLBrowser() {
+  try {
+    const tools = requireGpuTools();
+    return { browser: await puppeteer.launch({ executablePath: tools.exe, headless: true, args: HARDWARE_GL_ARGS, protocolTimeout: 600000 }), gpu: true, note: `hardware WebGL, ANGLE on Vulkan (${tools.vulkan})` };
+  } catch (e) {
+    return { browser: await launchSoftwareBrowser(), gpu: false, note: 'software GL (SwiftShader)' };
+  }
+}
+export const launchAnyBrowser = launchWebGLBrowser;
 
 /** Start `vite` on 127.0.0.1:port; resolves with the URL once it is listening. */
 export function startVite(port = 5173) {
