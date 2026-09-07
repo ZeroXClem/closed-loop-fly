@@ -1,0 +1,814 @@
+{
+ "counts": {
+  "EPG": 46,
+  "EPGt": 4,
+  "PEN": 42,
+  "PEN_L": 21,
+  "PEN_R": 21,
+  "Delta7": 42,
+  "PEG": 18,
+  "EL": 18,
+  "PFL1": 14,
+  "PFL2": 12,
+  "PFL3": 24,
+  "ER": 282,
+  "ExR": 26,
+  "LNO": 16,
+  "MeTu": 1009,
+  "TuBu": 156,
+  "DNa02_L": 1,
+  "DNa02_R": 1,
+  "haltere_L": 104,
+  "haltere_R": 101,
+  "HS_L": 3,
+  "HS_R": 3,
+  "LC4_L": 71,
+  "LC4_R": 55,
+  "LPLC2_L": 94,
+  "LPLC2_R": 91
+ },
+ "signs": {
+  "EPG": {
+   "acetylcholine:1": 46
+  },
+  "PEN": {
+   "acetylcholine:1": 42
+  },
+  "Delta7": {
+   "glutamate:-1": 42
+  },
+  "PEG": {
+   "acetylcholine:1": 18
+  },
+  "PFL3": {
+   "acetylcholine:1": 24
+  },
+  "ER": {
+   "gaba:-1": 282
+  },
+  "MeTu": {
+   "acetylcholine:1": 1008,
+   "nan:0": 1
+  }
+ },
+ "ring": {
+  "epg": [
+   {
+    "index": 501,
+    "bodyId": 10539,
+    "side": "R",
+    "angleDeg": 138.9
+   },
+   {
+    "index": 1215,
+    "bodyId": 11307,
+    "side": "L",
+    "angleDeg": -44.1
+   },
+   {
+    "index": 1403,
+    "bodyId": 11503,
+    "side": "R",
+    "angleDeg": 56.4
+   },
+   {
+    "index": 1750,
+    "bodyId": 11874,
+    "side": "L",
+    "angleDeg": 168.8
+   },
+   {
+    "index": 1858,
+    "bodyId": 11987,
+    "side": "R",
+    "angleDeg": -80.9
+   },
+   {
+    "index": 1860,
+    "bodyId": 11989,
+    "side": "L",
+    "angleDeg": -104.7
+   },
+   {
+    "index": 2291,
+    "bodyId": 12449,
+    "side": "L",
+    "angleDeg": -89.1
+   },
+   {
+    "index": 3008,
+    "bodyId": 13217,
+    "side": "L",
+    "angleDeg": 126.3
+   },
+   {
+    "index": 4170,
+    "bodyId": 14507,
+    "side": "R",
+    "angleDeg": 4.9
+   },
+   {
+    "index": 4373,
+    "bodyId": 14727,
+    "side": "L",
+    "angleDeg": 178
+   },
+   {
+    "index": 5164,
+    "bodyId": 15616,
+    "side": "R",
+    "angleDeg": -172.4
+   },
+   {
+    "index": 5255,
+    "bodyId": 15713,
+    "side": "L",
+    "angleDeg": -132.4
+   },
+   {
+    "index": 5834,
+    "bodyId": 16360,
+    "side": "L",
+    "angleDeg": -140.2
+   },
+   {
+    "index": 8325,
+    "bodyId": 19125,
+    "side": "R",
+    "angleDeg": -83.5
+   },
+   {
+    "index": 8938,
+    "bodyId": 19825,
+    "side": "R",
+    "angleDeg": -32.1
+   },
+   {
+    "index": 64140,
+    "bodyId": 84758,
+    "side": "L",
+    "angleDeg": 161.6
+   },
+   {
+    "index": 66861,
+    "bodyId": 88342,
+    "side": "L",
+    "angleDeg": 2.2
+   },
+   {
+    "index": 69740,
+    "bodyId": 92188,
+    "side": "R",
+    "angleDeg": 19.4
+   },
+   {
+    "index": 80761,
+    "bodyId": 107195,
+    "side": "L",
+    "angleDeg": -93.1
+   },
+   {
+    "index": 96882,
+    "bodyId": 131313,
+    "side": "R",
+    "angleDeg": -30.4
+   },
+   {
+    "index": 126035,
+    "bodyId": 512305,
+    "side": "R",
+    "angleDeg": 48.8
+   },
+   {
+    "index": 126154,
+    "bodyId": 512513,
+    "side": "R",
+    "angleDeg": 99.8
+   },
+   {
+    "index": 126155,
+    "bodyId": 512514,
+    "side": "L",
+    "angleDeg": 73.1
+   },
+   {
+    "index": 126374,
+    "bodyId": 512928,
+    "side": "R",
+    "angleDeg": 179.5
+   },
+   {
+    "index": 126423,
+    "bodyId": 513033,
+    "side": "L",
+    "angleDeg": 130.5
+   },
+   {
+    "index": 126564,
+    "bodyId": 513284,
+    "side": "R",
+    "angleDeg": -166.5
+   },
+   {
+    "index": 126664,
+    "bodyId": 513463,
+    "side": "R",
+    "angleDeg": 147.7
+   },
+   {
+    "index": 126665,
+    "bodyId": 513464,
+    "side": "R",
+    "angleDeg": 61.7
+   },
+   {
+    "index": 126691,
+    "bodyId": 513517,
+    "side": "L",
+    "angleDeg": -53.4
+   },
+   {
+    "index": 126693,
+    "bodyId": 513520,
+    "side": "R",
+    "angleDeg": -39.7
+   },
+   {
+    "index": 127030,
+    "bodyId": 514126,
+    "side": "R",
+    "angleDeg": -69.1
+   },
+   {
+    "index": 127920,
+    "bodyId": 515675,
+    "side": "R",
+    "angleDeg": 92.6
+   },
+   {
+    "index": 130000,
+    "bodyId": 519140,
+    "side": "L",
+    "angleDeg": 81.7
+   },
+   {
+    "index": 130004,
+    "bodyId": 519144,
+    "side": "L",
+    "angleDeg": 119.5
+   },
+   {
+    "index": 130116,
+    "bodyId": 519328,
+    "side": "L",
+    "angleDeg": -7.8
+   },
+   {
+    "index": 130457,
+    "bodyId": 519941,
+    "side": "L",
+    "angleDeg": -16.7
+   },
+   {
+    "index": 130836,
+    "bodyId": 520581,
+    "side": "R",
+    "angleDeg": -124.2
+   },
+   {
+    "index": 130942,
+    "bodyId": 520812,
+    "side": "R",
+    "angleDeg": 52.2
+   },
+   {
+    "index": 130946,
+    "bodyId": 520818,
+    "side": "L",
+    "angleDeg": -43.4
+   },
+   {
+    "index": 131216,
+    "bodyId": 521409,
+    "side": "L",
+    "angleDeg": 141.1
+   },
+   {
+    "index": 131433,
+    "bodyId": 521812,
+    "side": "R",
+    "angleDeg": 10.8
+   },
+   {
+    "index": 131434,
+    "bodyId": 521813,
+    "side": "L",
+    "angleDeg": 39.5
+   },
+   {
+    "index": 131967,
+    "bodyId": 523786,
+    "side": "R",
+    "angleDeg": -133.5
+   },
+   {
+    "index": 132105,
+    "bodyId": 524073,
+    "side": "L",
+    "angleDeg": 48.5
+   },
+   {
+    "index": 142548,
+    "bodyId": 556346,
+    "side": "L",
+    "angleDeg": -146.2
+   },
+   {
+    "index": 142549,
+    "bodyId": 556347,
+    "side": "R",
+    "angleDeg": -119.8
+   }
+  ],
+  "localShare4": 0.387,
+  "relayWeight": {
+   "EL": 1954711,
+   "PEG": 346469,
+   "PEN_a(PEN1)": 4616482,
+   "PEN_b(PEN2)": 2903786
+  }
+ },
+ "penOffsets": [
+  {
+   "index": 2204,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 3.4,
+   "inSyn": 373,
+   "outSyn": 710
+  },
+  {
+   "index": 4778,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -7.9,
+   "inSyn": 341,
+   "outSyn": 538
+  },
+  {
+   "index": 6814,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 5.7,
+   "inSyn": 213,
+   "outSyn": 435
+  },
+  {
+   "index": 7682,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 4.9,
+   "inSyn": 371,
+   "outSyn": 978
+  },
+  {
+   "index": 7756,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -9.4,
+   "inSyn": 331,
+   "outSyn": 965
+  },
+  {
+   "index": 7972,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 3.4,
+   "inSyn": 373,
+   "outSyn": 897
+  },
+  {
+   "index": 8004,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -7.6,
+   "inSyn": 352,
+   "outSyn": 819
+  },
+  {
+   "index": 8146,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -5.3,
+   "inSyn": 315,
+   "outSyn": 433
+  },
+  {
+   "index": 8373,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 7.9,
+   "inSyn": 350,
+   "outSyn": 746
+  },
+  {
+   "index": 8882,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 10.2,
+   "inSyn": 422,
+   "outSyn": 692
+  },
+  {
+   "index": 9822,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 2.6,
+   "inSyn": 291,
+   "outSyn": 798
+  },
+  {
+   "index": 10818,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 7.7,
+   "inSyn": 359,
+   "outSyn": 498
+  },
+  {
+   "index": 11103,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -9.2,
+   "inSyn": 349,
+   "outSyn": 628
+  },
+  {
+   "index": 12029,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 3.5,
+   "inSyn": 268,
+   "outSyn": 442
+  },
+  {
+   "index": 12331,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -3.6,
+   "inSyn": 248,
+   "outSyn": 366
+  },
+  {
+   "index": 13027,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -7.2,
+   "inSyn": 319,
+   "outSyn": 462
+  },
+  {
+   "index": 13731,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 10.4,
+   "inSyn": 206,
+   "outSyn": 294
+  },
+  {
+   "index": 14278,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -1.4,
+   "inSyn": 268,
+   "outSyn": 548
+  },
+  {
+   "index": 14833,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 0.5,
+   "inSyn": 227,
+   "outSyn": 371
+  },
+  {
+   "index": 15607,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -10,
+   "inSyn": 243,
+   "outSyn": 480
+  },
+  {
+   "index": 16950,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -4.2,
+   "inSyn": 216,
+   "outSyn": 416
+  },
+  {
+   "index": 17256,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -4.2,
+   "inSyn": 242,
+   "outSyn": 324
+  },
+  {
+   "index": 18294,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -3.8,
+   "inSyn": 294,
+   "outSyn": 409
+  },
+  {
+   "index": 18733,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 1.1,
+   "inSyn": 207,
+   "outSyn": 331
+  },
+  {
+   "index": 19995,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 3.4,
+   "inSyn": 199,
+   "outSyn": 355
+  },
+  {
+   "index": 22370,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 5.7,
+   "inSyn": 260,
+   "outSyn": 550
+  },
+  {
+   "index": 23077,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -5.6,
+   "inSyn": 216,
+   "outSyn": 553
+  },
+  {
+   "index": 24315,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 12.1,
+   "inSyn": 221,
+   "outSyn": 546
+  },
+  {
+   "index": 26681,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 5.9,
+   "inSyn": 348,
+   "outSyn": 571
+  },
+  {
+   "index": 27181,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -7.7,
+   "inSyn": 362,
+   "outSyn": 598
+  },
+  {
+   "index": 38216,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 5.6,
+   "inSyn": 224,
+   "outSyn": 530
+  },
+  {
+   "index": 40319,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -2.7,
+   "inSyn": 240,
+   "outSyn": 322
+  },
+  {
+   "index": 57315,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -7.3,
+   "inSyn": 390,
+   "outSyn": 930
+  },
+  {
+   "index": 126373,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -4.2,
+   "inSyn": 315,
+   "outSyn": 682
+  },
+  {
+   "index": 126563,
+   "side": "L",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 8.2,
+   "inSyn": 432,
+   "outSyn": 1178
+  },
+  {
+   "index": 126980,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -2.3,
+   "inSyn": 333,
+   "outSyn": 763
+  },
+  {
+   "index": 127029,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 3.7,
+   "inSyn": 247,
+   "outSyn": 356
+  },
+  {
+   "index": 127205,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": -5.8,
+   "inSyn": 245,
+   "outSyn": 574
+  },
+  {
+   "index": 129423,
+   "side": "R",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": -1.8,
+   "inSyn": 230,
+   "outSyn": 345
+  },
+  {
+   "index": 131435,
+   "side": "R",
+   "type": "PEN_a(PEN1)",
+   "offsetDeg": 0.8,
+   "inSyn": 299,
+   "outSyn": 716
+  },
+  {
+   "index": 132461,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 4.6,
+   "inSyn": 206,
+   "outSyn": 274
+  },
+  {
+   "index": 133937,
+   "side": "L",
+   "type": "PEN_b(PEN2)",
+   "offsetDeg": 8.6,
+   "inSyn": 385,
+   "outSyn": 646
+  }
+ ],
+ "drive": {
+  "haltere_L": {
+   "direct": {},
+   "twoHop": {
+    "DNa02 L": -41587,
+    "DNa02 R": 1359,
+    "ER": 23,
+    "EPG": 15,
+    "Delta7": 0,
+    "PEN L": 0
+   }
+  },
+  "haltere_R": {
+   "direct": {},
+   "twoHop": {
+    "DNa02 R": -70998,
+    "DNa02 L": 5270,
+    "ER": 61,
+    "Delta7": 1,
+    "EPG": 21,
+    "PEN L": 0
+   }
+  },
+  "HS_L": {
+   "direct": {
+    "DNa02 L": 66
+   },
+   "twoHop": {
+    "Delta7": 9,
+    "EPG": 0,
+    "PEN L": 0,
+    "PEN R": 0,
+    "DNa02 L": 7223,
+    "ER": 110,
+    "DNa02 R": -1218
+   }
+  },
+  "HS_R": {
+   "direct": {
+    "DNa02 R": 71
+   },
+   "twoHop": {
+    "DNa02 R": 14590,
+    "DNa02 L": -4,
+    "ER": 293
+   }
+  },
+  "LC4_L": {
+   "direct": {},
+   "twoHop": {
+    "DNa02 L": -26946,
+    "EPG": 3,
+    "ER": 136,
+    "DNa02 R": 86597,
+    "PEN R": 0,
+    "Delta7": 0,
+    "PEN L": 0
+   }
+  },
+  "LPLC2_L": {
+   "direct": {},
+   "twoHop": {
+    "DNa02 L": 15877,
+    "DNa02 R": -3240,
+    "ER": -2770,
+    "Delta7": 0,
+    "EPG": 3,
+    "PEN L": 0,
+    "PEN R": 0
+   }
+  },
+  "MeTu": {
+   "direct": {},
+   "twoHop": {
+    "DNa02 L": 72713,
+    "ER": 3717789,
+    "DNa02 R": 43419,
+    "PEN R": 918,
+    "EPG": 852,
+    "Delta7": 0,
+    "PEN L": 1260
+   }
+  },
+  "TuBu": {
+   "direct": {
+    "ER": 16055
+   },
+   "twoHop": {
+    "ER": 2788924,
+    "EPG": 1356811,
+    "PEN L": -45896,
+    "PEN R": -42514,
+    "Delta7": 1446,
+    "DNa02 L": 1112,
+    "DNa02 R": 265
+   }
+  },
+  "PFL3": {
+   "direct": {
+    "DNa02 R": 380,
+    "Delta7": 1,
+    "ER": 6,
+    "EPG": 20,
+    "DNa02 L": 356
+   },
+   "twoHop": {
+    "DNa02 L": -381178,
+    "DNa02 R": -466291,
+    "EPG": -32223,
+    "ER": -49284,
+    "PEN L": -6788,
+    "PEN R": -6890,
+    "Delta7": 8085
+   }
+  },
+  "EPG": {
+   "direct": {
+    "Delta7": 19896,
+    "EPG": 11486,
+    "ER": 20053,
+    "PEN L": 6182,
+    "PEN R": 6148
+   },
+   "twoHop": {
+    "EPG": -34496326,
+    "PEN L": -16906722,
+    "ER": 6587377,
+    "PEN R": -16142413,
+    "Delta7": -6978946,
+    "DNa02 R": 19710,
+    "DNa02 L": 3483
+   }
+  }
+ },
+ "opticV2MeTu": []
+}

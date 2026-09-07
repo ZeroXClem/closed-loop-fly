@@ -313,3 +313,37 @@ one point of this graph, with or without the ionic brake. The brake itself is wo
 an option: it is the first hand-set constant in this repo that makes the network *less*
 willing to do something implausible rather than more, and any future run that drives strong
 cells should have it on.
+
+## 8. Step 0, the compass: the heading circuit is in the graph, its inputs are not in the loop
+
+**The question** (HANDOFF step 0a): can the loop get a heading signal from the central complex
+instead of a rotation reflex? Three parts: is the compass there, can the LIF hold a bump on it,
+and what would drive it.
+
+**It is there** (`bench/compass-paths.mjs`, `bench/out/compass.json`). EPG 46 (23 per side) plus 4
+EPGt, PEN 42, Δ7 42, PEG 18, EL 18, PFL1/2/3 14/12/24, 282 ring neurons, 26 ExR, and upstream of
+the ring neurons 156 TuBu and 1,009 MeTu. The signs are the textbook ones: EPG, PEN, PEG, PFL3
+and MeTu cholinergic (+1), Δ7 glutamatergic (−1), ring neurons GABAergic (−1). The ring can be
+ordered from its own wiring: a spectral embedding of the EPG → {PEN, PEG, EL} → EPG excitation
+puts 39% of each cell's excitation on its four nearest angular neighbours (a random graph gives
+9%, a perfect ring 100%), and the 42 PEN cells' output-minus-input angle offsets have opposite
+signs on the two sides (median +5.6° left, −5.3° right), the signature of a shifter. **PFL3 →
+DNa02 is in the graph too**: 356 synapses onto the left DNa02 and 380 onto the right, the fly's
+heading-to-steering path landing on the very neurons this loop steers with.
+
+**Nothing the loop has reaches it.** Two-hop signed drive onto PEN, EPG and the ring neurons is
+zero from the haltere afferents (both sides), zero from HS, zero from LC4 and LPLC2. The one
+input that does reach the compass is the anterior visual pathway, MeTu → TuBu → ring neurons
+(16,055 direct TuBu → ER synapses, 3.7 million two-hop weight from MeTu), and the fitted optic
+net has **no MeTu units at all**: optic-v2 is the motion and looming pathways only. So the
+graph's own self-motion input to PEN is not anything the loop carries (it is not the halteres,
+at least not within two hops), and the graph's landmark input to the ring is not anything the
+optic model computes.
+
+**What that leaves.** A compass-based stabiliser can only be built here with a second proxy: a
+body-rotation current into PEN, one side per turn direction, exactly as the haltere proxy fed
+yaw rate into afferents. The difference that would make it worth doing is that the *memory*
+would be the network's: if the EPG ring integrates that input into a persistent bump, the loop
+gets a heading estimate held by the connectome, and a decoded heading error (bump angle versus
+the starting angle) can replace the rotation reflex. Whether the un-refit LIF holds a bump at
+all is the next test (`bench/compass-bump.mjs`).

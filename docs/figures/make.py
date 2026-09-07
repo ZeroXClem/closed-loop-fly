@@ -559,5 +559,42 @@ def adaptation():
 
 ALL.update(flight_gain=flight_gain, adaptation=adaptation)
 
+
+def compass():
+    cx, bp = load('compass.json'), load('compass-bump.json')
+    if not cx: return print('skip compass (no run)')
+    f, top = fig('Step 0 · the compass in the graph', 'The EPG ring can be read off the wiring; does the un-refit LIF hold a bump on it?',
+                 'Left: the 46 EPG cells placed by a spectral embedding of their PEN/PEG-mediated excitation, coloured by side; PEN offsets show which way each side shifts. '
+                 'Middle: population-vector length and angle after a wedge pulse at three tonic drives. Right: the bump angle while one PEN side is driven.',
+                 'bench/compass-paths.mjs, bench/compass-bump.mjs · bench/out/compass.json, compass-bump.json · docs/followups.md §8')
+    ax = f.add_axes([0.05, BOTTOM, 0.27, top - BOTTOM]); panel(ax); ax.set_aspect('equal'); ax.grid(False)
+    for e in cx['ring']['epg']:
+        th = np.radians(e['angleDeg']); ax.scatter([np.cos(th)], [np.sin(th)], s=90, color=A if e['side'] == 'L' else B, zorder=3)
+    ax.scatter([], [], color=A, label='EPG, left soma'); ax.scatter([], [], color=B, label='EPG, right soma')
+    offs = cx.get('penOffsets', [])
+    for side, col in [('L', A), ('R', B)]:
+        vals = [o['offsetDeg'] for o in offs if o['side'] == side]
+        if vals: ax.text(0, 0.12 if side == 'L' else -0.12, f'PEN {side}: median shift {np.median(vals):+.0f}°', ha='center', va='center', color=col, fontsize=12)
+    ax.text(0, -0.36, f"{cx['ring']['localShare4'] * 100:.0f}% of excitation on the 4 nearest neighbours", ha='center', color=MUTED, fontsize=11)
+    ax.set_xlim(-1.3, 1.3); ax.set_ylim(-1.3, 1.3); ax.set_xticks([]); ax.set_yticks([]); ax.legend(loc='upper left', frameon=False, fontsize=11); ax.set_title('the ring, from its own wiring', color=MUTED, fontsize=15)
+    ax2 = f.add_axes([0.39, BOTTOM, 0.27, top - BOTTOM]); panel(ax2)
+    if bp:
+        cols = [A, GOOD, B, DN, WARN]
+        for k, a in enumerate(bp['A']):
+            tr = a['trace']; ax2.plot([r['t'] for r in tr], [r['pvl'] for r in tr], color=cols[k % 5], lw=2.5, label=f"tonic {a['tonic']} mV/ms{'  ·  bump' if a['bump'] else ''}")
+        ax2.axvspan(0.5, 0.8, color=INK, alpha=0.08); ax2.text(0.65, 0.97, 'pulse', transform=ax2.get_xaxis_transform(), ha='center', va='top', color=MUTED, fontsize=11)
+        ax2.set_xlabel('time, s'); ax2.set_ylabel('EPG population-vector length'); ax2.set_ylim(0, 1); ax2.legend(loc='upper right', frameon=False, fontsize=11)
+    ax2.set_title('does a bump persist?', color=MUTED, fontsize=15)
+    ax3 = f.add_axes([0.73, BOTTOM, 0.23, top - BOTTOM]); panel(ax3)
+    if bp and bp.get('B'):
+        for row, col in zip(bp['B'], [A, B]):
+            tr = row['trace']; ax3.plot([r['t'] for r in tr], [r['angleDeg'] for r in tr], color=col, lw=2.5, label=f"PEN {row['side']} driven: shift {row['shiftDeg']:+.0f}°")
+        ax3.axvspan(1.1, 2.1, color=INK, alpha=0.08); ax3.text(1.6, 0.97, 'PEN drive', transform=ax3.get_xaxis_transform(), ha='center', va='top', color=MUTED, fontsize=11)
+        ax3.set_xlabel('time, s'); ax3.set_ylabel('bump angle, degrees'); ax3.set_ylim(-180, 180); ax3.legend(loc='lower left', frameon=False, fontsize=11)
+    ax3.set_title('does PEN move it?', color=MUTED, fontsize=15)
+    save(f, '22-compass')
+
+ALL.update(compass=compass)
+
 if __name__ == '__main__':
     for n in (sys.argv[1:] or list(ALL)): ALL[n]()
