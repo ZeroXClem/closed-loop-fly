@@ -271,3 +271,14 @@ after the monoamine fix). `bench/hs-inject.mjs --octopamine` muted each relay, b
 lateralise DNg02 through 324 relay synapses against 35,000 others in an un-refit LIF". The
 Phase 3 text is left as written, with a pointer, so the record shows what was believed when.
 The DNa02 readout lateralises under every condition, so nothing in Phases 4–6 changes.
+
+## 2026-09-07 — Haltere sign −1: "corrective" retracted as anatomy, kept as an empirical clamp
+
+`bench/haltere-paths.mjs` shows each side's afferents inhibit their own DNa02 through PS059, which
+predicts the wrong sign; `bench/haltere-inject.mjs` shows the real response is a whole-network,
+current-dependent switch, side-symmetric up to 0.6 mV/ms and asymmetric above it (right afferents
+silence both DNa02 sides, left afferents spare the left one); `bench/haltere-loop.mjs` shows sign
+−1 works by pushing back only at large yaw rates, sign +1 locks a 2 rad/s spin. Both rely on the
+readout turning DNa02 silence into a +0.34 command. docs/followups.md §2. The thread's "30×" holds;
+the mechanism is a clamp, not a reflex. HANDOFF step 2 (readout without rest subtraction) moves to
+the top of the queue.

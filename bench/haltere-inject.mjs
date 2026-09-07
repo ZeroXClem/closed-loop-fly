@@ -38,5 +38,5 @@ const f = (r, a, b) => `${r[a].toFixed(1)}/${r[b].toFixed(1)}`;
 console.log(`haltere afferents ${sets.affL.length} L / ${sets.affR.length} R; DNg02 tonic ${DN} mV/ms; ${SECONDS} s, last half averaged; currents ${CURRENTS.join(', ')} mV/ms\n`);
 console.log('| drive | DNa02 L/R | DNa02 L−R | turn DN L/R | DNg02 L/R | wing MN L/R | haltere MN L/R | PS059 L/R |\n| --- | --- | --- | --- | --- | --- | --- | --- |');
 for (const r of rows) console.log(`| ${r.drive === 'none' ? 'none' : (r.drive === 'affL' ? 'left' : 'right') + ` afferents ${r.current} mV/ms`} | ${f(r, 'dna02L', 'dna02R')} | ${(r.dna02L - r.dna02R).toFixed(1)} | ${f(r, 'turnL', 'turnR')} | ${f(r, 'dng02L', 'dng02R')} | ${f(r, 'wingL', 'wingR')} | ${f(r, 'halMnL', 'halMnR')} | ${f(r, 'ps059L', 'ps059R')} |`);
-writeFileSync(join(ROOT, 'bench/out/haltere-inject.json'), JSON.stringify({ currents: CURRENTS, dnBias: DN, seconds: SECONDS, rows }, null, 1));
-console.log('\nwrote bench/out/haltere-inject.json');
+writeFileSync(join(ROOT, arg('out', 'bench/out/haltere-inject.json')), JSON.stringify({ currents: CURRENTS, dnBias: DN, seconds: SECONDS, rows }, null, 1));
+console.log('\nwrote ' + arg('out', 'bench/out/haltere-inject.json'));

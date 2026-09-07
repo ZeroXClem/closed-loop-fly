@@ -129,13 +129,17 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    relay, both, and sets the 541 monoamine cells to their file sign (0). DNg02 L−R stays within
    ±1 Hz in all ten runs; DNa02 lateralises in all ten. docs/followups.md §1, DECISIONS.md.
    The next probe on DNg02 is a biological tonic drive: `--drive AN07B004` (not written yet).
-2. **Readout without rest subtraction** (or with a slow re-centring like their `offsetTau`)
+2. **Readout without rest subtraction** (now first: the haltere clamp depends on the artefact, followups §2) (or with a slow re-centring like their `offsetTau`)
    so silent populations command straight flight; rerun `bench/ablate.mjs`.
 3. **GPU port of the rate net**: AbijahKaj's two WGSL kernels (`gpu-net.ts`, drive/integrate)
    on the kernels runtime's `GPUDevice` (`brain.device` in `BrainGPU`), then a gather kernel
    for the bridge so the per-frame fence goes. Target > 0.4× realtime.
-4. **Haltere sign vs anatomy**: check which side the 205 afferents (all via DMetaN) project
-   to in [B] (`bench/paths.mjs`-style) before calling −1 "corrective".
+4. ~~Haltere sign vs anatomy~~ **Done 2026-09-07 evening**: `bench/haltere-paths.mjs`,
+   `bench/haltere-inject.mjs --currents …`, `bench/haltere-loop.mjs`. The afferents are
+   ipsilateral and inhibit their own DNa02 via PS059 (predicts the wrong sign); the real effect
+   is a current-dependent switch that only becomes side-asymmetric above 0.8 mV/ms, and sign −1
+   works as an anti-spin clamp at large yaw rates through the readout's silence-as-command
+   artefact. docs/followups.md §2, figure 18. This makes step 2 the most load-bearing item.
 5. Walking: leg MN → joint map (Phase 4 leftover) once something drives the leg VNC; DNa02
    is the natural turn signal there. Xenova's `gait.js` IK is the skeleton to drive.
 6. Re-record `docs/cruise-dna02.webm` (haltere off) if a before/after video is wanted:

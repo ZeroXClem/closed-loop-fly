@@ -48,8 +48,9 @@ All six phases have been run once (2026-09-07). Read them in order: `docs/recon.
 `docs/phase3.md` (the two-network bridge: looming works end to end, DNg02 does not
 lateralise in the un-refit LIF), `docs/phase4.md` (motor readout: the published DNg02 code
 cannot steer here; a labelled DNa02 deviation can), `docs/phase5.md` (closed-loop cruise),
-`docs/ablations.md` (Phase 6). Reasons in `DECISIONS.md`, the plan in `GOAL.md`, every
-number in `bench/out/`.
+`docs/ablations.md` (Phase 6), then `docs/followups.md` (the octopamine hypothesis killed, the
+haltere sign explained). Reasons in `DECISIONS.md`, the plan in `GOAL.md`, every number in
+`bench/out/`.
 
 The main page (`loop.html`) runs the loop; `index.html` is Xenova's paint demo on the new
 worker; `eye.html` is the eye alone.

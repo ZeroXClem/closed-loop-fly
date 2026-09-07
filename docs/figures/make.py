@@ -424,30 +424,50 @@ def octopamine():
     save(f, '17-octopamine-test')
 
 def haltere_anatomy():
-    p, j = load('haltere-paths.json'), load('haltere-inject.json')
+    p = load('haltere-paths.json')
     if not p: return print('skip haltere anatomy (no run)')
-    f, top = fig('Follow-up · haltere sign vs anatomy', 'What the 205 haltere afferents actually reach, and what driving them does to the steering neurons',
-                 'Left: signed two-hop drive from each side\'s afferents onto the steering and motor populations (Σ count × count × sign, thousands). '
-                 'Right: the same afferents driven with a constant current in the spiking net, DNa02 and wing-MN rates read out.',
-                 'bench/haltere-paths.mjs, bench/haltere-inject.mjs · bench/out/haltere-paths.json, haltere-inject.json')
-    ax = f.add_axes([0.08, BOTTOM, 0.50, top - BOTTOM]); panel(ax)
+    inj = [r for f in ('haltere-inject.json', 'haltere-inject-fine.json') if (d := load(f)) for r in d['rows']]
+    loop = load('haltere-loop.json')
+    f, top = fig('Follow-up · haltere sign vs anatomy', 'The haltere proxy is a clamp, not a reflex: both sides act alike until the current is large',
+                 'Left: signed two-hop drive from each side\'s afferents (Σ count × count × sign, thousands). Middle: DNa02 in the spiking net while one side\'s afferents '
+                 'carry a constant current. Right: the turn command the closed loop actually issued against the body\'s yaw rate, for both signs of the proxy.',
+                 'bench/haltere-paths.mjs · bench/haltere-inject.mjs (coarse + fine sweeps) · bench/haltere-loop.mjs · bench/out/haltere-*.json')
+    ax = f.add_axes([0.10, BOTTOM, 0.23, top - BOTTOM]); panel(ax)
     keys = ['DNa02 L', 'DNa02 R', 'wing MN L', 'wing MN R', 'haltere MN L', 'haltere MN R', 'DNg02 L', 'DNg02 R']
     y = np.arange(len(keys))[::-1]
-    for k, (side, col, off) in enumerate([('L', A, 0.2), ('R', B, -0.2)]):
-        vals = [p['twoHop'][side].get(t, 0) / 1000 for t in keys]
-        ax.barh(y + off, vals, height=0.38, color=col, label=f'{side} afferents ({p["afferents"][side]} cells)')
-    ax.axvline(0, color=MUTED, lw=1); ax.set_yticks(y); ax.set_yticklabels(keys, fontsize=14); ax.set_xlabel('signed two-hop drive, thousands (negative = net inhibition)')
-    ax.legend(loc='lower right', frameon=False)
-    ax2 = f.add_axes([0.66, BOTTOM, 0.30, top - BOTTOM]); panel(ax2)
-    if j:
-        rows = j['rows']; labels = ['none', 'left driven', 'right driven']
-        x = np.arange(3)
-        ax2.bar(x - 0.2, [r['dna02L'] for r in rows], width=0.38, color=A, label='DNa02 L')
-        ax2.bar(x + 0.2, [r['dna02R'] for r in rows], width=0.38, color=DN, label='DNa02 R')
-        for i, r in enumerate(rows):
-            ax2.text(i - 0.2, r['dna02L'] + 0.5, f'{r["dna02L"]:.0f}', ha='center', color=INK, fontsize=13); ax2.text(i + 0.2, r['dna02R'] + 0.5, f'{r["dna02R"]:.0f}', ha='center', color=INK, fontsize=13)
-        ax2.set_xticks(x); ax2.set_xticklabels(labels, fontsize=14); ax2.set_ylabel('Hz'); ax2.legend(loc='upper left', frameon=False)
-        ax2.set_title(f'afferents at {j["current"]} mV/ms in the LIF', color=MUTED, fontsize=15)
+    for side, col, off in [('L', A, 0.2), ('R', B, -0.2)]:
+        ax.barh(y + off, [p['twoHop'][side].get(t, 0) / 1000 for t in keys], height=0.38, color=col, label=f'{side} afferents ({p["afferents"][side]})')
+    ax.axvline(0, color=MUTED, lw=1); ax.set_yticks(y); ax.set_yticklabels(keys, fontsize=12); ax.set_xlabel('two-hop drive, thousands')
+    ax.legend(loc='lower right', frameon=False, fontsize=12); ax.set_title('anatomy', color=MUTED, fontsize=15)
+    ax2 = f.add_axes([0.40, BOTTOM, 0.26, top - BOTTOM]); panel(ax2)
+    if inj:
+        base = next(r for r in inj if r['drive'] == 'none')
+        for drive, col, lab in [('affL', A, 'left afferents driven'), ('affR', B, 'right afferents driven')]:
+            rows = sorted([r for r in inj if r['drive'] == drive], key=lambda r: r['current'])
+            xs = [0] + [r['current'] for r in rows]
+            ax2.plot(xs, [base['dna02L']] + [r['dna02L'] for r in rows], '-o', color=col, lw=2.5, ms=6, label=f'{lab}: DNa02 L')
+            ax2.plot(xs, [base['dna02R']] + [r['dna02R'] for r in rows], '--s', color=col, lw=2.5, ms=6, alpha=0.7, label='DNa02 R')
+        ax2.axvspan(0.56, 1.4, color=GOOD, alpha=0.08); ax2.axvline(0.35, color=MUTED, lw=1, ls=':'); ax2.text(0.37, 0.5, 'afferent\nthreshold', color=MUTED, fontsize=10, va='bottom')
+        ax2.text(0.98, 0.42, 'shaded: the loop\'s typical\ncurrent (p50–p90 of\n|yaw rate| × gain 2)', transform=ax2.transAxes, ha='right', va='top', color=MUTED, fontsize=11)
+        ax2.set_xlabel('afferent current, mV/ms'); ax2.set_ylabel('DNa02, Hz'); ax2.legend(loc='upper right', frameon=False, fontsize=10)
+    ax2.set_title('steady state in the LIF', color=MUTED, fontsize=15)
+    ax3 = f.add_axes([0.72, BOTTOM, 0.25, top - BOTTOM]); panel(ax3)
+    if loop:
+        edges = np.linspace(-1.5, 1.5, 16)
+        for sign, col, lab in [('-1', GOOD, 'sign −1 (stable)'), ('1', BAD, 'sign +1 (spins)')]:
+            run = loop['runs'].get(sign)
+            if not run: continue
+            yr = np.array([r['yawRate'] for r in run['rows']]); tc = np.array([r['turnCmd'] for r in run['rows']])
+            ax3.scatter(yr, tc, s=6, color=col, alpha=0.18)
+            mids, means = [], []
+            for lo, hi in zip(edges[:-1], edges[1:]):
+                m = (yr >= lo) & (yr < hi)
+                if m.sum() >= 5: mids.append((lo + hi) / 2); means.append(tc[m].mean())
+            ax3.plot(mids, means, '-o', color=col, lw=3, ms=5, label=lab)
+        ax3.axhline(0, color=MUTED, lw=1); ax3.axvline(0, color=MUTED, lw=1)
+        ax3.set_xlabel('body yaw rate, rad/s  (+ = left)'); ax3.set_ylabel('turn command  (+ = yaw right)'); ax3.legend(loc='upper left', frameon=False, fontsize=12)
+        ax3.text(0.03, 0.03, 'a corrective law would\nrise from left to right', transform=ax3.transAxes, ha='left', va='bottom', color=MUTED, fontsize=11)
+    ax3.set_title('the closed loop', color=MUTED, fontsize=15)
     save(f, '18-haltere-anatomy')
 
 ALL.update(octopamine=octopamine, haltere_anatomy=haltere_anatomy)
