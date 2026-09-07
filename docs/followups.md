@@ -157,3 +157,31 @@ gain, or a turn gain fitted so that the loop's own rotational optic flow at ~0.2
 a counter-command of the size the drift needs; (b) a haltere model with phase-encoded afferents
 onto the wing-steering motor neurons instead of a yaw-rate current into DNa02's neighbourhood;
 (c) re-centring by default. None of these is a wiring result; all are readout or proxy design.
+
+## 4. A biological tonic drive for DNg02: AN07B004 is two cells and they set the network on fire
+
+**The idea** (§1, HANDOFF step 1): replace the hand-set DNg02 constant with drive through
+DNg02's own largest excitatory input, AN07B004, and ask whether HS then lateralises DNg02.
+
+**What AN07B004 is in this graph.** Two cells, one per side, with 1,193 synapses onto DNg02
+between them and very large output elsewhere. `bench/hs-inject.mjs --drive AN07B004:<mV/ms>
+--dnbias 0` (output `bench/out/hs-inject-an07b004.txt`):
+
+| AN07B004 current | DNg02 tonic | HS off: DNg02 L/R, spikes/1.5 s | HS on: DNg02 L/R, spikes/1.5 s |
+| --- | --- | --- | --- |
+| 0.5 | 0 | 1.2 / 0.0, 1,217,000 (storm) | 8.0 / 8.5, 140,000 |
+| 1 | 0 | 1.2 / 0.0, 1,223,000 (storm) | 1.2 / 0.0, 1,248,000 (storm) |
+| 2 | 0 | 11.2 / 11.9, 211,000 | 5.3 / 3.3, 1,244,000 (storm) |
+| 2 | 0.4 | 20.8 / 15.3, 1,280,000 (storm) | 17.4 / 12.6, 1,274,000 (storm) |
+
+For scale: with no drive at all this LIF is silent; with the DNg02 constant at 0.4 mV/ms it
+makes about 33,000 spikes per second, and with the three HS cells driven on top 60,000–80,000
+(`bench/out/hs-inject.txt`). Driving the two AN07B004 cells at 0.5 mV/ms or more tips most runs into a
+network-wide storm of over a million spikes in which DNa02 and the relays read zero and DNg02
+reads about 1 Hz; in the runs that stay out of the storm, DNg02 left and right move together
+(8.0 / 8.5; 11.2 / 11.9) and HS drive changes the difference by no more than it did with the
+constant. So the biological tonic route is not available in the un-refit LIF either: AN07B004's
+output is strong enough that any current that makes it fire regularly destabilises the whole
+network before DNg02 sits near threshold. Same verdict as §1, one level up: DNg02's steering
+is not reachable by injecting current at any single point of this graph; it needs a fitted
+network, which is outside this repo's premise.

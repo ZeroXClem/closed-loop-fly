@@ -128,7 +128,9 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `turngai
    `bench/hs-inject.mjs --octopamine` (options `--mute <types>`, `--monoamines 0`) mutes each
    relay, both, and sets the 541 monoamine cells to their file sign (0). DNg02 L−R stays within
    ±1 Hz in all ten runs; DNa02 lateralises in all ten. docs/followups.md §1, DECISIONS.md.
-   The next probe on DNg02 is a biological tonic drive: `--drive AN07B004` (not written yet).
+   The biological-tonic-drive probe (`--drive AN07B004:<mV/ms>`) is also done: AN07B004 is two
+   cells whose drive throws the network into a >1M-spike storm before DNg02 nears threshold;
+   docs/followups.md §4. DNg02 steering is not reachable by injection anywhere in this graph.
 2. ~~Readout without rest subtraction~~ **Done 2026-09-07 evening**: `gate` and `recenterTau` in
    `src/motor/readout.js` (off by default), `bench/ablate.mjs --gate 1 [--recenter 10] --tag …`.
    Silent conditions now fly straight; the intact loop drifts +204° (re-centring: +108°) and

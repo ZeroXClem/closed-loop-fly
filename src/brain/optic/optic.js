@@ -159,9 +159,9 @@ export class OpticBrain {
    * the host copy of r refreshed by `await sync()` once per frame (flush() first, then the LIF
    * batch, then sync(), so no extra fence).
    */
-  useGPU(device) {
+  async useGPU(device) {
     if (this.net.kind === 'gpu') return;
-    this.net = RateNetGPU.fromCPU(device, this.net);
+    this.net = await RateNetGPU.fromCPU(device, this.net);
     this.name = this.name.replace('[cpu]', '[gpu]');
   }
   get gpu() { return this.net.kind === 'gpu'; }

@@ -16,7 +16,8 @@ const mean = (rows, k) => rows.reduce((a, r) => a + r[k], 0) / Math.max(1, rows.
 requireGpuTools();
 const vite = await startVite(); const browser = await launchCombinedBrowser();
 const report = { runs: {} };
-for (const optic of ['cpu', 'gpu']) {
+const onlyAt = process.argv.indexOf('--only'), ONLY = onlyAt > 0 ? process.argv[onlyAt + 1].split(',') : [];
+for (const optic of ['cpu', 'gpu'].filter((o) => !ONLY.length || ONLY.includes(o))) {
   const page = await browser.newPage();
   const q = `bench=1&gain=2&set=validated&backend=gpu&dnbias=0.4&hold=frame&motor=hover&turngain=2&readout=dna02&optic=${optic}`;
   await page.goto(`${vite.url}loop.html?${q}`, { waitUntil: 'domcontentloaded' });
@@ -37,9 +38,11 @@ for (const optic of ['cpu', 'gpu']) {
   log(`optic=${optic}: ${summary.wallMs} ms/frame (optic ${summary.opticMs}, LIF ${summary.brainMs}) · CW [A] HS ${summary.cw.aHsL}/${summary.cw.aHsR} [B] HS ${summary.cw.bHsL}/${summary.cw.bHsR} DNa02 ${summary.cw.dna02L}/${summary.cw.dna02R} · CCW [A] HS ${summary.ccw.aHsL}/${summary.ccw.aHsR} [B] HS ${summary.ccw.bHsL}/${summary.ccw.bHsR} DNa02 ${summary.ccw.dna02L}/${summary.ccw.dna02R}`);
   await page.close();
 }
+if (report.runs.cpu && report.runs.gpu) {
 const c = report.runs.cpu.summary, g = report.runs.gpu.summary;
 report.verdict = { speedup: +(c.wallMs / g.wallMs).toFixed(2), realtimeCpu: +(16.7 / c.wallMs).toFixed(3), realtimeGpu: +(16.7 / g.wallMs).toFixed(3),
   aHsAgree: Math.max(Math.abs(c.cw.aHsL - g.cw.aHsL), Math.abs(c.cw.aHsR - g.cw.aHsR), Math.abs(c.ccw.aHsL - g.ccw.aHsL), Math.abs(c.ccw.aHsR - g.ccw.aHsR)) };
 log(`verdict: ${c.wallMs} → ${g.wallMs} ms/frame (×${report.verdict.speedup}), ${report.verdict.realtimeCpu}× → ${report.verdict.realtimeGpu}× realtime; max |Δ| in [A] HS means ${report.verdict.aHsAgree.toFixed(3)}`);
+}
 writeFileSync(join(ROOT, 'bench/out/optic-gpu.json'), JSON.stringify(report));
 log('wrote bench/out/optic-gpu.json'); await browser.close(); vite.stop(); process.exit(0);

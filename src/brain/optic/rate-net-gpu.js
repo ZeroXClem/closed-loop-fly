@@ -53,15 +53,29 @@ fn integrate(@builtin(global_invocation_id) gid: vec3<u32>) {
   if (i >= P.n) { return; }
   var d = 0.0;
   for (var c = unitChunkPtr[i]; c < unitChunkPtr[i + 1u]; c++) { d += partial[c]; }
-  let target = P.wScale * d + ext[i] + bias[i];
+  let tgt = P.wScale * d + ext[i] + bias[i];
   let a = min(1.0, P.dt / tau[i]);
-  let xi = x[i] + a * (target - x[i]);
+  let xi = x[i] + a * (tgt - x[i]);
   x[i] = xi;
   r[i] = clamp(xi, 0.0, P.rMax);
 }`;
 
 export class RateNetGPU {
-  constructor(device, csr, tau, { wScale = 1, rMax = 5 } = {}) {
+  /** Build asynchronously so shader compilation errors surface with their message (WGSL line, reason). */
+  static async create(device, csr, tau, params = {}) {
+    device.pushErrorScope('validation');
+    const net = new RateNetGPU(device, csr, tau, params, true);
+    for (const [name, mod] of [['drive', net.driveModule], ['integrate', net.integModule]]) {
+      const info = await mod.getCompilationInfo();
+      const bad = info.messages.filter((m) => m.type === 'error');
+      if (bad.length) throw Error(`optic-v2 ${name} kernel failed to compile: ` + bad.map((m) => `line ${m.lineNum}:${m.linePos} ${m.message}`).join(' | '));
+    }
+    net.finishPipelines();
+    const err = await device.popErrorScope();
+    if (err) throw Error('optic-v2 GPU rate net: ' + err.message);
+    return net;
+  }
+  constructor(device, csr, tau, { wScale = 1, rMax = 5 } = {}, deferPipelines = false) {
     this.device = device;
     this.csr = csr;
     this.n = csr.n;
@@ -93,18 +107,25 @@ export class RateNetGPU {
     const entry = (i, type) => ({ binding: i, visibility: GPUShaderStage.COMPUTE, buffer: { type } });
     const driveLayout = device.createBindGroupLayout({ entries: [entry(0, 'uniform'), entry(1, 'read-only-storage'), entry(2, 'read-only-storage'), entry(3, 'read-only-storage'), entry(4, 'read-only-storage'), entry(5, 'read-only-storage'), entry(6, 'read-only-storage'), entry(7, 'storage')] });
     const integLayout = device.createBindGroupLayout({ entries: [entry(0, 'uniform'), entry(1, 'read-only-storage'), entry(2, 'read-only-storage'), entry(3, 'storage'), entry(4, 'storage'), entry(5, 'read-only-storage'), entry(6, 'read-only-storage'), entry(7, 'read-only-storage')] });
-    this.drivePipe = device.createComputePipeline({ layout: device.createPipelineLayout({ bindGroupLayouts: [driveLayout] }), compute: { module: device.createShaderModule({ code: WGSL_DRIVE }), entryPoint: 'drive' } });
-    this.integPipe = device.createComputePipeline({ layout: device.createPipelineLayout({ bindGroupLayouts: [integLayout] }), compute: { module: device.createShaderModule({ code: WGSL_INTEGRATE }), entryPoint: 'integrate' } });
+    this.driveModule = device.createShaderModule({ label: 'optic-v2 drive', code: WGSL_DRIVE });
+    this.integModule = device.createShaderModule({ label: 'optic-v2 integrate', code: WGSL_INTEGRATE });
+    this.layouts = { driveLayout, integLayout };
     const b = this.buf, bind = (layout, list) => device.createBindGroup({ layout, entries: list.map((buffer, i) => ({ binding: i, resource: { buffer } })) });
     this.driveBind = bind(driveLayout, [b.uniform, b.chunkUnit, b.unitChunkPtr, b.indptr, b.idx, b.wt, b.r, b.partial]);
     this.integBind = bind(integLayout, [b.uniform, b.unitChunkPtr, b.partial, b.x, b.r, b.ext, b.bias, b.tau]);
+    if (!deferPipelines) this.finishPipelines();
     this.uniformData = new ArrayBuffer(32);
     this.pendingSteps = 0;
     this.kind = 'gpu';
   }
+  finishPipelines() {
+    const device = this.device, { driveLayout, integLayout } = this.layouts;
+    this.drivePipe = device.createComputePipeline({ label: 'optic-v2 drive', layout: device.createPipelineLayout({ bindGroupLayouts: [driveLayout] }), compute: { module: this.driveModule, entryPoint: 'drive' } });
+    this.integPipe = device.createComputePipeline({ label: 'optic-v2 integrate', layout: device.createPipelineLayout({ bindGroupLayouts: [integLayout] }), compute: { module: this.integModule, entryPoint: 'integrate' } });
+  }
   /** Take over from a settled CPU RateNet: same CSR, tau and params, its x, r, ext and bias. */
-  static fromCPU(device, net) {
-    const g = new RateNetGPU(device, net.csr, net.tau, net.params);
+  static async fromCPU(device, net) {
+    const g = await RateNetGPU.create(device, net.csr, net.tau, net.params);
     g.x.set(net.x); g.r.set(net.r); g.ext.set(net.ext); g.bias.set(net.bias);
     g.uploadState();
     return g;

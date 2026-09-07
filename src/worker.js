@@ -354,7 +354,7 @@ async function initOptic(urls, columns, opticBackend = 'cpu') {
   postMessage({ type: 'stage', message: 'Settling the optic net under grey…' });
   optic.settle(0.5);
   if (opticBackend === 'gpu') {
-    if (brain.device) { optic.useGPU(brain.device); postMessage({ type: 'stage', message: 'optic-v2 rate net moved to the GPU (same device as the LIF)' }); }
+    if (brain.device) { await optic.useGPU(brain.device); postMessage({ type: 'stage', message: 'optic-v2 rate net moved to the GPU (same device as the LIF)' }); }
     else postMessage({ type: 'fallback', message: 'optic=gpu asked but the LIF is on the CPU; the rate net stays on the CPU' });
   }
   buildPairs();

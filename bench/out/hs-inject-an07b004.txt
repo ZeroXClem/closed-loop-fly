@@ -1,0 +1,44 @@
+drive AN07B004: 2 cells at 0.5 mV/ms
+PS080_L (1 cell) input 4495 synapses; top: PS118_L-:163  PS057_L-:153  PS333_R+:150  PLP228_R+:147  PS090_L-:138  LAL061_L-:136  LAL156_a_R+:136  PS232_R+:130  PS112_L-:124  LAL019_L+:103  LAL126_R-:94  PLP208_R+:89  PS221_L+:89  LAL133_e_L-:86
+  excitatory 2730, inhibitory 1752
+monoamine cells: 541 (octopamine 101); sign in Xenova's file: {"0":541}; +1 after the load-time fix
+
+== DNg02 tonic 0 mV/ms, HS_L current 0 mV/ms (1.5 s, 1216983 spikes, 2 cells driven [AN07B004 0.5 mV/ms])
+   HS L/R 0.0/0.0  PS080 L/R 0.0/0.0  OA-VUMa4 54.2  GNG286 L/R 13.2/22.8  DNp15_L 0.0  LPT114_L 0.0  PS321_L 0.0
+   DNg02 L/R 1.2/0.0  DNa02 L/R 0.0/0.0
+
+== DNg02 tonic 0 mV/ms, HS_L current 1.5 mV/ms (1.5 s, 140315 spikes, 2 cells driven [AN07B004 0.5 mV/ms])
+   HS L/R 129.9/0.0  PS080 L/R 29.2/32.9  OA-VUMa4 60.0  GNG286 L/R 39.0/32.5  DNp15_L 76.6  LPT114_L 2.4  PS321_L 40.8
+   DNg02 L/R 8.0/8.5  DNa02 L/R 23.0/8.5
+drive AN07B004: 2 cells at 1 mV/ms
+PS080_L (1 cell) input 4495 synapses; top: PS118_L-:163  PS057_L-:153  PS333_R+:150  PLP228_R+:147  PS090_L-:138  LAL061_L-:136  LAL156_a_R+:136  PS232_R+:130  PS112_L-:124  LAL019_L+:103  LAL126_R-:94  PLP208_R+:89  PS221_L+:89  LAL133_e_L-:86
+  excitatory 2730, inhibitory 1752
+monoamine cells: 541 (octopamine 101); sign in Xenova's file: {"0":541}; +1 after the load-time fix
+
+== DNg02 tonic 0 mV/ms, HS_L current 0 mV/ms (1.5 s, 1223455 spikes, 2 cells driven [AN07B004 1 mV/ms])
+   HS L/R 0.0/0.0  PS080 L/R 0.0/0.0  OA-VUMa4 55.8  GNG286 L/R 12.8/21.7  DNp15_L 0.0  LPT114_L 0.0  PS321_L 0.0
+   DNg02 L/R 1.2/0.0  DNa02 L/R 0.0/0.0
+
+== DNg02 tonic 0 mV/ms, HS_L current 1.5 mV/ms (1.5 s, 1247779 spikes, 2 cells driven [AN07B004 1 mV/ms])
+   HS L/R 128.4/0.0  PS080 L/R 0.0/0.0  OA-VUMa4 59.5  GNG286 L/R 19.1/21.7  DNp15_L 61.8  LPT114_L 0.0  PS321_L 30.1
+   DNg02 L/R 1.2/0.0  DNa02 L/R 0.0/0.0
+drive AN07B004: 2 cells at 2 mV/ms
+PS080_L (1 cell) input 4495 synapses; top: PS118_L-:163  PS057_L-:153  PS333_R+:150  PLP228_R+:147  PS090_L-:138  LAL061_L-:136  LAL156_a_R+:136  PS232_R+:130  PS112_L-:124  LAL019_L+:103  LAL126_R-:94  PLP208_R+:89  PS221_L+:89  LAL133_e_L-:86
+  excitatory 2730, inhibitory 1752
+monoamine cells: 541 (octopamine 101); sign in Xenova's file: {"0":541}; +1 after the load-time fix
+
+== DNg02 tonic 0 mV/ms, HS_L current 0 mV/ms (1.5 s, 211480 spikes, 2 cells driven [AN07B004 2 mV/ms])
+   HS L/R 0.0/0.0  PS080 L/R 32.5/43.7  OA-VUMa4 93.0  GNG286 L/R 57.4/54.4  DNp15_L 0.0  LPT114_L 2.4  PS321_L 2.6
+   DNg02 L/R 11.2/11.9  DNa02 L/R 33.3/18.6
+
+== DNg02 tonic 0 mV/ms, HS_L current 1.5 mV/ms (1.5 s, 1244092 spikes, 2 cells driven [AN07B004 2 mV/ms])
+   HS L/R 129.6/0.0  PS080 L/R 9.5/4.0  OA-VUMa4 71.5  GNG286 L/R 34.0/34.6  DNp15_L 57.0  LPT114_L 0.6  PS321_L 37.0
+   DNg02 L/R 5.3/3.3  DNa02 L/R 0.0/0.0
+
+== DNg02 tonic 0.4 mV/ms, HS_L current 0 mV/ms (1.5 s, 1279751 spikes, 2 cells driven [AN07B004 2 mV/ms])
+   HS L/R 0.0/0.0  PS080 L/R 6.7/8.0  OA-VUMa4 66.6  GNG286 L/R 33.3/36.5  DNp15_L 0.0  LPT114_L 0.4  PS321_L 0.0
+   DNg02 L/R 20.8/15.3  DNa02 L/R 0.0/0.0
+
+== DNg02 tonic 0.4 mV/ms, HS_L current 1.5 mV/ms (1.5 s, 1273786 spikes, 2 cells driven [AN07B004 2 mV/ms])
+   HS L/R 129.8/0.0  PS080 L/R 4.0/2.7  OA-VUMa4 67.2  GNG286 L/R 25.3/24.8  DNp15_L 63.8  LPT114_L 0.4  PS321_L 29.7
+   DNg02 L/R 17.4/12.6  DNa02 L/R 0.0/0.0
