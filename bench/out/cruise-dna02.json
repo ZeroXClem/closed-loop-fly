@@ -1,0 +1,102 @@
+{
+ "readout": "dna02",
+ "seconds": 5,
+ "dnBias": 0.4,
+ "turnGain": 2,
+ "haltereGain": 2,
+ "baseAmp": 0.7,
+ "runs": [
+  {
+   "rest": {
+    "dng02L": 20.085186646343725,
+    "dng02R": 19.895596636355474,
+    "dna02L": 13.113014427062756,
+    "dna02R": 9.026681649982093,
+    "wing": 48.169219553654806
+   },
+   "frames": 300,
+   "collisions": 0,
+   "driftDeg": -5.7,
+   "maxExcursionDeg": 22.3,
+   "wobbleRadS": 0.496,
+   "meanYawRate": -0.02,
+   "distance": 3.9,
+   "meanSpeed": 0.69,
+   "spikesPerFrame": 1330,
+   "dng02": [
+    20.9,
+    21.1
+   ],
+   "dna02": [
+    22.8,
+    16.4
+   ],
+   "wingMn": [
+    53.3,
+    51
+   ],
+   "headingPerSecond": [
+    42.6,
+    56.2,
+    34.7,
+    40,
+    27.3
+   ],
+   "end": {
+    "x": -2.9,
+    "z": -2
+   },
+   "haltere": false
+  },
+  {
+   "rest": {
+    "dng02L": 7.005065643509176,
+    "dng02R": 4.856551486271928,
+    "dna02L": 13.50104131059555,
+    "dna02R": 0.23906196057760773,
+    "wing": 24.68727286823333
+   },
+   "frames": 300,
+   "collisions": 0,
+   "driftDeg": -463.8,
+   "maxExcursionDeg": 463.8,
+   "wobbleRadS": 0.808,
+   "meanYawRate": -1.62,
+   "distance": 11,
+   "meanSpeed": 0.69,
+   "spikesPerFrame": 2174,
+   "dng02": [
+    8.5,
+    4.3
+   ],
+   "dna02": [
+    2,
+    3.9
+   ],
+   "wingMn": [
+    33.7,
+    45.1
+   ],
+   "headingPerSecond": [
+    308.6,
+    296.1,
+    186.6,
+    72.1,
+    -42.5
+   ],
+   "end": {
+    "x": 1.4,
+    "z": 1
+   },
+   "haltere": true
+  }
+ ],
+ "verdict": {
+  "pass": true,
+  "best": {
+   "haltere": false,
+   "collisions": 0,
+   "driftDeg": -5.7
+  }
+ }
+}

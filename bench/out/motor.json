@@ -1,0 +1,86 @@
+{
+ "gain": 2,
+ "dnBias": 0.4,
+ "turnGain": 20,
+ "seconds": 6,
+ "omega": 1,
+ "set": "validated",
+ "backend": "gpu",
+ "runs": [
+  {
+   "omega": 1,
+   "frames": 360,
+   "corrHeadingDrum": 0.995,
+   "meanYawRate": 0.322,
+   "finalYawDeg": 71.9,
+   "drumDeg": 343.8,
+   "meanTurnCmd": -0.092,
+   "dng02": {
+    "L": 19.5,
+    "R": 19.65
+   },
+   "aTurn": 1.101,
+   "follows": true
+  },
+  {
+   "omega": -1,
+   "frames": 360,
+   "corrHeadingDrum": -0.9,
+   "meanYawRate": 0.132,
+   "finalYawDeg": 129,
+   "drumDeg": -343.8,
+   "meanTurnCmd": -0.035,
+   "dng02": {
+    "L": 20.52,
+    "R": 21.23
+   },
+   "aTurn": -0.685,
+   "follows": false
+  },
+  {
+   "loom": {
+    "az": -45,
+    "peakRollDeg": 15.3,
+    "meanYawRate": 0.233,
+    "aLoomPeak": {
+     "L": 4.9,
+     "R": 0.02
+    },
+    "dnp01Peak": 209.5,
+    "dng02": {
+     "L": 18.45,
+     "R": 18.53
+    },
+    "banksAway": true,
+    "yawsAway": false
+   }
+  },
+  {
+   "loom": {
+    "az": 45,
+    "peakRollDeg": 14.5,
+    "meanYawRate": 0.375,
+    "aLoomPeak": {
+     "L": 0.126,
+     "R": 4.9
+    },
+    "dnp01Peak": 232.9,
+    "dng02": {
+     "L": 18.12,
+     "R": 17.78
+    },
+    "banksAway": false,
+    "yawsAway": true
+   }
+  }
+ ],
+ "verdict": {
+  "optomotor": false,
+  "corr": [
+   0.995,
+   -0.9
+  ],
+  "loomAway": true,
+  "pass": false
+ }
+}

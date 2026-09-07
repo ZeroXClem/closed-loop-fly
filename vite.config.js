@@ -43,10 +43,11 @@ export default defineConfig({
   base: './',
   publicDir: PUBLIC,
   plugins: [storedGzip()],
-  build: { rolldownOptions: { input: { main: resolve('index.html'), eye: resolve('eye.html') } } },
+  build: { rolldownOptions: { input: { main: resolve('index.html'), eye: resolve('eye.html'), loop: resolve('loop.html') } } },
   worker: { format: 'es' },
   server: { host: true, port: 5173, strictPort: true },
   // The worker is the only importer of @huggingface/kernels. Without this, the dev server
   // discovers it at runtime, re-bundles, and force-reloads the page mid-boot.
-  optimizeDeps: { entries: ['index.html', 'src/worker.js'], include: ['@huggingface/kernels', 'three'] },
+  optimizeDeps: { entries: ['index.html', 'eye.html', 'loop.html', 'src/worker.js'], include: ['@huggingface/kernels', 'three'] },
+  assetsInclude: ['**/*.bin'],
 });

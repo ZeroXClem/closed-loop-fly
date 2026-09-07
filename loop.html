@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Closed-loop fly — two networks</title>
+    <link rel="icon" href="data:," />
+    <style>
+      html, body { margin: 0; height: 100%; background: #10171d; color: #cfd6df; font: 13px ui-monospace, monospace; overflow: hidden; }
+      #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+      #hud { position: fixed; left: 8px; top: 8px; width: 680px; height: 270px; background: rgba(16, 23, 29, 0.7); border: 1px solid #2a3038; }
+      #net { position: fixed; left: 8px; top: 286px; width: 680px; height: 90px; background: rgba(16, 23, 29, 0.7); border: 1px solid #2a3038; }
+      #stats { position: fixed; left: 8px; top: 384px; display: grid; grid-template-columns: max-content max-content; gap: 1px 12px; background: rgba(16, 23, 29, 0.7); padding: 6px 8px; border: 1px solid #2a3038; max-height: calc(100% - 400px); overflow: auto; }
+      #stats .k { color: #9aa3ad; }
+      #status { position: fixed; right: 8px; top: 8px; max-width: 46%; background: rgba(16, 23, 29, 0.8); padding: 6px 8px; border: 1px solid #2a3038; }
+      #help { position: fixed; right: 8px; bottom: 8px; color: #9aa3ad; text-align: right; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view"></canvas>
+    <canvas id="hud" width="680" height="270"></canvas>
+    <canvas id="net" width="680" height="90"></canvas>
+    <div id="stats"></div>
+    <div id="status">starting…</div>
+    <div id="help">[ ] drum · space stop · b bridge on/off · l loom · r reset<br />?omega= ?bench=1 ?gain= ?set=validated|inputs ?backend=gpu|cpu</div>
+    <script type="module" src="/src/loop.js"></script>
+  </body>
+</html>

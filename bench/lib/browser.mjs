@@ -79,7 +79,7 @@ export async function launchWebGLBrowser() {
 export const launchAnyBrowser = launchWebGLBrowser;
 
 /** Start `vite` on 127.0.0.1:port; resolves with the URL once it is listening. */
-export function startVite(port = 5173) {
+export function startVite(port = 5200 + Math.floor(Math.random() * 3000)) { // random port: benches may run side by side
   return new Promise((resolve, reject) => {
     const child = spawn('npx', ['vite', '--port', String(port), '--strictPort', '--host', '127.0.0.1'], { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '';

@@ -186,3 +186,40 @@ set. Still impure, still host Brave + host driver; nothing packaged.
 Also: the first `requestAdapter` in a fresh GPU process fails while Dawn initialises, and a
 plain first request locks in SwiftShader (`bench/webgpu-retry-probe.mjs`). The worker's shim
 now retries the same `high-performance` request before relaxing it.
+
+## 2026-09-07 — Phase 3: what is bridged, what is held, what is hand-set
+
+- **Bridge set = HS, LC4, LPLC2 (317 cells), option `inputs` = every LPTC and looming LC
+  (1,114).** Not DNp, not DNg02, not motor neurons: in [A] those are stubs (DNp sits at the
+  rate ceiling at rest because its central-brain inputs run unfitted), and Phase 0 showed [B]
+  holds 81–95% of their real input. `[A].r − rest` (rest captured after the 2.5 s warm-up)
+  times `bridgeGain · typeGain` becomes current (mV/ms) on the same body ID in [B].
+- **[A] stays on the CPU** (their worker-fallback path, 27–38 ms per 16.7 ms frame). Their
+  WGSL kernel is two small dispatches and the shared `GPUDevice` is at hand; porting it is
+  Phase 5 performance work, after correctness.
+- **Rate hold per frame.** Per-substep coupling costs one GPU fence per 4 ms; headed under
+  Xvfb a fence is ~45 ms, so a frame took 213 ms (0.08×). With the injected current held at
+  [A]'s end-of-frame rates and one [B] batch of 160 ticks per frame, one fence per frame.
+  GOAL.md names this as the first fix below 0.3×.
+- **Tonic DNg02 drive (`dnBias`, mV/ms on [B]'s 29 DNg02 cells through the inject API).**
+  `bench/paths.mjs` shows why it is needed: in [B] there are zero direct HS → DNg02 synapses;
+  the route is HSS/HSN → PS080 (GABAergic, 112–168 synapses) → contralateral DNg02 (152–172
+  synapses spread over 14–15 cells). Inhibition can only lateralise a DNg02 that is already
+  firing. In the animal that drive comes from ascending neurons (AN07B004, the top excitatory
+  input) and the rest of the flight circuit; here it is one constant, the same trick as
+  AbijahKaj's `dnBias`, and the loudest hand-written number in the model. Its size is a
+  threshold problem: ~10 synapses × 0.275 mV per DNg02 cell of PS080 inhibition is worth
+  about 1.4 mV mean, so DNg02 lateralises only when the tonic drive keeps it within a few mV
+  of threshold.
+- **Xenova's stimulus path stays live** in the loop worker: painting still injects, and the
+  Phase 1 A/B (`?stimulus=poisson`) still works.
+
+## 2026-09-07 — Phase 4: DNg02 code with the published sign; DNa02 noted, not used
+
+`src/motor/readout.js` turns [B]'s DNg02 L/R into wing amplitudes with the Namiki 2022
+population code and no fitted sign (the wiring's PS080 route and the published
+contralateral-amplitude effect agree on the optomotor direction). `bench/paths.mjs` also
+shows HSS → DNa02 directly (36–47 synapses), and in the bridge runs [B]'s DNa02 lateralises
+far more than DNg02. DNa02 is Xenova's walking-turn channel and a walking DN in the
+literature, so it stays out of the flight readout; it is the obvious signal for the walking
+readout when the leg VNC is driven.
