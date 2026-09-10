@@ -14,12 +14,18 @@
  * (bench/paths.mjs), and the fly must yaw with the drum, so (L − R) > 0 must turn left.
  * A first-order lag on the amplitudes (`motorTau`) stands in for the wing hinge dynamics.
  */
+/** Steering MN rate keys used by the 'steering' readout source (step 0b). */
+const STEER_KEYS = ['b1L', 'b1R', 'b2L', 'b2R', 'b3L', 'b3R', 'i1L', 'i1R', 'iii3L', 'iii3R'];
+
 export const DEFAULT_READOUT = Object.freeze({
   /**
    * 'dng02' (default): the published flight population code. 'dna02': DEVIATION for exploring
    * the closed loop only — DNa02 is a walking-turn descending neuron that HS drives directly
    * (36–47 synapses, bench/paths.mjs) and it lateralises strongly in [B], where DNg02 does not
    * (docs/phase3.md). Not a published flight map; every result taken with it says so.
+   * 'steering': FITTED STAGE — reads wing steering MN rates (b1/b2/b3 as agonists, i1/iii3
+   * as antagonists); the L/R asymmetry of the net drive maps to turn command. Requires the
+   * wingbeat CPG to fire the steering MNs (?haltere=phase). See docs/followups.md §9.
    */
   source: 'dng02',
   baseAmp: 0.5,
@@ -62,23 +68,41 @@ export class MotorReadout {
     a.dna02R = (a.dna02R ?? 0) + rates.dna02R;
     a.wingL += rates.wingMnL;
     a.wingR += rates.wingMnR;
+    // steering MN rest levels (step 0b)
+    for (const k of STEER_KEYS) a[k] = (a[k] ?? 0) + (rates[k] ?? 0);
   }
   captureRest() {
     const a = this.restAcc, n = Math.max(1, a.n);
     this.rest = { dng02L: a.dng02L / n, dng02R: a.dng02R / n, dna02L: (a.dna02L ?? 0) / n, dna02R: (a.dna02R ?? 0) / n, wing: (a.wingL + a.wingR) / (2 * n) };
+    for (const k of STEER_KEYS) this.rest[k] = (a[k] ?? 0) / n;
     return this.rest;
   }
   /** rates: the worker's readout rates (Hz); dt: frame seconds. Returns { left, right }. */
   step(rates, dt) {
     const p = this.p;
+    let diffRaw, gate = 1;
+    if (p.source === 'steering') {
+      // Step 0b: agonist (b1+b2+b3) vs antagonist (i1+iii3), rest-subtracted, per side
+      const r = this.rest ?? {};
+      const ag = (s) => ((rates['b1' + s] ?? 0) - (r['b1' + s] ?? 0)) + ((rates['b2' + s] ?? 0) - (r['b2' + s] ?? 0)) + ((rates['b3' + s] ?? 0) - (r['b3' + s] ?? 0));
+      const ant = (s) => ((rates['i1' + s] ?? 0) - (r['i1' + s] ?? 0)) + ((rates['iii3' + s] ?? 0) - (r['iii3' + s] ?? 0));
+      const netL = ag('L') / 3 - ant('L') / 2;
+      const netR = ag('R') / 3 - ant('R') / 2;
+      const rawL = (rates.b1L ?? 0) + (rates.b2L ?? 0) + (rates.b3L ?? 0) + (rates.i1L ?? 0) + (rates.iii3L ?? 0);
+      const rawR = (rates.b1R ?? 0) + (rates.b2R ?? 0) + (rates.b3R ?? 0) + (rates.i1R ?? 0) + (rates.iii3R ?? 0);
+      if (p.gate) gate = Math.min(1, (rawL + rawR) / ((r.b1L ?? 0) + (r.b2L ?? 0) + (r.b3L ?? 0) + (r.i1L ?? 0) + (r.iii3L ?? 0) + (r.b1R ?? 0) + (r.b2R ?? 0) + (r.b3R ?? 0) + (r.i1R ?? 0) + (r.iii3R ?? 0) + 1e-6));
+      diffRaw = gate * (netL - netR) / (rawL + rawR + p.floor);
+      if (p.recenterTau > 0 && this.rest) { const b = Math.min(1, dt / p.recenterTau); for (const k of STEER_KEYS) this.rest[k] = (this.rest[k] ?? 0) + b * ((rates[k] ?? 0) - (this.rest[k] ?? 0)); }
+    } else {
     const src = p.source === 'dna02' ? 'dna02' : 'dng02';
     const L = rates[src + 'L'], R = rates[src + 'R'];
     // remove the standing asymmetry of the two populations (their rest), like [A]'s side offsets
     const restL = this.rest?.[src + 'L'] ?? 0, restR = this.rest?.[src + 'R'] ?? 0;
     const dL = L - restL, dR = R - restR;
-    const gate = p.gate ? Math.min(1, (L + R) / (restL + restR + 1e-6)) : 1;
-    const diffRaw = gate * (dL - dR) / (L + R + p.floor);
+    gate = p.gate ? Math.min(1, (L + R) / (restL + restR + 1e-6)) : 1;
+    diffRaw = gate * (dL - dR) / (L + R + p.floor);
     if (p.recenterTau > 0 && this.rest) { const b = Math.min(1, dt / p.recenterTau); this.rest[src + 'L'] = restL + b * (L - restL); this.rest[src + 'R'] = restR + b * (R - restR); }
+    }
     this.gate = gate;
     this.diffRaw = diffRaw;
     // turn > 0 = yaw right (their convention): left wing harder

@@ -329,3 +329,21 @@ On the GPU it lives in the state struct's padding word (bitcast), so no buffer l
 the uniform block gains two floats. Default `inc` 0 keeps both backends bit-identical to before.
 Bench: `bench/adapt-check.mjs` (CPU/GPU agreement with it on), then the AN07B004 probe and the
 cruise with it on; results in docs/followups.md §7.
+
+## 2026-09-09 — Step 0b: phase-encoded haltere via wingbeat CPG (fitted stage, `?haltere=phase`)
+
+FITTED STAGE. Route 0a (compass) is closed (§8): the heading circuit is in the graph but
+unusable without input or tuning. Route 0b admits a fitted stage: a 200 Hz wingbeat CPG drives
+wing steering MNs (b1/b2/b3 agonists, i1/iii3 antagonists) at their preferred phases, and
+haltere afferents fire once per cycle with L/R amplitude modulated by body yaw rate. The CPG
+amplitude, haltere amplitude, and phase gain are all hand-set (labeled in `DEFAULT_WINGBEAT`).
+
+The connectome provides the haltere→MN synapses (b1: 295/277, b3: 369/310, i1: 160/225, all
+ipsilateral direct); everything else is hand-set: the CPG, the pulse timing, the readout map
+(`source='steering'` in `MotorReadout`).
+
+Implementation: `src/motor/wingbeat.js` (WingbeatCPG), `src/bridge/steering-ids.json` (MN body
+IDs), integrated in `src/worker.js` (batch breaking into 50-tick wingbeat cycles). URL: append
+`&haltere=phase&cpgamp=0.8&haltamp=1.5&phasegain=0.1` (all optional, shown are defaults).
+Benches: `bench/wingbeat-unit.mjs` (CPU sweep), `bench/haltere-phase.mjs` (GPU cruise
+comparison). Results in docs/followups.md §9.

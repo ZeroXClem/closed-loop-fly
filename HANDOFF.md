@@ -85,7 +85,9 @@ next to them, and never quote a single closed-loop run: the loop is chaotic, one
 | `src/brain/optic/` | AbijahKaj ports: `graph.js` (v2 loader, CSR by post), `params.js` (fitted params → weights), `rate-net.js` (Euler, CPU), `optic.js` (OpticBrain: photoreceptors → lamina, tonic drives, calibration offsets, readouts, LC receptive fields) |
 | `src/eye/` | `columns.json` (1,771 column directions from the vendored graph; regenerate with `scripts/gen-columns.mjs`), `ommatidia.js`, `eye.js` (6×48² cube sampler), `photoreceptor.js` (Weber + fitted low-pass), `index.js`, `hud.js` |
 | `src/world/` | drum arena, rigid-body fly, looming sphere (ports, same seeds as upstream) |
-| `src/motor/readout.js`, `wings.js` | DNg02 population code (Namiki 2022) → wing amplitudes; `source: 'dna02'` is the deviation; wing forces port |
+| `src/motor/readout.js`, `wings.js` | DNg02 population code (Namiki 2022) → wing amplitudes; `source: 'dna02'` is the deviation; `source: 'steering'` is the step 0b fitted stage; wing forces port |
+| `src/motor/wingbeat.js` | step 0b: 200 Hz wingbeat CPG + phase-encoded haltere (fitted stage) |
+| `src/bridge/steering-ids.json` | wing steering MN body IDs by type (b1/b2/b3/i1/iii3/...) and side |
 | `src/loop.js` + `loop.html` | scene + eye + worker; fixed 1/60 s frames gated on the worker (deterministic); `window.__loop` bench hook; URL params below |
 | `src/main.js` + `index.html` | Xenova's UI, imports pointed at vendor/, `window.__closedLoop` hook |
 | `src/bridge/haltere-ids.json` | 205 haltere afferents by body ID, sided by `rootSide` |
@@ -95,9 +97,9 @@ next to them, and never quote a single closed-loop run: the loop is chaotic, one
 
 `loop.html` URL params: `bench=1` (no rAF; driven by `__loop.run(n)`), `backend=gpu|cpu`,
 `gain=` (bridge gain, mV/ms per rate unit), `set=validated|inputs`, `dnbias=` (tonic DNg02,
-mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `flight=<LPTC gain>`, `adapt=<mV/spike>,<tau ms>`, `turngain=`,
-`turnsign=`, `haltere=on`, `halteregain=`, `halteresign=±1`, `course=1`, `bridge=off`,
-`stimulus=inject|poisson`, `frame=` (dt).
+mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02|steering`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `flight=<LPTC gain>`, `adapt=<mV/spike>,<tau ms>`, `turngain=`,
+`turnsign=`, `haltere=on|phase`, `halteregain=`, `halteresign=±1`, `cpgamp=`, `haltamp=`,
+`phasegain=`, `course=1`, `bridge=off`, `stimulus=inject|poisson`, `frame=` (dt).
 
 ## The hand-set numbers (all in DECISIONS.md with reasons)
 
@@ -110,7 +112,8 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|
 | readout | DNg02 code: base 0.5, turnGain 1–20 (never steers); DNa02 deviation: turnGain 2 | `src/motor/readout.js` |
 | motor lag | 50 ms | readout |
 | cruise | base amplitude 0.7 → 0.78 units/s | `bench/lib/cruise.mjs` |
-| haltere proxy | gain 2 mV/ms per rad/s, cap 3, **sign −1** (left afferents for rightward rotation) | `src/loop.js` |
+| haltere proxy (DC) | gain 2 mV/ms per rad/s, cap 3, **sign −1** (left afferents for rightward rotation) | `src/loop.js` |
+| haltere (phase) | cpgAmp 0.8, haltAmp 1.5, phaseGain 0.1, sign −1 (all fitted) | `src/motor/wingbeat.js` |
 | mute current | −50 mV/ms | worker `mute` |
 | eye | 48 px faces, Weber τ 1 s, photoreceptor τ 19.6 ms (fitted) | `src/eye/` |
 
@@ -150,9 +153,12 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02`, `gate=0|
    MeTu, and the un-refit LIF's ring is a fixed point at one wedge (~52° on the spectral ring)
    for any pulse position and any tonic drive: no bump, no memory. Making it a compass means
    tuning EPG–PEN–Δ7 gains, i.e. a fitted stage. `bench/compass-paths.mjs`, `bench/compass-bump.mjs`.
-   (b) **still open**: a haltere model whose afferents encode rotation phase onto the wing-steering
-   MNs (b1/b2/i1, in `bench/out/motor-neurons.json`) instead of a yaw-rate current. Run every
-   closed-loop claim as ≥ 3 realisations (different warm-up) before writing it down.
+   (b) **implemented 2026-09-09 (fitted stage)**: `?haltere=phase` — 200 Hz wingbeat CPG drives
+   steering MNs, haltere afferents fire once per cycle with L/R amplitude modulated by yaw rate.
+   All constants hand-set (labeled in `DEFAULT_WINGBEAT`). CPU: `bench/wingbeat-unit.mjs`; GPU:
+   `bench/haltere-phase.mjs`. The readout is `source='steering'` (agonist−antagonist asymmetry).
+   Preliminary cruise: lowest wobble (0.110 rad/s) of the three conditions, comparable drift.
+   docs/followups.md §9, DECISIONS.md.
 
 
 1. ~~Kill or confirm the octopamine hypothesis~~ **Done 2026-09-07 evening, killed**:

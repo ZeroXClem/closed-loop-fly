@@ -53,7 +53,9 @@ world.course.visible = params.has('course');
 let collisions = 0, inContact = false;
 // sign +1: left afferents fire for leftward rotation; −1: the mirror. Which one the wiring
 // turns into a *corrective* wing asymmetry is an empirical question (bench/cruise.mjs).
-const haltere = { on: params.get('haltere') === 'on', gain: Number(params.get('halteregain') ?? 2), sign: Number(params.get('halteresign') ?? 1), maxCurrent: 3 };
+const haltereMode = params.get('haltere') ?? 'off'; // 'on' = DC proxy, 'phase' = wingbeat CPG (step 0b)
+const haltere = { on: haltereMode === 'on', gain: Number(params.get('halteregain') ?? 2), sign: Number(params.get('halteresign') ?? 1), maxCurrent: 3 };
+const halterePhase = haltereMode === 'phase'; // step 0b: phase-encoded via wingbeat CPG in the worker
 function countCollisions() {
   const p = body.state.position;
   let hit = false;
@@ -133,9 +135,13 @@ function requestFrame() {
   stepScene(FRAME_DT);
   if (!BENCH || hook.renderFrames) render();
   const lumL = eye.lum.left.slice(), lumR = eye.lum.right.slice();
-  const h = haltereCurrent();
-  if (h) worker.postMessage({ type: 'inject', bodyIds: h.bodyIds, values: h.values });
-  worker.postMessage({ type: 'frame', generation, dt: FRAME_DT, lumL, lumR, silenced: hook.silenced }, [lumL.buffer, lumR.buffer]);
+  if (!halterePhase) {
+    const h = haltereCurrent();
+    if (h) worker.postMessage({ type: 'inject', bodyIds: h.bodyIds, values: h.values });
+  }
+  const frameMsg = { type: 'frame', generation, dt: FRAME_DT, lumL, lumR, silenced: hook.silenced };
+  if (halterePhase) frameMsg.yawRate = body.state.yawRate;
+  worker.postMessage(frameMsg, [lumL.buffer, lumR.buffer]);
 }
 function afterFrame(m) {
   if (BENCH) return;
@@ -187,7 +193,7 @@ Object.assign(hook, {
   loomState: () => ({ active: loomer.active, distance: loomer.distance, hits: loomer.hits }),
   reset() { generation++; time = 0; frame = 0; body.reset(); eye.reset(); loomer.stop(); readout.reset(); forces = { ...HOVER }; collisions = 0; inContact = false; hook.frames.length = 0; pending = true; worker.postMessage({ type: 'reset', generation }); },
   motor: { get mode() { return motorMode; }, set mode(v) { motorMode = v; }, readout, captureRest: () => readout.captureRest(), setParams: (p) => Object.assign(readout.p, p) },
-  haltere,
+  haltere, halterePhase,
   silenced: false, // recurrent transmission in [B] off (Xenova's flag)
   renderFrames: false,
   mute: (superclasses, current) => worker.postMessage({ type: 'mute', superclasses, current }),
@@ -220,5 +226,6 @@ worker.postMessage({
   opticParams: { flightGain: Number(params.get('flight') ?? 1) },
   adapt: params.get('adapt') ? { inc: Number(params.get('adapt').split(',')[0]), tau: Number(params.get('adapt').split(',')[1] ?? 300) } : null,
   columns,
+  wingbeat: halterePhase ? { frequency: Number(params.get('cpg') ?? 200), cpgAmplitude: Number(params.get('cpgamp') ?? 0.8), haltereAmplitude: Number(params.get('haltamp') ?? 1.5), phaseGain: Number(params.get('phasegain') ?? 0.1), sign: Number(params.get('halteresign') ?? -1) } : null,
 });
 worker.postMessage({ type: 'bridge', config: { gain: Number(params.get('gain') ?? 2), set: params.get('set') ?? 'validated', on: params.get('bridge') !== 'off', dnBias: Number(params.get('dnbias') ?? 0), holdPerFrame: params.get('hold') !== 'substep' } });

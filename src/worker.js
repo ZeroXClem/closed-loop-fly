@@ -18,6 +18,9 @@ import { RateMonitor } from './brain/rates.js';
 import { loadGraph as loadOpticGraph, unitsWhere as opticUnitsWhere, typeName as opticTypeName, roleName as opticRoleName } from './brain/optic/graph.js';
 import { OpticBrain } from './brain/optic/optic.js';
 import { eyesFromColumns } from './eye/ommatidia.js';
+import { WingbeatCPG } from './motor/wingbeat.js';
+import haltereIdsData from './bridge/haltere-ids.json';
+import steeringIdsData from './bridge/steering-ids.json';
 
 let graph,
   brain,
@@ -45,6 +48,7 @@ let graph,
   bridge = { on: true, gain: 2, typeGains: { HS: 1, LC4: 1, LPLC2: 1 }, subtractRest: true, set: 'validated', dnBias: 0, holdPerFrame: true },
   pairs = null, // { a: Int32Array, b: Int32Array, gain: Float32Array, rest: Float32Array, key: string[] }
   readoutSets = null, // [B] index sets by body ID: DNg02 L/R, DNp, wing MN L/R, haltere MN, bridge cells
+  wingbeat = null, // WingbeatCPG instance (step 0b, ?haltere=phase)
   pendingDt = 0,
   frameCount = 0,
   loopStats = { opticMs: 0, brainMs: 0, substeps: 0 };
@@ -127,7 +131,8 @@ async function handle(m) {
     else brain = new BrainCPU(graph);
     if (m.adapt && brain.setAdaptation) brain.setAdaptation(m.adapt.inc ?? 0, m.adapt.tau ?? 300);
     if (m.optic) await initOptic(m.optic, m.columns, m.opticBackend ?? 'cpu', m.opticParams ?? {});
-    postMessage({ type: 'ready', backend, stimulus, steps: batchSteps, optic: optic ? optic.name : null, bridge: pairs ? { ...bridge, pairs: pairs.a.length } : null });
+    if (m.wingbeat) buildWingbeat(m.wingbeat);
+    postMessage({ type: 'ready', backend, stimulus, steps: batchSteps, optic: optic ? optic.name : null, bridge: pairs ? { ...bridge, pairs: pairs.a.length } : null, wingbeat: !!wingbeat });
   } else if (m.type === 'pulse') {
     if (m.replace) pulses.reset();
     pulses.add(m.indices, brain.tick, m.strength, m.profile ?? 'paint');
@@ -184,17 +189,36 @@ async function handle(m) {
     const netDt = optic.params.netDt, ticks = Math.round(netDt / 0.0001);
     let substeps = 0, opticMs = 0, brainMs = 0, spikes = 0;
     const counts = new Float32Array(graph.n);
+    const yawRate = m.yawRate ?? 0;
+    const wbPeriod = wingbeat ? wingbeat.periodTicks : 0;
     const runB = async (nTicks) => {
       const pulseRates = pulses.sample(brain.tick);
       if (stimulus === 'poisson') kickFromRates(zeroRates, 0, external, kick);
       else kickFromRates(pulseRates, injectGain, external, kick);
       if (bridge.on && pairs.rested) addBridgeKick();
+      if (wingbeat) wingbeat.fillCycleKick(yawRate, kick);
       const t1 = performance.now();
       const result = await brain.batch(nTicks, stimulus === 'poisson' ? pulseRates : zeroRates, m.silenced ?? false, kick);
       monitor.update(result.counts, nTicks);
       for (let i = 0; i < graph.n; i++) counts[i] += result.counts[i];
       spikes += result.total;
       brainMs += performance.now() - t1;
+    };
+    /** Run totalTicks of [B], breaking into wingbeat-period chunks when CPG is active. */
+    const runBatch = async (totalTicks) => {
+      if (!wingbeat) {
+        for (let done = 0; done < totalTicks; ) {
+          const chunk = Math.min(200, totalTicks - done);
+          await runB(chunk);
+          done += chunk;
+        }
+      } else {
+        for (let done = 0; done < totalTicks; ) {
+          const chunk = Math.min(wbPeriod, totalTicks - done);
+          await runB(chunk);
+          done += chunk;
+        }
+      }
     };
     const n = Math.floor(pendingDt / netDt + 1e-9);
     pendingDt -= n * netDt;
@@ -206,11 +230,7 @@ async function handle(m) {
       for (let k = 0; k < n; k++) optic.step(m.lumL, m.lumR, netDt);
       optic.flush();
       opticMs += performance.now() - t0;
-      for (let done = 0; done < n * ticks; ) {
-        const chunk = Math.min(200, n * ticks - done);
-        await runB(chunk);
-        done += chunk;
-      }
+      await runBatch(n * ticks);
       const t2 = performance.now();
       await optic.sync();
       if (!pairs.rested && optic.calibrated) captureRest();
@@ -224,11 +244,7 @@ async function handle(m) {
       }
       opticMs += performance.now() - t0;
       // one [B] batch for the whole frame (<= 200 ticks), current held at [A]'s end-of-frame rates
-      for (let done = 0; done < n * ticks; ) {
-        const chunk = Math.min(200, n * ticks - done);
-        await runB(chunk);
-        done += chunk;
-      }
+      await runBatch(n * ticks);
       substeps = n;
     } else
       for (let k = 0; k < n; k++) {
@@ -236,7 +252,7 @@ async function handle(m) {
         optic.step(m.lumL, m.lumR, netDt);
         if (!pairs.rested && optic.calibrated) captureRest();
         opticMs += performance.now() - t0;
-        await runB(ticks);
+        await runBatch(ticks);
         substeps++;
       }
     frameCount++;
@@ -422,12 +438,31 @@ function buildReadoutSets() {
     dna02L: fromB((t, s) => t === 'DNa02' && s === 'L'), dna02R: fromB((t, s) => t === 'DNa02' && s === 'R'),
     walkL: fromB((t, s) => ['DNp09', 'DNg100', 'DNg97'].includes(t) && s === 'L'), walkR: fromB((t, s) => ['DNp09', 'DNg100', 'DNg97'].includes(t) && s === 'R'),
     turnL: fromB((t, s) => ['DNa02', 'DNa11', 'DNg13'].includes(t) && s === 'L'), turnR: fromB((t, s) => ['DNa02', 'DNa11', 'DNg13'].includes(t) && s === 'R'),
+    // step 0b: wing steering MNs for the 'steering' readout
+    b1L: fromB((t, s) => t === 'b1 MN' && s === 'L'), b1R: fromB((t, s) => t === 'b1 MN' && s === 'R'),
+    b2L: fromB((t, s) => t === 'b2 MN' && s === 'L'), b2R: fromB((t, s) => t === 'b2 MN' && s === 'R'),
+    b3L: fromB((t, s) => t === 'b3 MN' && s === 'L'), b3R: fromB((t, s) => t === 'b3 MN' && s === 'R'),
+    i1L: fromB((t, s) => t === 'i1 MN' && s === 'L'), i1R: fromB((t, s) => t === 'i1 MN' && s === 'R'),
+    iii3L: fromB((t, s) => t === 'iii3 MN' && s === 'L'), iii3R: fromB((t, s) => t === 'iii3 MN' && s === 'R'),
   };
 }
 
 /** Tonic current on [B]'s DNg02 (both sides) = bridge.dnBias mV/ms, via the external-current array. */
 function applyDnBias() {
   for (const k of ['dng02L', 'dng02R']) for (const i of readoutSets[k]) external[i] = bridge.dnBias;
+}
+
+/** Build the WingbeatCPG from body-ID JSON files (step 0b). */
+function buildWingbeat(params = {}) {
+  const toIdx = (bodyIds) => Uint32Array.from(bodyIds.map((b) => bodyIndex.get(Number(b))).filter((i) => i != null));
+  const affL = toIdx(haltereIdsData.left), affR = toIdx(haltereIdsData.right);
+  const steer = {};
+  for (const [type, sides] of Object.entries(steeringIdsData)) {
+    if (type === 'source') continue;
+    for (const [side, bids] of Object.entries(sides)) steer[type + side] = toIdx(bids);
+  }
+  wingbeat = new WingbeatCPG(params, affL, affR, steer);
+  postMessage({ type: 'stage', message: `wingbeat CPG: ${affL.length} L + ${affR.length} R afferents, ${Object.keys(steer).length} MN sets, period ${wingbeat.periodTicks} ticks` });
 }
 
 /** Mean EMA rate (Hz) of each readout set in [B]. */

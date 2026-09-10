@@ -387,3 +387,79 @@ the whole repo is built to stay short of. Kakaria and de Bivort's connectome-der
 attractor works because its gains are chosen to make it work; the review's point again, now in
 the compass. Route 0a is closed. What remains for a stabiliser is route 0b, a haltere model
 that encodes rotation onto the wing-steering motor neurons, or admitting a fitted stage.
+
+## 9. Step 0b: phase-encoded haltere via wingbeat CPG (fitted stage)
+
+**Status:** FITTED STAGE. Every constant below is hand-set, not a connectome result. The model
+tests whether the published haltere→steering MN wiring can decode a yaw signal when driven by
+a realistic wingbeat pattern, but the amplitudes and gains are tuned, not derived.
+
+**Architecture.** A 200 Hz wingbeat CPG drives each wing steering motor neuron type at its
+preferred phase: agonists (b1, b2, b3) at downstroke, antagonists (i1, iii3) at upstroke.
+Haltere afferents fire once per wingbeat cycle; under body rotation, the left and right
+amplitudes are modulated by `phaseGain × yawRate × sign`, creating a rate asymmetry that
+the connectome's direct haltere→MN synapses (b1: 295/277, b3: 369/310, i1: 160/225 syn,
+all ipsilateral) can decode. The `source='steering'` readout reads the agonist/antagonist
+rate asymmetry and maps it to wing amplitude commands (`src/motor/readout.js`).
+
+**Implementation.** `src/motor/wingbeat.js` (WingbeatCPG class), integrated into the worker
+via `?haltere=phase` URL parameter. Within each frame, the LIF batch is broken into 50-tick
+(5 ms) wingbeat-cycle chunks, each with a fresh `fillCycleKick` that adds CPG + haltere kick.
+
+**Fitted constants** (labeled in code and DEFAULT_WINGBEAT):
+
+| constant | default | source |
+|---|---|---|
+| CPG frequency | 200 Hz | Drosophila wingbeat (Dickinson 1999) |
+| CPG amplitude | 0.8 mV/ms | hand-set to fire each MN ~once/cycle |
+| Haltere amplitude | 1.5 mV/ms | hand-set to fire each afferent ~once/cycle |
+| Phase gain | 0.1 per rad/s | hand-set, swept in bench |
+| CPG pulse width | 2 ticks (0.2 ms) | hand-set |
+| Haltere pulse width | 1 tick (0.1 ms) | hand-set |
+
+**Wiring.** The connectome provides direct ipsilateral synapses from haltere afferents onto
+the steering MNs. The CPG is entirely hand-set — there is no CPG in the MaleCNS connectome.
+The readout (agonist−antagonist asymmetry) is a hand-set map, like the DNg02 readout.
+
+**CPU unit test** (`bench/wingbeat-unit.mjs`). Sweeps cpgAmplitude (0.2–1.6 mV/ms) and
+yawRate (0, 1, 2 rad/s) on BrainCPU, 1.5 s per condition. At cpgAmp 0.8 (default), yaw 2
+produces ~19 Hz asymmetry between left and right net (agonist−antagonist) rates. The
+steering MN firing is sparse at low amplitudes and saturates at high ones; 0.8–1.2 is the
+working range. Results are stochastic (single-neuron MN populations).
+
+**GPU bench** (`bench/haltere-phase.mjs`). (A) Static drum rotation with phase haltere:
+modest steering MN asymmetry under yaw (~3–5 Hz at ω=±1), consistent with the haltere→MN
+pathway modulating firing through the connectome's wiring. (B) Cruise comparison, 20 s × 1
+rep, four conditions:
+
+| condition | collisions | drift | wobble | readout |
+|---|---|---|---|---|
+| no haltere (dna02) | 0 | −342° | 0.636 rad/s | dna02 |
+| DC proxy, sign −1 (dna02) | 0 | **−10.9°** | 0.434 rad/s | dna02 |
+| phase haltere (dna02) | 1 | −349° | 0.543 rad/s | dna02 |
+| phase haltere (steering) | 2 | 450° | **0.307 rad/s** | steering |
+
+The DC proxy with dna02 readout reproduces the published stabilisation (§2–3: through the
+silent-pair artefact). Phase haltere with dna02 readout does not help: the haltere modulates
+steering MNs, not DNa02. Phase haltere with steering MN readout produces the lowest wobble
+(the CPG rhythm smooths yaw oscillations) but drifts 450° — the steering MN asymmetry is
+present but the closed-loop sign or gain of the hand-set readout does not stabilise heading.
+
+Note: all three reps in each condition were identical (fully deterministic GPU LIF from the
+same reset state). Meaningful realisations would require varying initial conditions.
+
+**What this proves and does not prove.** The haltere afferent→steering MN wiring in the
+connectome *can carry* a yaw signal to the wing steering muscles when driven by a
+CPG-patterned input: the drum test shows a steering MN asymmetry under yaw, and the cruise
+produces the lowest wobble. The direction and magnitude of the asymmetry depend on hand-set
+constants (CPG amplitude, haltere amplitude, phase gain, readout gain). This is a plausibility
+demonstration, not a functional prediction: the biological haltere encodes rotation via
+Coriolis-modulated spike timing within each wingbeat cycle, a mechanism that cannot be
+replicated in the GPU batch model (which holds kick constant within a batch). The
+amplitude-modulation approximation used here is a proxy, analogous to the DC haltere proxy
+but with physiological rhythm.
+
+**The conclusion remains the same as §3.** No combination of haltere model and readout tested
+here stabilises heading without either (a) the silent-pair readout artefact (DC proxy + dna02)
+or (b) explicit gain tuning of the hand-set steering readout. The un-refit LIF does not
+produce a natural closed-loop stabiliser from the connectome wiring alone.
