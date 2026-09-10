@@ -42,7 +42,7 @@ export const DEFAULT_READOUT = Object.freeze({
    * follow the rates with this time constant while flying (0 = frozen at capture), so a
    * standing asymmetry that wanders after calibration does not become a permanent turn.
    */
-  gate: 0,
+  gate: 1,
   recenterTau: 0,
 });
 

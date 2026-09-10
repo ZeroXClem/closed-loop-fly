@@ -1,8 +1,8 @@
-# HANDOFF — closed-loop-fly, as of 2026-09-07 evening (EDT)
+# HANDOFF — closed-loop-fly, as of 2026-09-10 (EDT)
 
-For the next agent. Everything here was learned the hard way in one overnight session; the
-phase docs carry the science, this file carries how to work. Read `README.md`, then this,
-then `DECISIONS.md`. Every number quoted below lives in `bench/out/`.
+For the next agent. Everything here was learned the hard way; the phase docs carry the science,
+this file carries how to work. Read `README.md`, then this, then `DECISIONS.md`. Every number
+quoted below lives in `bench/out/`.
 
 ## State in one paragraph
 
@@ -16,19 +16,27 @@ lateralises in the un-refit LIF (DSI ≤ 0.08), so the published DNg02 flight co
 is 35° over 30 s against a 20° target. Throughput 0.17× realtime on the RTX 3070 (0.20× with
 the rate net on the GPU, `?optic=gpu`).
 
-**Evening follow-ups (docs/followups.md, all pushed; the thread is public):** the octopamine
-cancellation story is dead (§1); the haltere proxy's 30× was an anti-spin clamp riding on the
-readout treating a silent DNa02 pair as a turn (§2); with that artefact gated out (`?gate=1`,
-default off) the intact loop drifts ~200° in 20 s and haltere-off −5°, so the loop has **no real
-stabiliser** (§3); a biological tonic drive through AN07B004 storms the network (§4); the rate net
-runs on the GPU with identical output (§5). Later the same evening (§6–7): a flight-state (octopamine)
-gain on the LPTC synapses raises the drive and does not stabilise heading (one 9° run, replicates
-at 175°; §6), and a potassium-like adaptation term in both LIFs stops the storms but mutes DNa02 and
-DNg02 alike (§7). **The open problem is still a stabiliser**, and the two cheap ideas are now spent:
-what is left is a real heading signal (the central complex, never read here) or a phase-encoded
-haltere model onto the wing-steering MNs. Do not present the Phase 5/6 drift numbers without §3
-next to them, and never quote a single closed-loop run: the loop is chaotic, one run is one sample
-(§6 is the cautionary tale).
+**Evening follow-ups (docs/followups.md §1–7, all pushed):** the octopamine cancellation story
+is dead (§1); the haltere proxy's 30× was an anti-spin clamp riding on the readout treating a
+silent DNa02 pair as a turn (§2); with that artefact gated out (`?gate=1`, default off) the
+intact loop drifts ~200° in 20 s and haltere-off −5°, so the loop has **no real stabiliser**
+(§3); a biological tonic drive through AN07B004 storms the network (§4); the rate net runs on
+the GPU with identical output (§5). Later (§6–7): a flight-state gain on LPTC synapses raises
+drive, not stability (one 9° run replicates at 175°; §6); adaptation stops storms but mutes
+responses (§7).
+
+**Steps 0a–0b (docs/followups.md §8–9, 2026-09-09):** both cheap stabiliser ideas have been
+tried and closed. (a) The compass circuit is complete in the graph (EPG–PEN–Δ7 ring, PFL3 →
+DNa02 736 synapses), but nothing the loop carries reaches it, and the un-refit LIF's ring is a
+fixed point at one wedge — no bump, no memory (§8). (b) A phase-encoded haltere via 200 Hz
+wingbeat CPG (`?haltere=phase`) drives steering MNs with L/R amplitude modulated by yaw rate.
+The drum test shows a steering MN asymmetry under yaw (~3–5 Hz); cruise produces the lowest
+wobble (0.307 rad/s) but drifts 450° — the asymmetry does not stabilise heading (§9). **The
+conclusion is the same as §3: no combination of haltere model and readout stabilises heading
+without either the silent-pair artefact or explicit gain tuning.** The un-refit LIF does not
+produce a natural stabiliser from the connectome wiring alone. Do not present the Phase 5/6
+drift numbers without §3 next to them, and never quote a single closed-loop run: the loop is
+chaotic, one run is one sample (§6 is the cautionary tale).
 
 ## Machines
 
@@ -97,7 +105,7 @@ next to them, and never quote a single closed-loop run: the loop is chaotic, one
 
 `loop.html` URL params: `bench=1` (no rAF; driven by `__loop.run(n)`), `backend=gpu|cpu`,
 `gain=` (bridge gain, mV/ms per rate unit), `set=validated|inputs`, `dnbias=` (tonic DNg02,
-mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02|steering`, `gate=0|1`, `recenter=<s>`, `optic=cpu|gpu`, `flight=<LPTC gain>`, `adapt=<mV/spike>,<tau ms>`, `turngain=`,
+mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02|steering`, `gate=1|0` (default on; §10), `recenter=<s>`, `optic=cpu|gpu`, `flight=<LPTC gain>`, `adapt=<mV/spike>,<tau ms>`, `turngain=`,
 `turnsign=`, `haltere=on|phase`, `halteregain=`, `halteresign=±1`, `cpgamp=`, `haltamp=`,
 `phasegain=`, `course=1`, `bridge=off`, `stimulus=inject|poisson`, `frame=` (dt).
 
@@ -109,7 +117,7 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02|steering`,
 | bridge gain | 2 mV/ms per (r − rest); type gains all 1 | worker `bridge` |
 | tonic DNg02 drive | 0.4 mV/ms (0.5 in the Phase 3 GPU run) | worker `applyDnBias` |
 | rate hold | per 16.7 ms frame (one GPU fence) | worker `frame` |
-| readout | DNg02 code: base 0.5, turnGain 1–20 (never steers); DNa02 deviation: turnGain 2 | `src/motor/readout.js` |
+| readout | DNg02 code: base 0.5, turnGain 1–20 (never steers); DNa02 deviation: turnGain 2; **gate on** by default (§10) | `src/motor/readout.js` |
 | motor lag | 50 ms | readout |
 | cruise | base amplitude 0.7 → 0.78 units/s | `bench/lib/cruise.mjs` |
 | haltere proxy (DC) | gain 2 mV/ms per rad/s, cap 3, **sign −1** (left afferents for rightward rotation) | `src/loop.js` |
@@ -143,57 +151,52 @@ mV/ms), `hold=frame|substep`, `motor=hover|vnc`, `readout=dng02|dna02|steering`,
   the rest-subtracted command saturates and the fly spins identically — an artefact of the
   readout; read the rates for those conditions. With `--gate 1` those conditions fly straight
   (−2.3°), `docs/ablations-gated.md`.
+- Compass (step 0a, §8): EPG–PEN–Δ7 ring, PFL3 → DNa02 (736 syn) all present, but the
+  un-refit ring is a fixed point at ~52° for any pulse — no bump, no memory. Closed.
+- Phase haltere (step 0b, §9): 200 Hz CPG + haltere amplitude modulation, 20 s cruise:
+  no-haltere −342°/0.636; DC proxy **−10.9°**/0.434 (artefact); phase+dna02 −349°/0.543;
+  phase+steering **450°/0.307** (lowest wobble, worst drift). Conclusion unchanged from §3.
 
 ## Next steps, in the order I would take them
 
-0. **A stabiliser that is not a readout trick** (everything below §3 of docs/followups.md points
-   here). (a) ~~read heading from the central complex~~ **tried 2026-09-07 night, closed** (§8):
-   the compass is complete in the graph (EPG 46, PEN 42, Δ7 42, PFL3 → DNa02 736 synapses, ring
-   order recoverable from the wiring), but nothing the loop carries reaches it, optic-v2 has no
-   MeTu, and the un-refit LIF's ring is a fixed point at one wedge (~52° on the spectral ring)
-   for any pulse position and any tonic drive: no bump, no memory. Making it a compass means
-   tuning EPG–PEN–Δ7 gains, i.e. a fitted stage. `bench/compass-paths.mjs`, `bench/compass-bump.mjs`.
-   (b) **implemented 2026-09-09 (fitted stage)**: `?haltere=phase` — 200 Hz wingbeat CPG drives
-   steering MNs, haltere afferents fire once per cycle with L/R amplitude modulated by yaw rate.
-   All constants hand-set (labeled in `DEFAULT_WINGBEAT`). CPU: `bench/wingbeat-unit.mjs`; GPU:
-   `bench/haltere-phase.mjs`. The readout is `source='steering'` (agonist−antagonist asymmetry).
-   Preliminary cruise: lowest wobble (0.110 rad/s) of the three conditions, comparable drift.
-   docs/followups.md §9, DECISIONS.md.
+**Status as of 2026-09-10:** steps 0–4 and 6 are all closed. Step 5 is blocked. The stabiliser
+search (step 0) exhausted both cheap ideas — compass (fixed point) and phase haltere (lowest
+wobble but no heading stabilisation). What remains would require either (a) fitting LIF gains
+(the EPG–PEN–Δ7 ring, or broader), which is upstream's roadmap, not ours, or (b) a proprioceptive
+walking loop (step 5), which needs a walking state. The repo is at a natural stopping point for
+the un-refit connectome.
 
-
-1. ~~Kill or confirm the octopamine hypothesis~~ **Done 2026-09-07 evening, killed**:
-   `bench/hs-inject.mjs --octopamine` (options `--mute <types>`, `--monoamines 0`) mutes each
-   relay, both, and sets the 541 monoamine cells to their file sign (0). DNg02 L−R stays within
-   ±1 Hz in all ten runs; DNa02 lateralises in all ten. docs/followups.md §1, DECISIONS.md.
-   The biological-tonic-drive probe (`--drive AN07B004:<mV/ms>`) is also done: AN07B004 is two
-   cells whose drive throws the network into a >1M-spike storm before DNg02 nears threshold;
-   docs/followups.md §4. DNg02 steering is not reachable by injection anywhere in this graph.
-2. ~~Readout without rest subtraction~~ **Done 2026-09-07 evening**: `gate` and `recenterTau` in
-   `src/motor/readout.js` (off by default), `bench/ablate.mjs --gate 1 [--recenter 10] --tag …`.
-   Silent conditions now fly straight; the intact loop drifts +204° (re-centring: +108°) and
-   haltere-off −5°: the 30× stabilisation was the clamp through the artefact. docs/followups.md §3,
-   docs/ablations-gated*.md, figure 19. **Open**: a real stabiliser (stronger/faster optomotor
-   path or a phase-encoded haltere model onto the wing-steering MNs), and re-centring by default. (or with a slow re-centring like their `offsetTau`)
-   so silent populations command straight flight; rerun `bench/ablate.mjs`.
-3. ~~GPU port of the rate net~~ **Done 2026-09-07 evening**: `src/brain/optic/rate-net-gpu.js`,
-   `loop.html?optic=gpu` (default CPU), `bench/optic-gpu.mjs`. 107 → 83 ms/frame (0.16× → 0.20×),
-   output identical; the bridge lags one frame instead of adding a fence. docs/followups.md §5.
-   **The LIF (81 ms per frame) is now the entire budget**; the 0.4× target needs Xenova's
-   propagate/advance kernels sped up, not the optic side.
-4. ~~Haltere sign vs anatomy~~ **Done 2026-09-07 evening**: `bench/haltere-paths.mjs`,
-   `bench/haltere-inject.mjs --currents …`, `bench/haltere-loop.mjs`. The afferents are
-   ipsilateral and inhibit their own DNa02 via PS059 (predicts the wrong sign); the real effect
-   is a current-dependent switch that only becomes side-asymmetric above 0.8 mV/ms, and sign −1
-   works as an anti-spin clamp at large yaw rates through the readout's silence-as-command
-   artefact. docs/followups.md §2, figure 18. This makes step 2 the most load-bearing item.
-5. Walking: leg MN → joint map (Phase 4 leftover) once something drives the leg VNC; DNa02
-   is the natural turn signal there. Xenova's `gait.js` IK is the skeleton to drive. **Not started**:
-   nothing in the loop drives the leg VNC (the walking DNs are silent in flight), so a leg readout
-   would read zeros; it needs a walking state first (a DNp09/DNg100 drive, or a landing).
-6. (Superseded by followups §3: the haltere "before/after" contrast was the readout artefact.)
-   Re-record `docs/cruise-dna02.webm` (haltere off) if a before/after video is wanted:
-   `scripts/gpu-box.sh runx "node bench/cruise.mjs --readout dna02 --record"`, then pull
-   `docs/*.webm` **before** the next sync.
+0. ~~**A stabiliser that is not a readout trick**~~ **Closed.** Both cheap ideas tried and
+   exhausted (docs/followups.md §8–9):
+   (a) ~~read heading from the central complex~~ **closed** (§8): the compass circuit is complete
+   in the graph (EPG 46, PEN 42, Δ7 42, PFL3 → DNa02 736 synapses, ring order recoverable from
+   the wiring), but nothing the loop carries reaches it, optic-v2 has no MeTu, and the un-refit
+   LIF's ring is a fixed point at one wedge (~52°): no bump, no memory. Making it a compass
+   means tuning EPG–PEN–Δ7 gains, i.e. a fitted stage. `bench/compass-paths.mjs`,
+   `bench/compass-bump.mjs`.
+   (b) ~~phase-encoded haltere~~ **closed** (§9, fitted stage): `?haltere=phase` — 200 Hz
+   wingbeat CPG drives steering MNs, haltere afferents fire once per cycle with L/R amplitude
+   modulated by yaw rate. All constants hand-set (labeled in `DEFAULT_WINGBEAT`). CPU:
+   `bench/wingbeat-unit.mjs`; GPU: `bench/haltere-phase.mjs`. Cruise 20 s × 1 rep: lowest
+   wobble (0.307 rad/s) but 450° drift — does not stabilise heading.
+1. ~~Kill or confirm the octopamine hypothesis~~ **Done, killed** (§1): DNg02 L−R stays within
+   ±1 Hz in all ten conditions; DNa02 lateralises in all ten. AN07B004 tonic drive storms the
+   network (§4). DNg02 steering is not reachable by injection anywhere in this graph.
+2. ~~Readout without rest subtraction~~ **Done** (§3, §10): `gate` and `recenterTau` in
+   `src/motor/readout.js`. Gate now **default on** (§10). Ablations re-confirmed with the new
+   default (`bench/out/ablate-dna02-gated-default.json`): identical to the explicit `--gate 1`
+   run. The artefact-free table is the default behaviour.
+3. ~~GPU port of the rate net~~ **Done** (§5, §11): `?optic=gpu`, 107 → 83 ms/frame, output
+   identical. **The LIF (81 ms per frame) is the entire budget.** Tested single-encoder batch
+   (`SUBMISSION_STEPS = 200`): 103 ms/frame, **worse** — Dawn pipelines overlapping encoder
+   submissions (§11). The chunked approach (10 × 20 ticks) is already near-optimal.
+   0.4× realtime needs kernel-level changes (active-neuron filtering or upstream refit).
+4. ~~Haltere sign vs anatomy~~ **Done** (§2): the afferents are ipsilateral and sign −1 works
+   only through the readout's silence-as-command artefact.
+5. Walking: leg MN → joint map (Phase 4 leftover). **Blocked**: nothing in the loop drives the
+   leg VNC (walking DNs are silent in flight); needs a walking state first (DNp09/DNg100 drive,
+   or a landing). Xenova's `gait.js` IK is the skeleton.
+6. ~~Re-record cruise video~~ **Superseded** by §3 (the haltere contrast was the artefact).
 
 ## Figures (added 2026-09-07 afternoon)
 

@@ -347,3 +347,29 @@ IDs), integrated in `src/worker.js` (batch breaking into 50-tick wingbeat cycles
 `&haltere=phase&cpgamp=0.8&haltamp=1.5&phasegain=0.1` (all optional, shown are defaults).
 Benches: `bench/wingbeat-unit.mjs` (CPU sweep), `bench/haltere-phase.mjs` (GPU cruise
 comparison). Results in docs/followups.md §9.
+
+## 2026-09-10 — Gate on by default; readout artefact fix is no longer opt-in
+
+The `gate` parameter in `MotorReadout` scales the turn command by `min(1, (L+R)/(restL+restR))`
+so a readout pair that has gone silent commands nothing instead of a phantom turn from the rest
+subtraction (docs/followups.md §2–3). This was added on 2026-09-07 evening as `gate: 0`
+(off by default, opt-in via `?gate=1`) because the existing cruise numbers used the artefact and
+making it default-on would break them.
+
+Now changed to `gate: 1` (default on) in `DEFAULT_READOUT`, `loop.js`, `bench/lib/cruise.mjs`,
+and `bench/ablate.mjs`. Reasons: (1) the artefact is the main source of false-positive
+stabilisation; (2) all follow-up benches already ran with `gate=1` explicitly; (3) new benches
+should not accidentally depend on the artefact; (4) the old ungated numbers are preserved in
+`bench/out/ablate-dna02.json` and `docs/ablations.md`.
+
+Existing `?gate=0` in the URL still overrides to artefact-on for reproduction.
+
+## 2026-09-10 — LIF GPU: SUBMISSION_STEPS stays at 20 (tested, larger is worse)
+
+Xenova's `brain-gpu.js` splits each batch into groups of `SUBMISSION_STEPS = 20` ticks, each
+submitted via a separate command encoder. Tested `SUBMISSION_STEPS = MAX_STEPS` (200) — one
+encoder, one submission per batch — expecting to reduce per-encoder overhead. Result on RTX
+3070: **103.4 ms/frame** (vs 81.4 ms baseline). The chunked submission is **faster**, not
+slower: the Dawn driver pipelines overlapping encoder submissions, and a single large encoder
+serializes all work. Reverted to 20. The LIF throughput bottleneck is in the kernels themselves
+(166,700 neurons × 200 ticks of advance, plus sparse propagation), not in submission overhead.

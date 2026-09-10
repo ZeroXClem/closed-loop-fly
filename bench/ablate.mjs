@@ -12,7 +12,7 @@ import { launchCombinedBrowser, launchSoftwareBrowser, startVite } from './lib/b
 import { openLoop, cruise, fmt } from './lib/cruise.mjs';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
-const GL = arg('gl', 'combined'), READOUT = arg('readout', 'dng02'), BACKEND = arg('backend', 'gpu'), SECONDS = Number(arg('seconds', 20)), DNBIAS = Number(arg('dnbias', 0.4)), TURNGAIN = Number(arg('turngain', 2)), ONLY = arg('conditions', 'all'), HSIGN = Number(arg('halteresign', -1)), RECORD = process.argv.includes('--record'), GATE = Number(arg('gate', 0)), RECENTER = Number(arg('recenter', 0)), TAG = arg('tag', ''), FLIGHT = Number(arg('flight', 1)), ADAPT = arg('adapt', '');
+const GL = arg('gl', 'combined'), READOUT = arg('readout', 'dng02'), BACKEND = arg('backend', 'gpu'), SECONDS = Number(arg('seconds', 20)), DNBIAS = Number(arg('dnbias', 0.4)), TURNGAIN = Number(arg('turngain', 2)), ONLY = arg('conditions', 'all'), HSIGN = Number(arg('halteresign', -1)), RECORD = process.argv.includes('--record'), GATE = Number(arg('gate', 1)), RECENTER = Number(arg('recenter', 0)), TAG = arg('tag', ''), FLIGHT = Number(arg('flight', 1)), ADAPT = arg('adapt', '');
 const BRAIN = ['cb_intrinsic', 'cb_sensory', 'cb_motor', 'cb_endocrine', 'cb_efferent', 'cb_sensory_tbc', 'ol_intrinsic', 'ol_sensory', 'visual_projection', 'visual_centrifugal', 'visual_projection_tbc', 'descending_neuron', 'descending_neuron_tbc', 'sensory_descending', 'efferent_descending'];
 const CENTRAL = ['cb_intrinsic', 'cb_sensory', 'cb_motor', 'cb_endocrine', 'cb_efferent', 'cb_sensory_tbc'];
 const CONDITIONS = {

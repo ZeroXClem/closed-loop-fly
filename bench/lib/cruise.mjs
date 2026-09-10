@@ -8,7 +8,7 @@ const mean = (a) => a.reduce((s, v) => s + v, 0) / Math.max(1, a.length);
 const std = (a) => { const m = mean(a); return Math.sqrt(mean(a.map((v) => (v - m) ** 2))); };
 
 /** Open the loop page in the given state and wait for the worker. */
-export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, haltereSign = 1, course = true, bridge = true, gate = 0, recenter = 0, flight = 1, adapt = '', optic = 'cpu', cpgAmp = 0.8, haltAmp = 1.5, phaseGain = 0.1 } = {}) {
+export async function openLoop(page, url, { gain = 2, dnBias = 0.4, readout = 'dng02', turnGain = 2, backend = 'gpu', set = 'validated', haltere = false, haltereGain = 2, haltereSign = 1, course = true, bridge = true, gate = 1, recenter = 0, flight = 1, adapt = '', optic = 'cpu', cpgAmp = 0.8, haltAmp = 1.5, phaseGain = 0.1 } = {}) {
   let haltQ = '';
   if (haltere === 'phase') haltQ = `&haltere=phase&cpgamp=${cpgAmp}&haltamp=${haltAmp}&phasegain=${phaseGain}&halteresign=${haltereSign}`;
   else if (haltere) haltQ = `&haltere=on&halteregain=${haltereGain}&halteresign=${haltereSign}`;

@@ -463,3 +463,47 @@ but with physiological rhythm.
 here stabilises heading without either (a) the silent-pair readout artefact (DC proxy + dna02)
 or (b) explicit gain tuning of the hand-set steering readout. The un-refit LIF does not
 produce a natural closed-loop stabiliser from the connectome wiring alone.
+
+## 10. Gate on by default; ablations re-confirmed
+
+**Change.** The readout gate (`gate` in `MotorReadout`) scales the turn command by
+`min(1, (L+R)/(restL+restR))` so a readout pair that has gone silent commands nothing instead
+of a phantom turn. Added in §3 as opt-in (`gate: 0` default, `?gate=1` to enable). Now
+changed to **`gate: 1` by default** in `DEFAULT_READOUT`, `loop.js`, `bench/lib/cruise.mjs`,
+and `bench/ablate.mjs`. New benches no longer accidentally depend on the artefact; old numbers
+with `gate=0` are preserved in `bench/out/ablate-dna02.json` and `docs/ablations.md`.
+
+**Ablation re-run** (`bench/out/ablate-dna02-gated-default.json`). Identical to the previous
+explicit `--gate 1` run — the deterministic GPU LIF reproduces:
+
+| condition | collisions | drift | wobble | DNa02 L/R |
+|---|---|---|---|---|
+| intact | 1 | 203.6° | 0.323 rad/s | 13.3/9.4 |
+| bridge-off | 0 | 187.7° | 0.335 rad/s | 13.7/9.2 |
+| recurrence-off | 0 | −2.3° | 0.011 rad/s | 0/0 |
+| central-brain-silenced | 0 | −2.3° | 0.011 rad/s | 0/0 |
+| haltere-off | 1 | −5.1° | 0.480 rad/s | 13.9/10.4 |
+| neck-cut | 0 | −2.3° | 0.011 rad/s | 0/0 |
+| decapitated | 0 | −2.3° | 0.011 rad/s | 0/0 |
+
+The artefact-free table is now the default. The gate can still be overridden with `?gate=0`.
+
+## 11. LIF GPU throughput: SUBMISSION_STEPS tuning
+
+**Question.** Xenova's `brain-gpu.js` splits each 200-tick batch into groups of
+`SUBMISSION_STEPS = 20` ticks, each submitted as a separate command encoder. The hypothesis:
+reducing the number of encoders (larger groups) would save submission overhead.
+
+**Test.** Set `SUBMISSION_STEPS = MAX_STEPS` (200): one encoder, one compute pass, one
+submission per batch. Result on RTX 3070: **103.4 ms/frame** (vs 81.4 ms baseline at
+`SUBMISSION_STEPS = 20`). The single large encoder is **27% slower**, not faster.
+
+**Why.** The Dawn WebGPU driver pipelines overlapping command encoder submissions: while the
+GPU executes encoder N, the CPU can prepare encoder N+1. A single large encoder serializes all
+work and eliminates this overlap. The chunked approach (10 encoders of 20 ticks each) is
+already near-optimal for the RTX 3070.
+
+**Verdict.** Reverted to `SUBMISSION_STEPS = 20`. The LIF throughput bottleneck is in the
+kernels themselves (166,700 neurons × 200 ticks of advance per frame, plus sparse propagation
+of ~1000 spikes), not in submission overhead. The 0.4× realtime target (≈50 ms/frame) requires
+either faster WGSL kernels (active-neuron filtering, larger workgroups) or a smaller graph.
